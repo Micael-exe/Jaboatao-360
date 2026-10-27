@@ -1,0 +1,43 @@
+name: CI
+
+# Roda a cada push (qualquer branch) e a cada Pull Request
+on:
+  push:
+  pull_request:
+
+# Cancela execuções antigas da mesma branch quando chega um commit novo
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Linter, testes e build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Instalar o Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependências
+        run: npm install --no-audit --no-fund
+
+      - name: Linter (ESLint)
+        run: npm run lint
+
+      - name: Testes (Vitest)
+        run: npm test
+
+      - name: Build de produção
+        run: npm run build
