@@ -3,6 +3,9 @@ import { Link, useLocation } from 'react-router-dom'
 const links = [
   { to: '/', label: 'Início' },
   { to: '/mapa', label: 'Mapa' },
+  { to: '/roteiros', label: 'Roteiros' },
+  { to: '/comercio', label: 'Comércio' },
+  { to: '/perfil', label: 'Perfil' },
   { to: '/sobre', label: 'Sobre' },
 ]
 
@@ -15,7 +18,7 @@ export default function Navbar() {
         <Link to="/" className="text-xl font-bold tracking-tight">
           🌎 Jaboatão 360
         </Link>
-        <div className="flex gap-4 text-sm font-medium">
+        <div className="flex flex-wrap justify-end gap-x-4 gap-y-1 text-sm font-medium">
           {links.map(({ to, label }) => (
             <Link
               key={to}
