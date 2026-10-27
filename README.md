@@ -1,5 +1,7 @@
 # 🌎 Jaboatão 360
 
+[![CI](https://github.com/SEU-USUARIO/jaboatao-360/actions/workflows/ci.yml/badge.svg)](https://github.com/SEU-USUARIO/jaboatao-360/actions/workflows/ci.yml)
+
 **Uma nova forma de descobrir, explorar e vivenciar Jaboatão dos Guararapes – PE.**
 
 ## 📌 Sobre o projeto

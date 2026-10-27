@@ -4,6 +4,9 @@ import { catalogo, buscarItem } from '../data/dados'
 
 const rascunhoVazio = { id: null, nome: '', data: '', paradas: [] }
 
+// Id único sem depender de backend
+const novoId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+
 export default function Roteiros() {
   const [rascunho, setRascunho] = useLocalStorage('j360_rascunho', rascunhoVazio)
   const [salvos, setSalvos] = useLocalStorage('j360_roteiros', [])
@@ -21,7 +24,7 @@ export default function Roteiros() {
   const atualizar = (campos) => setRascunho((r) => ({ ...r, ...campos }))
 
   const adicionarParada = (ref) => {
-    const uid = `${ref}-${Date.now()}`
+    const uid = `${ref}-${novoId()}`
     setRascunho((r) => ({ ...r, paradas: [...r.paradas, { uid, ref, hora: '' }] }))
   }
 
@@ -50,7 +53,7 @@ export default function Roteiros() {
     if (rascunho.id) {
       setSalvos((lista) => lista.map((r) => (r.id === rascunho.id ? rascunho : r)))
     } else {
-      setSalvos((lista) => [{ ...rascunho, id: Date.now() }, ...lista])
+      setSalvos((lista) => [{ ...rascunho, id: novoId() }, ...lista])
     }
     setRascunho(rascunhoVazio)
     avisar('✅ Roteiro salvo com sucesso!')
@@ -63,7 +66,7 @@ export default function Roteiros() {
 
   const duplicar = (roteiro) =>
     setSalvos((lista) => [
-      { ...roteiro, id: Date.now(), nome: `${roteiro.nome} (cópia)` },
+      { ...roteiro, id: novoId(), nome: `${roteiro.nome} (cópia)` },
       ...lista,
     ])
 
