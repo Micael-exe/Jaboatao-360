@@ -193,3 +193,80 @@ No GitHub: **Settings → Branches → Add branch protection rule** na `main` �
 - Ainda não há testes de ponta a ponta (E2E) nem de cobertura mínima; podem entrar em uma próxima etapa.
 - Quando o backend existir, trocar `dados.js` e o `useLocalStorage` por chamadas à API (já há `axios` instalado) e adicionar um job de testes do backend na pipeline.
 - A pipeline usa `npm install`. Depois que o `package-lock.json` estiver atualizado e commitado, pode-se trocar por `npm ci`, que é mais rápido e reprodutível.
+
+---
+
+## 9. Redesign visual (identidade "Maré")
+
+Esta etapa mudou **somente a aparência** das telas. Nenhuma lógica, rota, dado, texto de botão/rótulo consultado pelos testes ou chave do `localStorage` foi alterado.
+
+### 9.1 Escopo
+
+| Item | Situação |
+|------|----------|
+| Nova paleta, tipografia e formas | Aplicadas em todo o frontend |
+| Navbar translúcida com menu para celular | Reescrita visualmente (mesmos links e rotas) |
+| Início com hero animado (sol e ondas) e destaques em grade assimétrica | Refeito |
+| Mapa, Roteiros, Comércio, Perfil e Sobre | Restilizados (estrutura e lógica intactas) |
+| Testes, dados, hooks, rotas, CI e backend | Não alterados |
+
+### 9.2 Identidade visual
+
+- **Cores:** verde-maré `#12665d` (primária), espuma `#e6f3ef` (fundos suaves), sol `#f5b544` (acento pontual), tintas verde-acinzentadas para texto e bordas. O verde original foi mantido como base.
+- **Tipografia:** Bricolage Grotesque (títulos) e Instrument Sans (texto), carregadas do Google Fonts em `index.html`. Sem conexão, o navegador usa a fonte do sistema.
+- **Formas:** cantos arredondados (`1.5rem` nos cartões), bordas finas, sombras suaves apenas no hover.
+- **Aviso de dados demonstrativos:** agora é uma pílula discreta com um ponto "sol", sem o emoji de alerta.
+- **Ícones:** os emojis dos dados (`dados.js`) continuam; os emojis decorativos do cabeçalho e da Navbar foram trocados por SVG.
+
+### 9.3 Animações
+
+- **Início:** entrada em sequência dos títulos, subida do sol e ondas em movimento contínuo e lento.
+- **Demais telas:** entrada suave e curta do conteúdo ao abrir a página.
+- **Interações:** cor e sublinhado nos links da Navbar, botões que reagem ao clique, filtros, campos com foco destacado e ícone que se inclina no hover dos cartões.
+- **Acessibilidade:** quem usa "reduzir movimento" no sistema não vê as animações; o foco do teclado é sempre visível.
+
+### 9.4 Como o tema funciona
+
+As cores `green`, `gray` e `yellow` do Tailwind foram **remapeadas** em `src/index.css` (bloco `@theme`). Por isso as classes já usadas nas telas assumem a nova paleta sem reescrever cada uma. Para ajustar a identidade, altere esse bloco.
+
+Classes novas definidas no mesmo arquivo:
+
+| Classe | Uso |
+|--------|-----|
+| `page`, `page-narrow`, `page-title`, `page-lead` | Contêiner, título e subtítulo das páginas |
+| `notice` | Aviso de dados demonstrativos |
+| `card`, `panel`, `tile`, `tag` | Cartões, painéis fixos, ícone do cartão e categoria |
+| `btn` (`btn-sm`, `btn-lg`), `chip` (`chip-on`), `input` (`input-sm`) | Botões, filtros e campos |
+| `avatar-btn` (`avatar-on`), `fav` | Escolha de avatar e botão de favorito |
+| `nav`, `nav-link` | Navbar |
+| `hero`, `ondas`, `dest` e derivadas | Tela inicial |
+
+### 9.5 Arquivos alterados
+
+```
+frontend/
+├── index.html                      (alterado — idioma pt-BR, título, fontes e cor do tema)
+└── src/
+    ├── index.css                   (alterado — tema, animações e classes visuais)
+    ├── components/Navbar.jsx       (alterado — novo visual e menu para celular)
+    └── pages/
+        ├── Home.jsx                (alterado — hero e destaques; dados dos destaques mantidos)
+        ├── Mapa.jsx                (alterado — apenas classes)
+        ├── Roteiros.jsx            (alterado — apenas classes)
+        ├── Comercio.jsx            (alterado — apenas classes e remoção do emoji do campo de busca)
+        ├── Perfil.jsx              (alterado — apenas classes)
+        └── Sobre.jsx               (alterado — apenas classes)
+docs/DOCUMENTACAO.md                (este documento — seção 9 adicionada)
+```
+
+### 9.6 Compatibilidade com os testes
+
+- O link ativo da Navbar continua com a classe `underline`, que o teste da Navbar consulta.
+- Nomes de botões, rótulos, placeholders e títulos usados pelos testes foram preservados.
+- O botão de menu da Navbar só aparece em telas pequenas e não duplica os links.
+- **Pendente:** esta etapa foi entregue sem rodar a pipeline. Antes de abrir o Pull Request, execute `cd frontend && npm run lint && npm test && npm run build`.
+
+### 9.7 Limitações
+
+- A tela inicial usa `<a href="/mapa">` (como antes), que recarrega a página. Trocar por `Link` do React Router seria uma mudança de comportamento e ficou fora desta etapa.
+- Os pontos de quebra (celular, tablet e desktop) foram pensados no código, mas ainda não foram conferidos em dispositivos reais.

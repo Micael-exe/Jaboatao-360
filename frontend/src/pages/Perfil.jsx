@@ -31,7 +31,7 @@ const visitasIniciais = [
 ]
 
 const inputClasse =
-  'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600'
+  'input'
 
 export default function Perfil() {
   const [aba, setAba] = useState('conta')
@@ -86,18 +86,18 @@ export default function Perfil() {
   ]
 
   return (
-    <main className="max-w-5xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-green-700 mb-2">Perfil do usuário</h1>
-      <p className="text-gray-500 text-sm mb-4">
+    <main className="page">
+      <h1 className="page-title">Perfil do usuário</h1>
+      <p className="page-lead">
         Gerencie sua conta, ajuste suas preferências e acompanhe os lugares que já visitou.
       </p>
 
-      <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 text-sm rounded-lg px-4 py-3 mb-8">
-        ⚠️ Dados demonstrativos — as informações ficam salvas apenas neste navegador, sem login real.
+      <div className="notice">
+        Dados demonstrativos — as informações ficam salvas apenas neste navegador, sem login real.
       </div>
 
       {/* Cabeçalho do perfil */}
-      <section className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm mb-6">
+      <section className="panel mb-6">
         <div className="flex items-center gap-4 mb-5">
           <div className="text-5xl bg-green-50 border border-green-200 rounded-full w-20 h-20 flex items-center justify-center">
             {conta.avatar}
@@ -105,7 +105,7 @@ export default function Perfil() {
           <div>
             <h2 className="text-xl font-bold text-gray-800">{conta.nome}</h2>
             <p className="text-sm text-gray-500">{conta.email}</p>
-            <span className="text-xs font-semibold text-green-700 uppercase tracking-wide">
+            <span className="tag">
               {conta.tipoUsuario}
             </span>
           </div>
@@ -127,11 +127,7 @@ export default function Perfil() {
           <button
             key={a.id}
             onClick={() => setAba(a.id)}
-            className={`text-sm font-semibold px-4 py-2 rounded-full border transition-colors ${
-              aba === a.id
-                ? 'bg-green-700 text-white border-green-700'
-                : 'bg-white text-green-700 border-green-300 hover:bg-green-50'
-            }`}
+            className={`chip ${aba === a.id ? 'chip-on' : ''}`}
           >
             {a.label}
           </button>
@@ -142,7 +138,7 @@ export default function Perfil() {
       {aba === 'conta' && (
         <form
           onSubmit={salvarConta}
-          className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm space-y-4"
+          className="panel space-y-4"
         >
           <h2 className="text-xl font-bold text-gray-800">Dados da conta</h2>
 
@@ -154,11 +150,7 @@ export default function Perfil() {
                   type="button"
                   key={a}
                   onClick={() => setFormConta({ ...formConta, avatar: a })}
-                  className={`text-2xl w-12 h-12 rounded-full border transition-colors ${
-                    formConta.avatar === a
-                      ? 'border-green-700 bg-green-50'
-                      : 'border-gray-200 hover:bg-gray-50'
-                  }`}
+                  className={`avatar-btn ${formConta.avatar === a ? 'avatar-on' : ''}`}
                 >
                   {a}
                 </button>
@@ -211,7 +203,7 @@ export default function Perfil() {
           <div className="flex items-center gap-3">
             <button
               type="submit"
-              className="bg-green-700 text-white px-5 py-2 rounded-full font-semibold text-sm hover:bg-green-800 transition-colors"
+              className="btn"
             >
               Salvar alterações
             </button>
@@ -223,7 +215,7 @@ export default function Perfil() {
       {/* Preferências */}
       {aba === 'preferencias' && (
         <div className="space-y-6">
-          <section className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+          <section className="panel">
             <h2 className="text-xl font-bold text-gray-800 mb-3">Meus interesses</h2>
             <div className="flex flex-wrap gap-2">
               {interessesDisponiveis.map((i) => {
@@ -232,11 +224,7 @@ export default function Perfil() {
                   <button
                     key={i.id}
                     onClick={() => alternarInteresse(i.id)}
-                    className={`text-sm font-semibold px-4 py-2 rounded-full border transition-colors ${
-                      ativo
-                        ? 'bg-green-700 text-white border-green-700'
-                        : 'bg-white text-green-700 border-green-300 hover:bg-green-50'
-                    }`}
+                    className={`chip ${ativo ? 'chip-on' : ''}`}
                   >
                     {i.emoji} {i.label}
                   </button>
@@ -245,7 +233,7 @@ export default function Perfil() {
             </div>
           </section>
 
-          <section className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <section className="panel grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">
                 Ritmo dos passeios
@@ -276,7 +264,7 @@ export default function Perfil() {
             </div>
           </section>
 
-          <section className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+          <section className="panel">
             <h2 className="text-xl font-bold text-gray-800 mb-3">Notificações</h2>
             <div className="space-y-2 text-sm text-gray-700">
               {[
@@ -305,7 +293,7 @@ export default function Perfil() {
         <div className="space-y-6">
           <form
             onSubmit={registrarVisita}
-            className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm"
+            className="panel"
           >
             <h2 className="text-xl font-bold text-gray-800 mb-3">Registrar nova visita</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
@@ -336,7 +324,7 @@ export default function Perfil() {
             />
             <button
               type="submit"
-              className="bg-green-700 text-white px-5 py-2 rounded-full font-semibold text-sm hover:bg-green-800 transition-colors"
+              className="btn"
             >
               + Registrar visita
             </button>
@@ -353,10 +341,10 @@ export default function Perfil() {
                   return (
                     <div
                       key={v.id}
-                      className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow"
+                      className="card"
                     >
-                      <div className="text-4xl mb-3">{a?.emoji}</div>
-                      <span className="text-xs font-semibold text-green-700 uppercase tracking-wide">
+                      <div className="tile">{a?.emoji}</div>
+                      <span className="tag">
                         {new Date(v.data + 'T00:00:00').toLocaleDateString('pt-BR')}
                       </span>
                       <h3 className="text-lg font-bold text-gray-800 mt-1 mb-2">{a?.nome}</h3>
