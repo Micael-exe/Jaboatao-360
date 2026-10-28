@@ -206,7 +206,7 @@ Os testes ficam ao lado do código que validam (`*.test.js` / `*.test.jsx`).
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/SEU-USUARIO/jaboatao-360.git
+git clone https://github.com/Micael-exe/jaboatao-360.git
 
 # 2. Entre na pasta do frontend
 cd jaboatao-360/frontend
