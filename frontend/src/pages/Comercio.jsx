@@ -41,32 +41,28 @@ export default function Comercio() {
   }
 
   const chip = (ativo) =>
-    `text-xs font-semibold px-3 py-1 rounded-full border transition-colors ${
-      ativo
-        ? 'bg-green-700 text-white border-green-700'
-        : 'bg-white text-green-700 border-green-300 hover:bg-green-50'
-    }`
+    `chip ${ativo ? 'chip-on' : ''}`
 
   return (
-    <main className="max-w-5xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-green-700 mb-2">Comércio local</h1>
-      <p className="text-gray-500 text-sm mb-4">
+    <main className="page">
+      <h1 className="page-title">Comércio local</h1>
+      <p className="page-lead">
         Descubra estabelecimentos e experiências próximas aos atrativos de Jaboatão e apoie quem
         movimenta a cidade.
       </p>
 
-      <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 text-sm rounded-lg px-4 py-3 mb-6">
-        ⚠️ Dados demonstrativos — os estabelecimentos exibidos são fictícios (MVP acadêmico).
+      <div className="notice">
+        Dados demonstrativos — os estabelecimentos exibidos são fictícios (MVP acadêmico).
       </div>
 
       {/* Filtros */}
-      <section className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm mb-8 space-y-4">
+      <section className="panel mb-8 space-y-4">
         <input
           type="text"
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
-          placeholder="🔎 Buscar por nome, bairro ou atrativo próximo"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600"
+          placeholder="Buscar por nome, bairro ou atrativo próximo"
+          className="input"
         />
         <div className="flex flex-wrap gap-2 items-center">
           <span className="text-xs text-gray-500 w-16">Tipo</span>
@@ -101,19 +97,19 @@ export default function Comercio() {
               return (
                 <div
                   key={c.id}
-                  className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col"
+                  className="card flex flex-col"
                 >
                   <div className="flex items-start justify-between">
-                    <div className="text-4xl mb-3">{c.emoji}</div>
+                    <div className="tile">{c.emoji}</div>
                     <button
                       onClick={() => alternarFavorito(c.id)}
                       aria-label={favorito ? 'Remover dos favoritos' : 'Favoritar'}
-                      className="text-xl"
+                      className="fav"
                     >
                       {favorito ? '❤️' : '🤍'}
                     </button>
                   </div>
-                  <span className="text-xs font-semibold text-green-700 uppercase tracking-wide">
+                  <span className="tag">
                     {c.tipo} · {c.categoria}
                   </span>
                   <h3 className="text-lg font-bold text-gray-800 mt-1 mb-2">{c.nome}</h3>
@@ -127,7 +123,7 @@ export default function Comercio() {
 
                   <button
                     onClick={() => adicionarAoRoteiro(c.id)}
-                    className="bg-green-700 text-white text-sm font-semibold py-2 rounded-full hover:bg-green-800 transition-colors"
+                    className="btn"
                   >
                     {adicionado === c.id ? '✓ Adicionado!' : '+ Adicionar ao roteiro'}
                   </button>
@@ -145,7 +141,7 @@ export default function Comercio() {
             </p>
             <Link
               to="/roteiros"
-              className="bg-green-700 text-white px-5 py-2 rounded-full font-semibold text-sm hover:bg-green-800 transition-colors"
+              className="btn"
             >
               Ver roteiro →
             </Link>

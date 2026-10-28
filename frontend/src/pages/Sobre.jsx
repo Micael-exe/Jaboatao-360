@@ -1,9 +1,9 @@
 export default function Sobre() {
   return (
-    <main className="max-w-3xl mx-auto px-4 py-10">
+    <main className="page page-narrow">
 
-      <h1 className="text-3xl font-bold text-green-700 mb-2">Sobre o Jaboatão 360</h1>
-      <p className="text-gray-500 text-sm mb-8">Projeto acadêmico — Análise e Desenvolvimento de Sistemas (ADS)</p>
+      <h1 className="page-title">Sobre o Jaboatão 360</h1>
+      <p className="page-lead">Projeto acadêmico — Análise e Desenvolvimento de Sistemas (ADS)</p>
 
       <section className="mb-8">
         <h2 className="text-xl font-bold text-gray-800 mb-3">A problemática</h2>

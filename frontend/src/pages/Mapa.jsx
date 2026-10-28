@@ -63,15 +63,15 @@ const atrativos = [
 
 export default function Mapa() {
   return (
-    <main className="max-w-5xl mx-auto px-4 py-10">
+    <main className="page">
 
-      <h1 className="text-3xl font-bold text-green-700 mb-2">Mapa de atrativos</h1>
-      <p className="text-gray-500 text-sm mb-4">
+      <h1 className="page-title">Mapa de atrativos</h1>
+      <p className="page-lead">
         Clique em um marcador para ver informações sobre o atrativo.
       </p>
 
-      <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 text-sm rounded-lg px-4 py-3 mb-6">
-        ⚠️ Dados demonstrativos — MVP acadêmico do projeto Jaboatão 360.
+      <div className="notice">
+        Dados demonstrativos — MVP acadêmico do projeto Jaboatão 360.
       </div>
 
       <div className="rounded-2xl overflow-hidden shadow-md border border-gray-200" style={{ height: '500px' }}>
