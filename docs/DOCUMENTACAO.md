@@ -177,7 +177,7 @@ Se qualquer etapa falhar, a execução fica vermelha. Em um Pull Request, o resu
 O README mostra o status da última execução na branch padrão:
 
 ```markdown
-[![CI](https://github.com/Micael-exe/jaboatao-360/actions/workflows/ci.yml/badge.svg)](https://github.com/SEU-USUARIO/jaboatao-360/actions/workflows/ci.yml)
+[![CI](https://github.com/Micael-exe/jaboatao-360/actions/workflows/ci.yml/badge.svg)](https://github.com/Micael-exe/jaboatao-360/actions/workflows/ci.yml)
 ```
 
 **Troque `SEU-USUARIO/jaboatao-360` pelo caminho real do repositório.** O badge exibe **passing** (verde) depois que a pipeline rodar com sucesso na branch padrão (normalmente a `main`), ou seja, depois do primeiro merge.
