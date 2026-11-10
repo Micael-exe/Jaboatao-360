@@ -1,0 +1,38 @@
+/* Rodapé global. Somente cores da paleta do projeto (@theme do index.css). */
+.foot {
+  --f-fundo: var(--color-mare-900, #0c3b38);
+  --f-texto: #b9d6cf;
+  --f-link: var(--color-green-200, #cbe7df);
+  --f-borda: var(--color-green-800, #0c4e47);
+  --f-sol: var(--color-sol-400, #f5b544);
+
+  background: var(--f-fundo);
+  color: var(--f-texto);
+  padding: 3rem 0 1.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+.foot-container { max-width: 72rem; margin-inline: auto; padding-inline: 1.25rem; }
+.foot-grid { display: grid; gap: 2rem; }
+@media (min-width: 768px) {
+  .foot-grid { grid-template-columns: 1.3fr 0.8fr 1.3fr; gap: 3rem; }
+}
+.foot-nome {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-display, inherit); font-size: 1.25rem; font-weight: 600; color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+.foot-ponto { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--f-sol); }
+.foot-titulo {
+  font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--f-sol); margin-bottom: 0.75rem;
+}
+.foot-texto { max-width: 26rem; }
+.foot-nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
+.foot a { color: var(--f-link); text-decoration: none; }
+.foot a:hover { color: #ffffff; text-decoration: underline; text-underline-offset: 3px; }
+.foot a:focus-visible { outline: 2px solid var(--f-sol); outline-offset: 3px; border-radius: 4px; }
+.foot-copy {
+  margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--f-borda);
+  font-size: 0.8125rem;
+}

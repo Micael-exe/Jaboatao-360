@@ -1,0 +1,143 @@
+/* Página inicial. Tudo escopado em .home / .home-*.
+   Somente cores da paleta do projeto (@theme do index.css + fixos já usados na home anterior). */
+.home {
+  --h-fundo: #f6f9f8;
+  --h-espuma: #e6f3ef;
+  --h-branco: #ffffff;
+  --h-mare: var(--color-mare-900, #0c3b38);
+  --h-verde: var(--color-green-700, #12665d);
+  --h-verde-vivo: var(--color-green-600, #178273);
+  --h-g50: var(--color-green-50, #edf7f4);
+  --h-g200: var(--color-green-200, #cbe7df);
+  --h-g300: var(--color-green-300, #9fd1c5);
+  --h-sol: var(--color-sol-400, #f5b544);
+  --h-borda: var(--color-gray-200, #dce6e3);
+  --h-titulo: var(--color-gray-800, #12231f);
+  --h-texto: var(--color-gray-600, #44564f);
+  --h-texto-2: var(--color-gray-500, #566762);
+  --h-sombra: 0 14px 34px -22px rgb(12 59 56 / 0.45);
+}
+
+.home-container { max-width: 72rem; margin-inline: auto; padding-inline: 1.25rem; }
+.home-eyebrow {
+  font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--h-verde); margin-bottom: 0.75rem;
+}
+
+/* Hero */
+.home-hero { position: relative; isolation: isolate; overflow: hidden; background: var(--h-espuma); padding: 2.25rem 0 5.5rem; }
+.home-hero-grid { display: grid; gap: 2.5rem; align-items: center; }
+.home-hero-title { font-size: clamp(2.5rem, 8vw, 4.75rem); line-height: 1.02; letter-spacing: -0.03em; color: var(--h-titulo); margin-bottom: 1.25rem; }
+.home-hero-title span { display: block; animation: linha 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+.home-hero-title span:nth-child(2) { animation-delay: 0.08s; }
+.home-hero-title span:nth-child(3) { animation-delay: 0.16s; color: var(--h-verde); }
+.home-hero-texto { max-width: 34rem; font-size: 1.0625rem; line-height: 1.65; color: var(--h-texto); }
+.home-hero-acoes { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.75rem; }
+.home-hero-media { position: relative; }
+.home-hero-sol {
+  position: absolute; z-index: 0; top: -1.25rem; right: -0.75rem;
+  width: 45%; aspect-ratio: 1; border-radius: 50%; background: var(--h-sol);
+}
+.home-hero-foto { position: relative; z-index: 1; aspect-ratio: 4 / 3; border-radius: 1.5rem; box-shadow: var(--h-sombra); }
+.home-hero-onda { position: absolute; z-index: 1; bottom: -1px; left: 0; width: 100%; height: 3rem; display: block; fill: var(--h-fundo); }
+
+@media (min-width: 1024px) {
+  .home-hero { padding: 4.5rem 0 7rem; }
+  .home-hero-grid { grid-template-columns: 1.1fr 0.9fr; gap: 4rem; }
+  .home-hero-foto { aspect-ratio: 4 / 5; }
+  .home-hero-onda { height: 4.5rem; }
+}
+
+/* Botões da home (o botão principal reutiliza .btn do projeto) */
+.home-btn-sec, .home-btn-sol {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 3rem; padding: 0.75rem 1.5rem; border-radius: 999px;
+  font-weight: 600; text-decoration: none; transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.home-btn-sec { border: 2px solid var(--h-verde); color: var(--h-verde); background: transparent; }
+.home-btn-sec:hover { background: var(--h-branco); }
+.home-btn-sol { background: var(--h-sol); color: var(--h-mare); }
+.home-btn-sol:hover { background: var(--h-branco); }
+
+/* Fotos e ilustração de reserva */
+.home-foto { display: block; width: 100%; object-fit: cover; background: var(--h-g50); }
+.home-foto--vazia { position: relative; overflow: hidden; }
+.home-foto-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.fo-sol { fill: var(--h-sol); }
+.fo-onda-1 { fill: var(--h-g200); }
+.fo-onda-2 { fill: var(--h-g300); }
+.fo-onda-3 { fill: var(--h-verde); }
+
+/* Indicadores */
+.home-stats { position: relative; z-index: 2; margin-top: -2.25rem; }
+.home-stats-lista {
+  display: grid; grid-template-columns: repeat(3, 1fr); margin: 0;
+  background: var(--h-branco); border: 1px solid var(--h-borda); border-radius: 1.5rem; box-shadow: var(--h-sombra);
+}
+.home-stat { display: flex; flex-direction: column-reverse; justify-content: center; gap: 0.35rem; padding: 1.1rem 0.5rem; text-align: center; }
+.home-stat + .home-stat { border-left: 1px solid var(--h-borda); }
+.home-stat dt { font-size: 0.75rem; line-height: 1.3; color: var(--h-texto); }
+.home-stat dd { margin: 0; font-family: var(--font-display, inherit); font-size: clamp(1.75rem, 6vw, 2.75rem); font-weight: 600; line-height: 1; color: var(--h-verde); }
+@media (min-width: 640px) { .home-stat dt { font-size: 0.9375rem; } .home-stat { padding: 1.5rem 1rem; } }
+
+/* Seções */
+.home-section { padding-block: 3.5rem; }
+.home-section--sem-topo { padding-top: 0; }
+.home-section--espuma { background: var(--h-espuma); }
+@media (min-width: 768px) { .home-section { padding-block: 5rem; } .home-section--sem-topo { padding-top: 0; } }
+
+.home-sh { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
+.home-sh-titulo { font-size: clamp(1.75rem, 4.5vw, 2.5rem); line-height: 1.1; letter-spacing: -0.02em; color: var(--h-titulo); }
+.home-sh-lead { max-width: 36rem; margin-top: 0.5rem; color: var(--h-texto); }
+.home-sh-link { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; color: var(--h-verde); text-decoration: none; }
+.home-sh-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+@media (min-width: 768px) {
+  .home-sh { flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 2rem; }
+}
+
+/* Grades */
+.home-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
+.home-grid > li { display: flex; }
+@media (min-width: 640px) { .home-grid--3, .home-grid--4 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .home-grid--3 { grid-template-columns: repeat(3, 1fr); } .home-grid--4 { grid-template-columns: repeat(4, 1fr); } }
+
+/* Cards (o link do título cobre o card inteiro) */
+.home-card {
+  position: relative; display: flex; flex-direction: column; width: 100%; overflow: hidden;
+  background: var(--h-branco); border: 1px solid var(--h-borda); border-radius: 1.25rem;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.home-card:hover { transform: translateY(-3px); border-color: var(--h-g300); box-shadow: var(--h-sombra); }
+.home-card:has(:focus-visible) { outline: 2px solid var(--h-verde-vivo); outline-offset: 3px; }
+.home-card-titulo { font-size: 1.1875rem; line-height: 1.25; color: var(--h-titulo); }
+.home-card-link { color: inherit; text-decoration: none; }
+.home-card-link::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.home-card-texto { font-size: 0.9375rem; line-height: 1.6; color: var(--h-texto); }
+.home-card-acao { margin-top: auto; padding-top: 0.5rem; font-size: 0.9375rem; font-weight: 600; color: var(--h-verde); }
+.home-card:hover .home-card-acao { text-decoration: underline; text-underline-offset: 4px; }
+
+.home-atalho { padding: 1.5rem; gap: 0.75rem; }
+.home-icone { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 1rem; background: var(--h-g50); color: var(--h-verde); }
+
+.home-dest-foto { aspect-ratio: 4 / 3; }
+.home-dest-corpo { display: flex; flex: 1; flex-direction: column; align-items: flex-start; gap: 0.5rem; padding: 1.25rem; }
+.home-dest-bairro { font-size: 0.8125rem; color: var(--h-texto-2); }
+
+.home-comercio { padding: 1.5rem; gap: 0.75rem; }
+.home-comercio-topo { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.home-comercio-tipo { font-size: 0.8125rem; color: var(--h-texto-2); }
+.home-comercio-meta { list-style: none; margin: auto 0 0; padding: 0.75rem 0 0; border-top: 1px solid var(--h-borda); display: grid; gap: 0.25rem; font-size: 0.8125rem; color: var(--h-texto-2); }
+
+/* Chamada final */
+.home-cta { background: var(--h-verde); color: var(--h-branco); padding-block: 3.5rem; }
+.home-cta-grid { display: grid; gap: 1.75rem; align-items: center; }
+.home-cta-titulo { font-size: clamp(1.75rem, 5vw, 2.75rem); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+.home-cta-texto { max-width: 36rem; color: var(--h-g200); font-size: 1.0625rem; }
+.home-cta-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; }
+.home-cta-link { color: var(--h-branco); font-weight: 600; text-underline-offset: 4px; }
+.home-cta-link:focus-visible, .home-btn-sol:focus-visible { outline: 2px solid var(--h-sol); outline-offset: 3px; }
+@media (min-width: 768px) {
+  .home-cta { padding-block: 5rem; }
+  .home-cta-grid { grid-template-columns: 1.4fr 1fr; gap: 3rem; }
+  .home-cta-acoes { justify-content: flex-end; }
+}
