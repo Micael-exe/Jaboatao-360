@@ -2,6 +2,8 @@
 
 Projeto **Jaboatão 360** · Frontend (React + Vite + Tailwind)
 
+Versão da documentação: **1.2** · Atualizado em 10/11/2026
+
 Este documento resume o que foi desenvolvido nesta entrega: três novas telas, testes automatizados, o uso de IA para apoiar os cenários de teste e a pipeline do GitHub Actions.
 
 ---
@@ -239,7 +241,7 @@ Classes novas definidas no mesmo arquivo:
 | `btn` (`btn-sm`, `btn-lg`), `chip` (`chip-on`), `input` (`input-sm`) | Botões, filtros e campos |
 | `avatar-btn` (`avatar-on`), `fav` | Escolha de avatar e botão de favorito |
 | `nav`, `nav-link` | Navbar |
-| `hero`, `ondas`, `dest` e derivadas | Tela inicial |
+| `hero`, `ondas`, `dest` e derivadas | Tela inicial (até a v1.1; a partir da v1.2 a home usa classes `home-*`, ver seção 10) |
 
 ### 9.5 Arquivos alterados
 
@@ -268,5 +270,112 @@ docs/DOCUMENTACAO.md                (este documento — seção 9 adicionada)
 
 ### 9.7 Limitações
 
-- A tela inicial usa `<a href="/mapa">` (como antes), que recarrega a página. Trocar por `Link` do React Router seria uma mudança de comportamento e ficou fora desta etapa.
+- A tela inicial usa `<a href="/mapa">` (como antes), que recarrega a página. Trocar por `Link` do React Router seria uma mudança de comportamento e ficou fora desta etapa. **Resolvido na v1.2** (seção 10).
 - Os pontos de quebra (celular, tablet e desktop) foram pensados no código, mas ainda não foram conferidos em dispositivos reais.
+
+---
+
+## 10. Redesign da página inicial (versão 1.2)
+
+Esta etapa redesenhou **somente a home** (`/`), com base na organização de seções do site da Abrecon (hierarquia, espaçamento e padrões de componentes), sem copiar textos, imagens ou marcas. Nenhuma outra tela, rota, dado existente, chave do `localStorage`, teste ou o `App.jsx` foi alterado.
+
+### 10.1 Escopo
+
+| Item | Situação |
+|------|----------|
+| Nova home em seções (hero, indicadores, atalhos, destaques, comércio, chamada final) | Criada |
+| Fotos de Jaboatão nos destaques e no hero | Estrutura pronta; **arquivos de imagem pendentes** |
+| Rodapé global (`Footer`) | Criado, **usado somente na home** por enquanto |
+| Links da home com React Router (`Link`) | Aplicado |
+| Emojis na home | Removidos (ícones em SVG) |
+| Novas dependências | Nenhuma |
+| Paleta de cores | Mantida (somente cores já existentes no projeto) |
+| Testes unitários dos componentes da home | **Pendentes** (próxima etapa) |
+
+### 10.2 Estrutura da página
+
+| Ordem | Bloco | Conteúdo |
+|---|---|---|
+| 1 | Hero | Título em três linhas, texto de apresentação, botões **Explorar o mapa** (`/mapa`) e **Montar um roteiro** (`/roteiros`) e foto principal |
+| 2 | Indicadores | 3 números calculados dos dados: atrativos (6), comércios e experiências (9) e bairros mapeados (6) |
+| 3 | Atalhos | Cards para Mapa, Roteiros, Comércio local e Perfil |
+| 4 | Destaques turísticos | 6 cards com foto, categoria, bairro e descrição, levando ao mapa |
+| 5 | Comércio local | 3 comércios em destaque (gastronomia, experiência guiada e cultura), levando à tela de comércio |
+| 6 | Chamada final | Convite para montar um roteiro |
+| 7 | Rodapé | Marca, navegação, nota sobre o projeto e direitos |
+
+Cada card é clicável por inteiro: o link do título cobre a área do card, o que mantém um único ponto de foco por card no teclado.
+
+### 10.3 Paleta
+
+Somente cores que já existiam no projeto:
+
+- **Tokens do tema (`@theme`):** `#edf7f4`, `#cbe7df`, `#9fd1c5`, `#178273`, `#12665d`, `#0c4e47`, `#dce6e3`, `#566762`, `#44564f`, `#12231f`, sol `#f5b544` e verde profundo `#0c3b38`.
+- **Fixas já usadas na home anterior:** `#f6f9f8`, `#e6f3ef`, `#b9d6cf` e `#ffffff`.
+
+Os estilos da home ficam em `Home.css` e os do rodapé em `Footer.css`, com variáveis locais que apontam para esses tokens.
+
+### 10.4 Fotos
+
+- Pasta: `frontend/src/assets/jaboatao/`. O arquivo é encontrado pelo nome, sem extensão (jpg, jpeg, png, webp ou avif).
+- Nomes esperados: `hero`, `piedade`, `candeias`, `pilar`, `guararapes`, `barra-de-jangada`, `morro-da-conceicao`.
+- Sem o arquivo, o componente `Foto` mostra uma ilustração neutra, marcada como decorativa (`aria-hidden`). Com o arquivo, renderiza `<img>` com o texto alternativo definido em `src/data/home.js`.
+- A imagem do topo é carregada com prioridade; as demais, de forma preguiçosa (`loading="lazy"`).
+- **Pendências:** adicionar as fotos, revisar os textos alternativos para descrever o que cada imagem mostra e registrar a licença e o crédito de cada uma.
+
+### 10.5 Rodapé global
+
+`src/components/Footer.jsx` tem a marca, a navegação (Início, Mapa, Roteiros, Comércio local, Perfil e Sobre), uma nota de que os dados são demonstrativos e o ano atual. Por decisão da equipe, ele só é chamado em `Home.jsx`. Para usá-lo em todas as telas, renderize-o em `App.jsx` após as rotas e remova a chamada de `Home.jsx` para não duplicar.
+
+### 10.6 Acessibilidade
+
+- Estrutura de títulos: um `h1` no hero, `h2` por seção e `h3` nos cards.
+- Seções com `aria-labelledby`, rodapé com `nav` rotulada e indicadores em lista de definição (`dl`).
+- Foco visível, inclusive no card inteiro (`:has(:focus-visible)`); no rodapé e na faixa escura, o contorno usa a cor sol.
+- Links repetidos ganham texto para leitor de tela (por exemplo, "no mapa" e "faixa de preço"), e elementos decorativos usam `aria-hidden`.
+- Contraste conferido par a par, todos acima de 4,5:1 (WCAG AA). Os menores valores foram 5,2:1 (texto `#cbe7df` sobre `#12665d`) e 5,6:1 (texto `#566762` sobre `#f6f9f8`).
+- Mobile-first: grades de 1 coluna que passam a 2 e 3 ou 4 em telas maiores. A animação do título respeita "reduzir movimento".
+
+### 10.7 Arquivos criados e alterados
+
+```
+frontend/src/
+├── pages/
+│   ├── Home.jsx                    (alterado — composição das seções e rodapé)
+│   └── Home.css                    (novo — estilos da home, prefixo home-)
+├── data/home.js                    (novo — destaques, atalhos, indicadores e comércios em destaque)
+├── components/
+│   ├── Footer.jsx                  (novo — rodapé global)
+│   ├── Footer.css                  (novo)
+│   └── home/                       (novo)
+│       ├── HomeHero.jsx
+│       ├── Foto.jsx
+│       ├── SectionHeader.jsx
+│       ├── StatsBar.jsx
+│       ├── AtalhoCard.jsx
+│       ├── DestaqueCard.jsx
+│       ├── ComercioCard.jsx
+│       └── CtaBand.jsx
+└── assets/jaboatao/                (novo — pasta das fotos, com LEIA-ME.txt)
+docs/DOCUMENTACAO.md                (este documento — seção 10 e histórico)
+README.md                           (alterado — versão, home, estrutura, fotos e histórico)
+```
+
+### 10.8 Limitações e pendências
+
+- **Testes:** os componentes novos da home ainda não têm testes unitários (previstos para a próxima etapa).
+- **Pipeline:** esta etapa foi entregue sem rodar `lint`, `test` e `build`. Antes do Pull Request, execute `cd frontend && npm run lint && npm test && npm run build`.
+- **Visual:** a home foi validada na estrutura (renderização no servidor), mas ainda não foi conferida em navegador e dispositivos reais.
+- **CSS sem uso:** as regras `.hero`, `.ondas`, `.onda*` e `.dest*` em `src/index.css` deixaram de ser usadas pela home e podem ser removidas em uma limpeza futura.
+- **Dados:** os números dos indicadores são reais em relação ao catálogo, mas o catálogo continua demonstrativo.
+- **Rodapé:** os links são os mesmos da Navbar; não há contatos nem redes sociais, que precisam ser definidos pela equipe.
+
+---
+
+## 11. Histórico de versões
+
+| Versão | Seções | Resumo |
+|---|---|---|
+| **1.2** | 10 | Redesign da página inicial, rodapé global (só na home) e estrutura de fotos |
+| **1.1** | 9 | Redesign visual "Maré" em todo o frontend (paleta, tipografia, navbar, animações) |
+| **1.0** | 1 a 8 | Telas de Roteiros, Comércio local e Perfil, testes automatizados, uso de IA nos cenários de teste e pipeline de CI |
