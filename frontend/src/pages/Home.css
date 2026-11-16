@@ -1,0 +1,146 @@
+/* Página inicial. Tudo escopado em .home / .home-*.
+   Somente cores da paleta do projeto (@theme do index.css + fixas já usadas na home anterior).
+   Os degradês sobre as fotos usam o verde profundo #0c3b38 com transparência. */
+.home {
+  --h-fundo: #f6f9f8;
+  --h-espuma: #e6f3ef;
+  --h-branco: #ffffff;
+  --h-mare: var(--color-mare-900, #0c3b38);
+  --h-verde: var(--color-green-700, #12665d);
+  --h-verde-vivo: var(--color-green-600, #178273);
+  --h-g200: var(--color-green-200, #cbe7df);
+  --h-sol: var(--color-sol-400, #f5b544);
+  --h-borda: var(--color-gray-200, #dce6e3);
+  --h-titulo: var(--color-gray-800, #12231f);
+  --h-texto: var(--color-gray-600, #44564f);
+  --h-texto-2: var(--color-gray-500, #566762);
+}
+
+/* A animação de entrada global (main > *) fica desligada na home */
+.home main > * { animation: none; }
+
+.home-container { max-width: 72rem; margin-inline: auto; padding-inline: 1.25rem; }
+.home-foto { display: block; width: 100%; object-fit: cover; }
+
+/* Link do título cobre o bloco inteiro (um único foco por item) */
+.home-link-esticado { color: inherit; text-decoration: none; }
+.home-link-esticado::after { content: ""; position: absolute; inset: 0; }
+
+/* Botões */
+.home-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 2.75rem; padding: 0.6rem 1.25rem; border: 2px solid transparent; border-radius: 0.5rem;
+  font-weight: 600; text-decoration: none; transition: background-color 0.15s, color 0.15s;
+}
+.home-btn--sol { background: var(--h-sol); color: var(--h-mare); }
+.home-btn--sol:hover { background: var(--h-branco); }
+.home-btn--contorno { border-color: var(--h-branco); color: var(--h-branco); }
+.home-btn--contorno:hover { background: rgb(255 255 255 / 0.16); }
+.home-hero :focus-visible, .home-cta :focus-visible, .home-principal :focus-visible { outline-color: var(--h-sol); }
+
+/* Hero: foto de fundo com degradê */
+.home-hero {
+  position: relative; isolation: isolate; display: flex; align-items: flex-end;
+  min-height: 32rem; overflow: hidden; background: var(--h-mare); color: var(--h-branco);
+}
+.home-hero-foto { position: absolute; inset: 0; z-index: -2; height: 100%; object-position: center 45%; }
+.home-hero-veu {
+  position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(180deg, rgb(12 59 56 / 0.4) 0%, rgb(12 59 56 / 0.9) 100%);
+}
+.home-hero-conteudo { width: 100%; padding-block: 4rem 2rem; }
+.home-hero-titulo { max-width: 16ch; font-size: clamp(2.5rem, 7vw, 4.25rem); font-weight: 600; line-height: 1.04; color: var(--h-branco); }
+.home-hero-texto { max-width: 34rem; margin-top: 1rem; font-size: 1.0625rem; line-height: 1.6; }
+.home-hero-acoes { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.75rem; }
+.home-stats {
+  display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; margin: 2.5rem 0 0; padding-top: 1.25rem;
+  border-top: 1px solid rgb(255 255 255 / 0.4);
+}
+.home-stat { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: baseline; gap: 0.4rem; }
+.home-stat dd { margin: 0; font-family: var(--font-display, inherit); font-size: 1.5rem; font-weight: 600; line-height: 1; }
+.home-stat dt { font-size: 0.9375rem; }
+@media (min-width: 900px) {
+  .home-hero { min-height: 38rem; }
+  .home-hero-conteudo { padding-block: 6rem 2.5rem; }
+  .home-hero-veu {
+    background:
+      linear-gradient(90deg, rgb(12 59 56 / 0.94) 0%, rgb(12 59 56 / 0.76) 66%, rgb(12 59 56 / 0.08) 100%),
+      linear-gradient(0deg, rgb(12 59 56 / 0.55) 0%, rgb(12 59 56 / 0) 40%);
+  }
+}
+
+/* Seções */
+.home-section { padding-block: 3.5rem; background: var(--h-fundo); }
+.home-section--branca { background: var(--h-branco); }
+.home-section--espuma { background: var(--h-espuma); }
+@media (min-width: 768px) { .home-section { padding-block: 5rem; } }
+
+.home-sh { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
+.home-sh-titulo { font-size: clamp(1.625rem, 4vw, 2.25rem); line-height: 1.15; color: var(--h-titulo); }
+.home-sh-lead { max-width: 36rem; margin-top: 0.5rem; color: var(--h-texto); }
+.home-sh-link { font-weight: 600; color: var(--h-verde); text-underline-offset: 4px; }
+.home-sh-link:hover { text-decoration: underline; }
+@media (min-width: 768px) { .home-sh { flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 2rem; } }
+
+/* Atalhos: lista simples, sem caixas nem ícones */
+.home-atalhos { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.home-atalho { position: relative; padding: 1.1rem 0; border-top: 1px solid var(--h-borda); color: var(--h-texto); }
+.home-atalho-titulo { margin-bottom: 0.25rem; font-size: 1.1875rem; color: var(--h-titulo); }
+.home-atalho:hover .home-atalho-titulo { text-decoration: underline; text-underline-offset: 4px; }
+.home-atalho:has(:focus-visible) { outline: 2px solid var(--h-verde-vivo); outline-offset: 4px; }
+@media (min-width: 768px) {
+  .home-atalhos { grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+  .home-atalho { padding: 1rem 0 0; border-top: 2px solid var(--h-verde); }
+}
+
+/* Atrativos: um destaque com foto e uma lista */
+.home-destaques { display: grid; gap: 2rem; }
+@media (min-width: 1024px) { .home-destaques { grid-template-columns: 1.15fr 1fr; gap: 3rem; align-items: start; } }
+
+.home-principal {
+  position: relative; isolation: isolate; display: flex; align-items: flex-end; min-height: 24rem;
+  overflow: hidden; border-radius: 0.5rem; background: var(--h-mare); color: var(--h-branco);
+}
+.home-principal-foto { position: absolute; inset: 0; z-index: -2; height: 100%; }
+.home-principal-veu {
+  position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(0deg, rgb(12 59 56 / 0.94) 0%, rgb(12 59 56 / 0.7) 38%, rgb(12 59 56 / 0) 75%);
+}
+.home-principal-texto { padding: 1.5rem; }
+.home-principal-meta { font-size: 0.9375rem; }
+.home-principal-nome { margin: 0.25rem 0 0.5rem; font-size: 1.625rem; line-height: 1.15; color: var(--h-branco); }
+.home-principal:hover .home-principal-nome { text-decoration: underline; text-underline-offset: 4px; }
+.home-principal:has(:focus-visible) { outline: 2px solid var(--h-sol); outline-offset: 3px; }
+@media (min-width: 1024px) { .home-principal { min-height: 100%; } }
+
+.home-lista { list-style: none; margin: 0; padding: 0; }
+.home-item { position: relative; display: flex; gap: 1rem; padding: 1rem 0; border-top: 1px solid var(--h-borda); }
+.home-item-foto { flex: none; width: 5.5rem; height: 5.5rem; border-radius: 0.375rem; }
+.home-item-nome { font-size: 1.125rem; line-height: 1.25; color: var(--h-titulo); }
+.home-item:hover .home-item-nome { text-decoration: underline; text-underline-offset: 4px; }
+.home-item:has(:focus-visible) { outline: 2px solid var(--h-verde-vivo); outline-offset: 2px; }
+.home-item-meta { margin-top: 0.15rem; font-size: 0.875rem; color: var(--h-texto-2); }
+.home-item-desc { margin-top: 0.35rem; font-size: 0.9375rem; line-height: 1.55; color: var(--h-texto); }
+
+/* Comércio: colunas com filete, sem cartões */
+.home-comercios { list-style: none; margin: 0; padding: 0; display: grid; gap: 2rem; }
+@media (min-width: 768px) { .home-comercios { grid-template-columns: repeat(3, 1fr); gap: 2.5rem; } }
+.home-com { position: relative; height: 100%; padding-top: 1rem; border-top: 2px solid var(--h-verde); }
+.home-com-nome { font-size: 1.1875rem; line-height: 1.25; color: var(--h-titulo); }
+.home-com:hover .home-com-nome { text-decoration: underline; text-underline-offset: 4px; }
+.home-com:has(:focus-visible) { outline: 2px solid var(--h-verde-vivo); outline-offset: 4px; }
+.home-com-meta { margin-top: 0.15rem; font-size: 0.875rem; color: var(--h-texto-2); }
+.home-com-desc { margin-top: 0.6rem; line-height: 1.55; color: var(--h-texto); }
+.home-com-info { margin-top: 0.5rem; font-size: 0.875rem; color: var(--h-texto-2); }
+.home-com-desc + .home-com-info { margin-top: 0.9rem; }
+
+/* Chamada final */
+.home-cta { background: var(--h-verde); color: var(--h-branco); padding-block: 3.5rem; }
+.home-cta-grid { display: grid; gap: 1.5rem; align-items: center; }
+.home-cta-titulo { font-size: clamp(1.75rem, 4.5vw, 2.5rem); line-height: 1.1; color: var(--h-branco); }
+.home-cta-texto { max-width: 34rem; margin-top: 0.6rem; font-size: 1.0625rem; color: var(--h-g200); }
+.home-cta .home-btn { justify-self: start; }
+@media (min-width: 768px) {
+  .home-cta { padding-block: 4.5rem; }
+  .home-cta-grid { grid-template-columns: 1fr auto; gap: 3rem; }
+}
