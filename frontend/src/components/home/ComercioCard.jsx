@@ -2,21 +2,14 @@ import { Link } from 'react-router-dom'
 
 export default function ComercioCard({ nome, tipo, categoria, descricao, bairro, horario, preco, proximoA }) {
   return (
-    <article className="home-card home-comercio">
-      <div className="home-comercio-topo">
-        <span className="tag">{categoria}</span>
-        <span className="home-comercio-tipo">{tipo}</span>
-      </div>
-      <h3 className="home-card-titulo">
-        <Link to="/comercio" className="home-card-link">{nome}</Link>
+    <article className="home-com">
+      <h3 className="home-com-nome">
+        <Link to="/comercio" className="home-link-esticado">{nome}</Link>
       </h3>
-      <p className="home-card-texto">{descricao}</p>
-      <ul className="home-comercio-meta">
-        <li>{bairro} · próximo a {proximoA}</li>
-        <li>
-          {horario} · <span className="sr-only">faixa de preço </span>{preco}
-        </li>
-      </ul>
+      <p className="home-com-meta">{categoria}, {tipo.toLowerCase()}</p>
+      <p className="home-com-desc">{descricao}</p>
+      <p className="home-com-info">{bairro}, perto de {proximoA}</p>
+      <p className="home-com-info">Horário: {horario}. Preço: {preco}</p>
     </article>
   )
 }

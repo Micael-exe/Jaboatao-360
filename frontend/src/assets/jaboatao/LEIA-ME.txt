@@ -1,6 +1,12 @@
-Coloque aqui as fotos de Jaboatão dos Guararapes (jpg, jpeg, png, webp ou avif).
-Nomes esperados (minúsculas, sem espaços):
-  hero, piedade, candeias, pilar, guararapes, barra-de-jangada, morro-da-conceicao
-Ex.: piedade.webp. Sem o arquivo, o card exibe uma ilustração neutra.
-Dica: 1600 px de largura para o hero e 1000 px para os cards, em WebP, até ~200 KB cada.
+Fotos da página inicial (jpg, jpeg, png, webp ou avif). O arquivo é encontrado pelo nome, sem extensão.
+
+Já incluídas:
+  hero.webp   fundo do topo da página (com degradê por cima)
+  pilar.webp  destaque principal de atrativos (Igreja de Nossa Senhora do Pilar)
+
+Opcionais (aparecem como miniatura na lista de atrativos):
+  piedade, candeias, guararapes, barra-de-jangada, morro-da-conceicao
+
+Sem o arquivo, o bloco aparece sem imagem.
+Dica: 1600 px de largura para o hero e 1000 px para as demais, em WebP, até ~200 KB cada.
 Confira a licença de cada foto e dê o crédito exigido (ex.: Wikimedia Commons, CC BY-SA).

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import logo from '../assets/logo-jaboatao360.webp'
 import './Footer.css'
 
 const links = [
@@ -15,19 +16,24 @@ export default function Footer() {
     <footer className="foot">
       <div className="foot-container">
         <div className="foot-grid">
-          <div className="foot-marca">
-            <p className="foot-nome">
-              <span className="foot-ponto" aria-hidden="true" />
-              Jaboatão 360
-            </p>
+          <div>
+            <img
+              src={logo}
+              width="640"
+              height="137"
+              alt="Jaboatão 360: descubra, explore, viva Jaboatão"
+              className="foot-logo"
+              loading="lazy"
+              decoding="async"
+            />
             <p className="foot-texto">
-              Guia digital de turismo e comércio local de Jaboatão dos Guararapes – PE.
+              Guia digital de turismo e comércio local de Jaboatão dos Guararapes, em Pernambuco.
             </p>
           </div>
 
-          <nav aria-label="Rodapé" className="foot-nav">
+          <nav aria-label="Rodapé">
             <p className="foot-titulo">Navegue</p>
-            <ul>
+            <ul className="foot-lista">
               {links.map((l) => (
                 <li key={l.to}>
                   <Link to={l.to}>{l.rotulo}</Link>
@@ -39,13 +45,13 @@ export default function Footer() {
           <div>
             <p className="foot-titulo">Sobre o projeto</p>
             <p className="foot-texto">
-              Projeto acadêmico em formato de MVP. Os dados exibidos são demonstrativos e
-              podem ser alterados.
+              Projeto acadêmico em formato de MVP. Os dados exibidos são demonstrativos e podem
+              ser alterados.
             </p>
           </div>
         </div>
 
-        <p className="foot-copy">© {new Date().getFullYear()} Jaboatão 360. Todos os direitos reservados.</p>
+        <p className="foot-copy">© {new Date().getFullYear()} Jaboatão 360</p>
       </div>
     </footer>
   )

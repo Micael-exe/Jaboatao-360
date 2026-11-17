@@ -92,7 +92,7 @@ Uma plataforma que reúne descoberta de lugares, planejamento de roteiros e vitr
 | **Comércio local** | Vitrine de estabelecimentos e experiências com busca, filtros por tipo e categoria, favoritos e atalho para adicionar ao roteiro. |
 | **Perfil do usuário** | Gestão de conta, preferências (interesses, ritmo, orçamento, notificações) e histórico de visitas, com resumo de atividades. |
 | **Favoritos** | Marcação de estabelecimentos favoritos (roteiros salvos já ficam registrados na tela de roteiros). |
-| **Página inicial** | Hero com chamadas para o mapa e para roteiros, indicadores calculados dos dados, atalhos para as telas, destaques turísticos com foto, comércio local em destaque, chamada final e rodapé. |
+| **Página inicial** | Hero com foto de fundo e degradê, indicadores calculados dos dados, atalhos para as telas, atrativos com foto em destaque e lista, comércio local, chamada final e rodapé com a logo do projeto. |
 | **Institucional** | Página Sobre. |
 
 ### Planejadas
@@ -136,7 +136,7 @@ flowchart LR
 - **Persistência isolada em um hook:** `useLocalStorage` encapsula o armazenamento; migrar para o backend altera um ponto, não as telas.
 - **Componentes de página independentes:** cada tela é um módulo em `src/pages`, com seus próprios testes.
 - **Conteúdo da home separado:** textos, destaques e atalhos ficam em `src/data/home.js`, e os números da faixa de indicadores são calculados a partir de `dados.js`, sem valores digitados à mão.
-- **Fotos por convenção de nome:** a home procura as imagens em `src/assets/jaboatao/` pelo nome do arquivo. Sem a foto, exibe uma ilustração neutra, sem imagem quebrada.
+- **Fotos por convenção de nome:** a home procura as imagens em `src/assets/jaboatao/` pelo nome do arquivo. Sem a foto, o bloco aparece sem imagem, sem ícone quebrado.
 
 ---
 
@@ -181,8 +181,10 @@ jaboatao-360/
 │   ├── public/
 │   ├── src/
 │   │   ├── assets/
-│   │   │   └── jaboatao/       # Fotos da home (ver "Fotos da página inicial")
-│   │   ├── components/         # Navbar, Footer e componentes da home (components/home)
+│   │   │   ├── jaboatao/       # Fotos da home (ver "Fotos da página inicial")
+│   │   │   ├── logo-jaboatao360.webp  # Logo do projeto
+│   │   │   └── logo-jaboatao360-navbar.webp  # Versão leve da logo para a Navbar
+│   │   ├── components/         # Navbar (com Navbar.css), Footer e componentes da home (components/home)
 │   │   ├── data/               # Dados demonstrativos (dados.js) e conteúdo da home (home.js)
 │   │   ├── hooks/              # Hooks reutilizáveis (useLocalStorage)
 │   │   ├── pages/              # Telas: Home, Mapa, Roteiros, Comercio, Perfil, Sobre
@@ -246,15 +248,15 @@ A home carrega as fotos de `frontend/src/assets/jaboatao/`, pelo **nome do arqui
 
 | Arquivo | Onde aparece |
 |---|---|
-| `hero` | Imagem principal do topo |
-| `piedade` | Praia de Piedade |
-| `candeias` | Praia de Candeias |
-| `pilar` | Igreja de Nossa Senhora do Pilar |
-| `guararapes` | Parque Histórico Nacional dos Guararapes |
-| `barra-de-jangada` | Praia de Barra de Jangada |
-| `morro-da-conceicao` | Morro da Conceição |
+| `hero` | Fundo do topo da página, com degradê escuro por cima (já incluída) |
+| `pilar` | Destaque principal de atrativos: Igreja de Nossa Senhora do Pilar (já incluída) |
+| `piedade` | Miniatura na lista: Praia de Piedade |
+| `candeias` | Miniatura na lista: Praia de Candeias |
+| `guararapes` | Miniatura na lista: Parque Histórico Nacional dos Guararapes |
+| `barra-de-jangada` | Miniatura na lista: Praia de Barra de Jangada |
+| `morro-da-conceicao` | Miniatura na lista: Morro da Conceição |
 
-Recomendações: WebP, 1600 px de largura para o `hero` e 1000 px para os cards, até ~200 KB cada. Confira a licença de cada foto, dê o crédito exigido (por exemplo, Wikimedia Commons) e revise os textos alternativos em `src/data/home.js`. Sem o arquivo, o card mostra uma ilustração neutra.
+Recomendações: WebP, 1600 px de largura para o `hero` e 1000 px para os cards, até ~200 KB cada. Confira a licença de cada foto, dê o crédito exigido (por exemplo, Wikimedia Commons) e revise os textos alternativos em `src/data/home.js`. Sem o arquivo, o bloco aparece sem imagem. Como o `hero` ocupa a largura da tela, prefira uma foto de pelo menos 1600 px.
 
 ---
 
@@ -384,7 +386,7 @@ Exemplo: `fix(roteiros): corrige geração de ids duplicados`
 
 | Versão | Entrega |
 |---|---|
-| **1.2** | Redesign da página inicial: hero com duas chamadas, indicadores reais, atalhos, destaques com fotos, comércio em destaque, chamada final e rodapé global (usado só na home). Links com React Router, sem emojis na home e sem novas dependências. |
+| **1.2** | Redesign da página inicial: hero com foto e degradê, indicadores reais, atalhos, atrativos com foto em destaque, comércio local, chamada final e rodapé global com a logo nova (usado só na home) e logo nova na Navbar, que fica escura com degradê no topo da home e clara ao rolar, e favicon novo. Visual mais sóbrio, sem emojis, ícones decorativos ou animações em cada bloco. Links com React Router e sem novas dependências. |
 | **1.1** | Redesign visual "Maré": nova paleta, tipografia, navbar com menu para celular e animações, em todas as telas. |
 | **1.0** | Telas de Roteiros, Comércio local e Perfil, testes automatizados e pipeline de CI. |
 

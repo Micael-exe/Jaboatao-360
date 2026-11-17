@@ -277,15 +277,19 @@ docs/DOCUMENTACAO.md                (este documento — seção 9 adicionada)
 
 ## 10. Redesign da página inicial (versão 1.2)
 
-Esta etapa redesenhou **somente a home** (`/`), com base na organização de seções do site da Abrecon (hierarquia, espaçamento e padrões de componentes), sem copiar textos, imagens ou marcas. Nenhuma outra tela, rota, dado existente, chave do `localStorage`, teste ou o `App.jsx` foi alterado.
+Esta etapa redesenhou **somente a home** (`/`), com base na organização de seções do site da Abrecon (hierarquia, espaçamento e padrões de componentes), sem copiar textos, imagens ou marcas. Nenhuma outra tela, rota, dado existente, chave do `localStorage`, teste ou o `App.jsx` foi alterado. A única mudança fora da home é a marca da Navbar (seção 10.4), a pedido da equipe.
 
 ### 10.1 Escopo
 
 | Item | Situação |
 |------|----------|
 | Nova home em seções (hero, indicadores, atalhos, destaques, comércio, chamada final) | Criada |
-| Fotos de Jaboatão nos destaques e no hero | Estrutura pronta; **arquivos de imagem pendentes** |
-| Rodapé global (`Footer`) | Criado, **usado somente na home** por enquanto |
+| Fotos de Jaboatão (hero e destaque principal) | Aplicadas com degradê; **demais fotos pendentes** |
+| Logo nova do projeto | Aplicada no rodapé da home |
+| Favicon | Trocado pelo ícone novo (`index.html` e `public/`) |
+| Marca da Navbar | Ícone e texto antigos trocados pela logo nova (**afeta todas as telas**, pois a Navbar é global) |
+| Navbar escura com degradê | Só na home (`/`) e **no topo da página**; ao rolar para baixo, fica clara e translúcida. Nas demais telas é sempre clara |
+| Rodapé global (`Footer`) | Criado, com a logo, **usado somente na home** por enquanto |
 | Links da home com React Router (`Link`) | Aplicado |
 | Emojis na home | Removidos (ícones em SVG) |
 | Novas dependências | Nenhuma |
@@ -296,15 +300,14 @@ Esta etapa redesenhou **somente a home** (`/`), com base na organização de se�
 
 | Ordem | Bloco | Conteúdo |
 |---|---|---|
-| 1 | Hero | Título em três linhas, texto de apresentação, botões **Explorar o mapa** (`/mapa`) e **Montar um roteiro** (`/roteiros`) e foto principal |
-| 2 | Indicadores | 3 números calculados dos dados: atrativos (6), comércios e experiências (9) e bairros mapeados (6) |
-| 3 | Atalhos | Cards para Mapa, Roteiros, Comércio local e Perfil |
-| 4 | Destaques turísticos | 6 cards com foto, categoria, bairro e descrição, levando ao mapa |
-| 5 | Comércio local | 3 comércios em destaque (gastronomia, experiência guiada e cultura), levando à tela de comércio |
-| 6 | Chamada final | Convite para montar um roteiro |
-| 7 | Rodapé | Marca, navegação, nota sobre o projeto e direitos |
+| 1 | Topo | Foto de fundo com degradê, título, texto curto, botões **Ver o mapa** (`/mapa`) e **Montar roteiro** (`/roteiros`) e uma linha com 3 números calculados dos dados: atrativos (6), comércios e experiências (9) e bairros (6) |
+| 2 | O que você encontra no site | Lista de 4 links: Mapa, Roteiros, Comércio local e Perfil, sem caixas nem ícones |
+| 3 | Atrativos turísticos | Destaque principal com foto e degradê (Igreja de Nossa Senhora do Pilar) e lista dos demais atrativos, levando ao mapa |
+| 4 | Comércio local | 3 comércios em destaque (gastronomia, experiência guiada e cultura), levando à tela de comércio |
+| 5 | Chamada final | Convite para montar um roteiro |
+| 6 | Rodapé | Logo, navegação, nota sobre o projeto e ano |
 
-Cada card é clicável por inteiro: o link do título cobre a área do card, o que mantém um único ponto de foco por card no teclado.
+Em cada item, o link do título cobre a área inteira, o que mantém um único ponto de foco por item no teclado.
 
 ### 10.3 Paleta
 
@@ -313,19 +316,26 @@ Somente cores que já existiam no projeto:
 - **Tokens do tema (`@theme`):** `#edf7f4`, `#cbe7df`, `#9fd1c5`, `#178273`, `#12665d`, `#0c4e47`, `#dce6e3`, `#566762`, `#44564f`, `#12231f`, sol `#f5b544` e verde profundo `#0c3b38`.
 - **Fixas já usadas na home anterior:** `#f6f9f8`, `#e6f3ef`, `#b9d6cf` e `#ffffff`.
 
-Os estilos da home ficam em `Home.css` e os do rodapé em `Footer.css`, com variáveis locais que apontam para esses tokens.
+Os degradês sobre as fotos usam o verde profundo `#0c3b38` com transparência. Os estilos da home ficam em `Home.css` e os do rodapé em `Footer.css`, com variáveis locais que apontam para esses tokens.
 
-### 10.4 Fotos
+**Atenção:** a logo e o favicon usam verdes, azul-marinho e toques de azul e laranja. Os verdes são próximos da paleta do site, mas não idênticos. São imagens aplicadas como recebidas; a paleta do site não foi alterada.
+
+### 10.4 Fotos e logo
 
 - Pasta: `frontend/src/assets/jaboatao/`. O arquivo é encontrado pelo nome, sem extensão (jpg, jpeg, png, webp ou avif).
-- Nomes esperados: `hero`, `piedade`, `candeias`, `pilar`, `guararapes`, `barra-de-jangada`, `morro-da-conceicao`.
-- Sem o arquivo, o componente `Foto` mostra uma ilustração neutra, marcada como decorativa (`aria-hidden`). Com o arquivo, renderiza `<img>` com o texto alternativo definido em `src/data/home.js`.
-- A imagem do topo é carregada com prioridade; as demais, de forma preguiçosa (`loading="lazy"`).
-- **Pendências:** adicionar as fotos, revisar os textos alternativos para descrever o que cada imagem mostra e registrar a licença e o crédito de cada uma.
+- **Em uso:** `hero.webp` (fundo do topo, com degradê escuro por cima) e `pilar.webp` (destaque principal de atrativos).
+- **Opcionais:** `piedade`, `candeias`, `guararapes`, `barra-de-jangada` e `morro-da-conceicao`. Se existirem, aparecem como miniatura na lista de atrativos.
+- Sem o arquivo, o componente `Foto` não renderiza nada e o bloco continua legível (fundo em verde profundo no topo e no destaque principal).
+- A imagem do topo é decorativa (`alt` vazio); a do destaque tem texto alternativo descrevendo o que mostra. A do topo carrega com prioridade e as demais, de forma preguiçosa.
+- **Logo:** `src/assets/logo-jaboatao360.webp`, versão horizontal recortada das margens vazias a partir do PNG original, com fundo transparente (640 px de largura, cerca de 38 KB). Usada no rodapé.
+- **Logo na Navbar:** `src/assets/logo-jaboatao360-navbar.webp`, versão da logo com 400 px de largura (cerca de 20 KB). Substitui o ícone SVG desenhado à mão e o texto "Jaboatão 360", já que o nome faz parte da logo. A imagem tem `alt="Jaboatão 360"` e 40 px de altura no celular e 44 px no computador, tamanho em que o nome continua legível; o slogan fica pequeno demais para leitura.
+- **Favicon:** `public/favicon-32.png` (32 px) e `public/favicon.png` (192 px), referenciados em `index.html`. Foram recortados do arquivo enviado e centralizados em um quadrado, mantendo os cantos transparentes.
+- **Navbar na home:** na rota `/`, a barra usa um degradê horizontal de `#0c3b38` para `#0c4e47`, que continua o verde escuro do degradê do topo, com links em `#cbe7df` e branco. Como o texto azul-marinho da logo some sobre fundo escuro, a logo fica sobre uma placa branca arredondada. Ao rolar a página (mais de 40 px), o degradê some com uma transição suave e a barra volta ao estilo claro e translúcido, para não cobrir o conteúdo; o texto dos links e a placa da logo acompanham. Nas outras telas nada muda. Para estender a barra escura a todas as telas, basta remover a condição `pathname === '/'` em `Navbar.jsx`.
+- **Pendências:** as duas fotos têm 730×449 px, abaixo do ideal para tela cheia; conferir licença e crédito de cada uma e confirmar que a foto do destaque realmente mostra a Igreja de Nossa Senhora do Pilar.
 
 ### 10.5 Rodapé global
 
-`src/components/Footer.jsx` tem a marca, a navegação (Início, Mapa, Roteiros, Comércio local, Perfil e Sobre), uma nota de que os dados são demonstrativos e o ano atual. Por decisão da equipe, ele só é chamado em `Home.jsx`. Para usá-lo em todas as telas, renderize-o em `App.jsx` após as rotas e remova a chamada de `Home.jsx` para não duplicar.
+`src/components/Footer.jsx` tem a logo, a navegação (Início, Mapa, Roteiros, Comércio local, Perfil e Sobre), uma nota de que os dados são demonstrativos e o ano atual. O fundo é claro para combinar com a logo. Por decisão da equipe, ele só é chamado em `Home.jsx`. Para usá-lo em todas as telas, renderize-o em `App.jsx` após as rotas e remova a chamada de `Home.jsx` para não duplicar.
 
 ### 10.6 Acessibilidade
 
@@ -333,8 +343,8 @@ Os estilos da home ficam em `Home.css` e os do rodapé em `Footer.css`, com vari
 - Seções com `aria-labelledby`, rodapé com `nav` rotulada e indicadores em lista de definição (`dl`).
 - Foco visível, inclusive no card inteiro (`:has(:focus-visible)`); no rodapé e na faixa escura, o contorno usa a cor sol.
 - Links repetidos ganham texto para leitor de tela (por exemplo, "no mapa" e "faixa de preço"), e elementos decorativos usam `aria-hidden`.
-- Contraste conferido par a par, todos acima de 4,5:1 (WCAG AA). Os menores valores foram 5,2:1 (texto `#cbe7df` sobre `#12665d`) e 5,6:1 (texto `#566762` sobre `#f6f9f8`).
-- Mobile-first: grades de 1 coluna que passam a 2 e 3 ou 4 em telas maiores. A animação do título respeita "reduzir movimento".
+- Contraste conferido par a par, todos acima de 4,5:1 (WCAG AA), inclusive no pior caso do texto branco sobre as fotos com degradê (cerca de 5:1, considerando a parte mais clara possível da imagem). O menor valor entre cores sólidas foi 5,2:1 (texto `#cbe7df` sobre `#12665d`).
+- Mobile-first: grades de 1 coluna que passam a 2 e 3 ou 4 em telas maiores. A home não usa animações de entrada.
 
 ### 10.7 Arquivos criados e alterados
 
@@ -345,18 +355,26 @@ frontend/src/
 │   └── Home.css                    (novo — estilos da home, prefixo home-)
 ├── data/home.js                    (novo — destaques, atalhos, indicadores e comércios em destaque)
 ├── components/
-│   ├── Footer.jsx                  (novo — rodapé global)
+│   ├── Footer.jsx                  (novo — rodapé global, com a logo)
 │   ├── Footer.css                  (novo)
+│   ├── Navbar.jsx                  (alterado — logo no lugar do ícone e do texto; escura no topo da home e clara ao rolar)
+│   ├── Navbar.css                  (novo — estilo da barra na home: escura no topo, clara ao rolar)
 │   └── home/                       (novo)
 │       ├── HomeHero.jsx
 │       ├── Foto.jsx
 │       ├── SectionHeader.jsx
 │       ├── StatsBar.jsx
 │       ├── AtalhoCard.jsx
-│       ├── DestaqueCard.jsx
+│       ├── DestaquePrincipal.jsx
+│       ├── DestaqueItem.jsx
 │       ├── ComercioCard.jsx
 │       └── CtaBand.jsx
-└── assets/jaboatao/                (novo — pasta das fotos, com LEIA-ME.txt)
+└── assets/
+    ├── logo-jaboatao360.webp       (novo — logo do projeto)
+    ├── logo-jaboatao360-navbar.webp (novo — logo leve para a Navbar)
+    └── jaboatao/                   (novo — hero.webp, pilar.webp e LEIA-ME.txt)
+frontend/index.html                 (alterado — links do favicon)
+frontend/public/                    (novos — favicon.png e favicon-32.png)
 docs/DOCUMENTACAO.md                (este documento — seção 10 e histórico)
 README.md                           (alterado — versão, home, estrutura, fotos e histórico)
 ```
@@ -367,8 +385,19 @@ README.md                           (alterado — versão, home, estrutura, foto
 - **Pipeline:** esta etapa foi entregue sem rodar `lint`, `test` e `build`. Antes do Pull Request, execute `cd frontend && npm run lint && npm test && npm run build`.
 - **Visual:** a home foi validada na estrutura (renderização no servidor), mas ainda não foi conferida em navegador e dispositivos reais.
 - **CSS sem uso:** as regras `.hero`, `.ondas`, `.onda*` e `.dest*` em `src/index.css` deixaram de ser usadas pela home e podem ser removidas em uma limpeza futura.
+- **Fotos:** `hero.webp` e `pilar.webp` têm 730×449 px e ficam ampliadas no topo em telas grandes; o degradê escuro reduz o efeito, mas fotos de 1600 px ou mais dão resultado melhor.
+- **Favicon antigo:** o arquivo `public/favicon.svg` não é mais referenciado e pode ser removido.
 - **Dados:** os números dos indicadores são reais em relação ao catálogo, mas o catálogo continua demonstrativo.
 - **Rodapé:** os links são os mesmos da Navbar; não há contatos nem redes sociais, que precisam ser definidos pela equipe.
+
+### 10.9 Direção visual da home
+
+Para evitar o aspecto de página gerada por modelo, a home foi simplificada:
+
+- Sem rótulos em caixa-alta acima dos títulos, setas "→" nos links, ícones em quadradinhos e numeração decorativa.
+- Sem cartões idênticos e arredondados com sombra e elevação ao passar o mouse: atalhos e comércio viram listas com filete, e os atrativos combinam um destaque com foto e uma lista.
+- Sem ilustração de reserva, sol decorativo, ondas animadas nem animação de entrada em cada bloco. Os degradês existem apenas para dar legibilidade ao texto sobre as fotos.
+- Textos mais diretos, em frases simples e sem slogans.
 
 ---
 
@@ -376,6 +405,6 @@ README.md                           (alterado — versão, home, estrutura, foto
 
 | Versão | Seções | Resumo |
 |---|---|---|
-| **1.2** | 10 | Redesign da página inicial, rodapé global (só na home) e estrutura de fotos |
+| **1.2** | 10 | Redesign da página inicial com fotos e degradê, logo nova, rodapé global (só na home) e visual mais sóbrio |
 | **1.1** | 9 | Redesign visual "Maré" em todo o frontend (paleta, tipografia, navbar, animações) |
 | **1.0** | 1 a 8 | Telas de Roteiros, Comércio local e Perfil, testes automatizados, uso de IA nos cenários de teste e pipeline de CI |

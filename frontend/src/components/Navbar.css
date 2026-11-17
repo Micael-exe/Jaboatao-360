@@ -1,0 +1,41 @@
+/* Navbar da página inicial. Somente cores da paleta do projeto.
+   No topo da página: degradê escuro, no mesmo verde do degradê do topo da home.
+   Ao rolar: volta ao estilo claro e translúcido (.nav de index.css), para não cobrir o conteúdo.
+   Classes: nav--home (sempre na home) e nav--escura (home sem rolagem). */
+
+.nav.nav--home { transition: border-color 0.3s; }
+
+/* O degradê fica numa camada própria para poder aparecer e sumir com transição */
+.nav--home::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, var(--color-mare-900, #0c3b38) 0%, var(--color-green-800, #0c4e47) 100%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.nav.nav--escura { backdrop-filter: none; border-bottom-color: rgb(255 255 255 / 0.12); }
+.nav--escura::before { opacity: 1; }
+
+/* A logo tem texto azul-marinho: sobre fundo escuro ela precisa de uma placa clara */
+.nav--home .nav-marca { padding: 0.25rem 0.6rem; border-radius: 0.75rem; background: transparent; transition: background-color 0.3s; }
+.nav--escura .nav-marca { background: #ffffff; }
+.nav--home .nav-logo { height: 2.5rem; }
+
+.nav--escura .nav-link { color: var(--color-green-200, #cbe7df); }
+.nav--escura .nav-link:hover,
+.nav--escura .nav-link.underline { color: #ffffff; }
+
+.nav--escura .nav-toggle { background: transparent; border-color: rgb(255 255 255 / 0.45); color: #ffffff; }
+.nav--escura .nav-menu { background: transparent; border-color: transparent; }
+.nav--escura :focus-visible { outline-color: var(--color-sol-400, #f5b544); }
+
+@media (max-width: 767.98px) {
+  .nav--escura .nav-menu {
+    background: var(--color-mare-900, #0c3b38);
+    border-bottom: 1px solid rgb(255 255 255 / 0.12);
+  }
+}
+@media (min-width: 768px) {
+  .nav--home .nav-logo { height: 2.75rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav--home::before, .nav--home .nav-marca, .nav.nav--home { transition: none; }
+}
