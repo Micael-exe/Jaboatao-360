@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import logo from '../assets/logo-jaboatao360-navbar.webp'
+import logoColorida from '../assets/logo-jaboatao360-navbar.webp'
+import logoBranca from '../assets/logo-jaboatao360-navbar-branca.webp'
 import './Navbar.css'
 
 const links = [
@@ -15,24 +16,70 @@ const links = [
 export default function Navbar() {
   const { pathname } = useLocation()
   const [aberto, setAberto] = useState(false)
-  // Rolou a página? Passando de 40 px, a barra deixa de ser escura e fica clara e translúcida
-  const [rolou, setRolou] = useState(() => typeof window !== 'undefined' && window.scrollY > 40)
+  const barra = useRef(null)
+  const naHome = pathname === '/'
+
+  // Só na home: a barra fica transparente sobre o topo e, ao rolar, encolhe e assume o tom
+  // da seção que está por baixo dela. Cada seção declara seu tom em data-nav-tema.
+  const [rolou, setRolou] = useState(false)
+  const [tema, setTema] = useState('escura') // 'escura' = fundo escuro por baixo; 'clara' = fundo claro
 
   useEffect(() => {
-    const aoRolar = () => setRolou(window.scrollY > 40)
-    window.addEventListener('scroll', aoRolar, { passive: true })
-    return () => window.removeEventListener('scroll', aoRolar)
-  }, [])
+    if (!naHome) return undefined
+    let quadro = 0
 
-  // Na página inicial, e no topo dela, a barra usa o degradê escuro do topo da home
-  const naHome = pathname === '/'
-  const escura = naHome && !rolou
+    const medir = () => {
+      quadro = 0
+      setRolou(window.scrollY > 40)
+      const meio = (barra.current?.offsetHeight ?? 64) / 2
+      let atual = 'clara'
+      for (const secao of document.querySelectorAll('[data-nav-tema]')) {
+        const r = secao.getBoundingClientRect()
+        if (r.top <= meio && r.bottom > meio) {
+          atual = secao.dataset.navTema
+          break
+        }
+      }
+      setTema(atual)
+    }
+    const agendar = () => {
+      if (!quadro) quadro = requestAnimationFrame(medir)
+    }
+
+    agendar()
+    window.addEventListener('scroll', agendar, { passive: true })
+    window.addEventListener('resize', agendar)
+    return () => {
+      cancelAnimationFrame(quadro)
+      window.removeEventListener('scroll', agendar)
+      window.removeEventListener('resize', agendar)
+    }
+  }, [naHome])
+
+  const classeHome = naHome ? `nav--home nav--${tema} ${rolou ? 'nav--rolou' : ''}` : ''
 
   return (
-    <nav className={`nav ${naHome ? 'nav--home' : ''} ${escura ? 'nav--escura' : ''}`}>
-      <div className="max-w-6xl mx-auto px-5 py-2.5 flex items-center justify-between gap-4">
+    <nav ref={barra} className={`nav ${classeHome}`}>
+      <div className="nav-container max-w-6xl mx-auto px-5 py-2.5 flex items-center justify-between gap-4">
         <Link to="/" className="nav-marca flex items-center">
-          <img src={logo} width="400" height="86" alt="Jaboatão 360" className="nav-logo h-10 md:h-11 w-auto" />
+          <img
+            src={logoColorida}
+            width="400"
+            height="86"
+            alt="Jaboatão 360"
+            className="nav-logo nav-logo--colorida h-10 md:h-11 w-auto"
+          />
+          {/* Versão clara da logo, usada sobre fundos escuros. Só aparece na home */}
+          {naHome && (
+            <img
+              src={logoBranca}
+              width="400"
+              height="86"
+              alt=""
+              aria-hidden="true"
+              className="nav-logo nav-logo--branca w-auto"
+            />
+          )}
         </Link>
 
         <button

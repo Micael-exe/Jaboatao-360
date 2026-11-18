@@ -3,7 +3,7 @@ import Foto from './Foto'
 
 export default function HomeHero({ foto, children }) {
   return (
-    <section className="home-hero" aria-labelledby="home-hero-titulo">
+    <section className="home-hero" aria-labelledby="home-hero-titulo" data-nav-tema="escura">
       {/* Imagem decorativa: o texto da página já diz tudo, por isso alt vazio */}
       <Foto nome={foto.nome} alt="" prioridade className="home-hero-foto" />
       <div className="home-hero-veu" aria-hidden="true" />
