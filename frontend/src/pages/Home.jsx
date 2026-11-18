@@ -25,7 +25,7 @@ export default function Home() {
           <StatsBar itens={indicadores} />
         </HomeHero>
 
-        <section className="home-section home-section--branca" aria-labelledby="home-atalhos-titulo">
+        <section className="home-section home-section--branca" aria-labelledby="home-atalhos-titulo" data-nav-tema="clara">
           <div className="home-container">
             <SectionHeader id="home-atalhos-titulo" titulo="O que você encontra no site" />
             <ul className="home-atalhos">
@@ -36,7 +36,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="home-section" aria-labelledby="home-destaques-titulo">
+        <section className="home-section" aria-labelledby="home-destaques-titulo" data-nav-tema="clara">
           <div className="home-container">
             <SectionHeader
               id="home-destaques-titulo"
@@ -56,7 +56,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="home-section home-section--espuma" aria-labelledby="home-comercio-titulo">
+        <section className="home-section home-section--espuma" aria-labelledby="home-comercio-titulo" data-nav-tema="clara">
           <div className="home-container">
             <SectionHeader
               id="home-comercio-titulo"

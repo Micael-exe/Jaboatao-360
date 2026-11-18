@@ -1,41 +1,58 @@
 /* Navbar da página inicial. Somente cores da paleta do projeto.
-   No topo da página: degradê escuro, no mesmo verde do degradê do topo da home.
-   Ao rolar: volta ao estilo claro e translúcido (.nav de index.css), para não cobrir o conteúdo.
-   Classes: nav--home (sempre na home) e nav--escura (home sem rolagem). */
+   Padrão de barra transparente sobre o topo que, ao rolar, encolhe e assume o tom da seção
+   que está por baixo dela:
+     nav--home    sempre na home (a barra fica fixa sobre o conteúdo)
+     nav--escura  a seção por baixo é escura  (texto e logo claros)
+     nav--clara   a seção por baixo é clara   (texto escuro e logo colorida)
+     nav--rolou   a página foi rolada         (barra encolhe e ganha fundo translúcido)
+   As demais páginas continuam com a barra clara de index.css. */
 
-.nav.nav--home { transition: border-color 0.3s; }
-
-/* O degradê fica numa camada própria para poder aparecer e sumir com transição */
-.nav--home::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: linear-gradient(90deg, var(--color-mare-900, #0c3b38) 0%, var(--color-green-800, #0c4e47) 100%);
-  opacity: 0; transition: opacity 0.3s;
+.nav.nav--home {
+  position: fixed; top: 0; left: 0; right: 0;
+  background: transparent; backdrop-filter: none; border-bottom: 1px solid transparent;
+  transition: background-color 0.3s, border-color 0.3s;
 }
-.nav.nav--escura { backdrop-filter: none; border-bottom-color: rgb(255 255 255 / 0.12); }
-.nav--escura::before { opacity: 1; }
+.nav--home .nav-container { padding-block: 1rem; transition: padding 0.3s; }
+.nav--home.nav--rolou .nav-container { padding-block: 0.45rem; }
 
-/* A logo tem texto azul-marinho: sobre fundo escuro ela precisa de uma placa clara */
-.nav--home .nav-marca { padding: 0.25rem 0.6rem; border-radius: 0.75rem; background: transparent; transition: background-color 0.3s; }
-.nav--escura .nav-marca { background: #ffffff; }
-.nav--home .nav-logo { height: 2.5rem; }
+/* Logo: duas versões empilhadas, sem fundo; a visível depende do tom por baixo da barra */
+.nav--home .nav-marca { display: grid; align-items: center; }
+.nav--home .nav-logo { grid-area: 1 / 1; height: 2.5rem; width: auto; transition: opacity 0.3s, height 0.3s; }
+.nav--home .nav-logo--branca { opacity: 0; }
+.nav--home.nav--escura .nav-logo--branca { opacity: 1; }
+.nav--home.nav--escura .nav-logo--colorida { opacity: 0; }
+.nav--home.nav--rolou .nav-logo { height: 2rem; }
 
-.nav--escura .nav-link { color: var(--color-green-200, #cbe7df); }
-.nav--escura .nav-link:hover,
-.nav--escura .nav-link.underline { color: #ffffff; }
+/* Sobre fundo escuro */
+.nav--home.nav--escura .nav-link,
+.nav--home.nav--escura .nav-link:hover,
+.nav--home.nav--escura .nav-link.underline { color: #ffffff; }
+.nav--home.nav--escura:not(.nav--rolou) .nav-link { text-shadow: 0 1px 10px rgb(12 59 56 / 0.7); }
+.nav--home.nav--escura .nav-toggle { background: transparent; border-color: rgb(255 255 255 / 0.55); color: #ffffff; }
+.nav--home.nav--escura :focus-visible { outline-color: var(--color-sol-400, #f5b544); }
 
-.nav--escura .nav-toggle { background: transparent; border-color: rgb(255 255 255 / 0.45); color: #ffffff; }
-.nav--escura .nav-menu { background: transparent; border-color: transparent; }
-.nav--escura :focus-visible { outline-color: var(--color-sol-400, #f5b544); }
+/* Depois de rolar: fundo translúcido no tom da seção por baixo */
+.nav--home.nav--escura.nav--rolou {
+  background: rgb(12 59 56 / 0.78);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border-bottom-color: rgb(255 255 255 / 0.14);
+}
+.nav--home.nav--clara.nav--rolou {
+  background: rgb(246 249 248 / 0.82);
+  backdrop-filter: blur(14px);
+  border-bottom-color: var(--color-gray-200, #dce6e3);
+}
 
 @media (max-width: 767.98px) {
-  .nav--escura .nav-menu {
-    background: var(--color-mare-900, #0c3b38);
-    border-bottom: 1px solid rgb(255 255 255 / 0.12);
+  .nav--home.nav--escura .nav-menu {
+    background: rgb(12 59 56 / 0.97);
+    border-bottom: 1px solid rgb(255 255 255 / 0.14);
   }
 }
 @media (min-width: 768px) {
-  .nav--home .nav-logo { height: 2.75rem; }
+  .nav--home .nav-logo { height: 3rem; }
+  .nav--home.nav--rolou .nav-logo { height: 2.25rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .nav--home::before, .nav--home .nav-marca, .nav.nav--home { transition: none; }
+  .nav.nav--home, .nav--home .nav-container, .nav--home .nav-logo { transition: none; }
 }

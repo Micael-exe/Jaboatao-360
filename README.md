@@ -183,7 +183,8 @@ jaboatao-360/
 │   │   ├── assets/
 │   │   │   ├── jaboatao/       # Fotos da home (ver "Fotos da página inicial")
 │   │   │   ├── logo-jaboatao360.webp  # Logo do projeto
-│   │   │   └── logo-jaboatao360-navbar.webp  # Versão leve da logo para a Navbar
+│   │   │   ├── logo-jaboatao360-navbar.webp  # Versão leve da logo para a Navbar
+│   │   │   └── logo-jaboatao360-navbar-branca.webp  # Logo com texto claro, para fundos escuros
 │   │   ├── components/         # Navbar (com Navbar.css), Footer e componentes da home (components/home)
 │   │   ├── data/               # Dados demonstrativos (dados.js) e conteúdo da home (home.js)
 │   │   ├── hooks/              # Hooks reutilizáveis (useLocalStorage)
@@ -386,7 +387,7 @@ Exemplo: `fix(roteiros): corrige geração de ids duplicados`
 
 | Versão | Entrega |
 |---|---|
-| **1.2** | Redesign da página inicial: hero com foto e degradê, indicadores reais, atalhos, atrativos com foto em destaque, comércio local, chamada final e rodapé global com a logo nova (usado só na home) e logo nova na Navbar, que fica escura com degradê no topo da home e clara ao rolar, e favicon novo. Visual mais sóbrio, sem emojis, ícones decorativos ou animações em cada bloco. Links com React Router e sem novas dependências. |
+| **1.2** | Redesign da página inicial: hero com foto e degradê, indicadores reais, atalhos, atrativos com foto em destaque, comércio local, chamada final e rodapé global com a logo nova (usado só na home) e logo nova na Navbar, que fica transparente sobre o topo da home e se adapta à cor da seção ao rolar, e favicon novo. Visual mais sóbrio, sem emojis, ícones decorativos ou animações em cada bloco. Links com React Router e sem novas dependências. |
 | **1.1** | Redesign visual "Maré": nova paleta, tipografia, navbar com menu para celular e animações, em todas as telas. |
 | **1.0** | Telas de Roteiros, Comércio local e Perfil, testes automatizados e pipeline de CI. |
 

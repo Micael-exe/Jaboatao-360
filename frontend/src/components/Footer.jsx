@@ -13,7 +13,7 @@ const links = [
 
 export default function Footer() {
   return (
-    <footer className="foot">
+    <footer className="foot" data-nav-tema="clara">
       <div className="foot-container">
         <div className="foot-grid">
           <div>

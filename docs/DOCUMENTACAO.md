@@ -287,8 +287,8 @@ Esta etapa redesenhou **somente a home** (`/`), com base na organização de se�
 | Fotos de Jaboatão (hero e destaque principal) | Aplicadas com degradê; **demais fotos pendentes** |
 | Logo nova do projeto | Aplicada no rodapé da home |
 | Favicon | Trocado pelo ícone novo (`index.html` e `public/`) |
-| Marca da Navbar | Ícone e texto antigos trocados pela logo nova (**afeta todas as telas**, pois a Navbar é global) |
-| Navbar escura com degradê | Só na home (`/`) e **no topo da página**; ao rolar para baixo, fica clara e translúcida. Nas demais telas é sempre clara |
+| Marca da Navbar | Ícone e texto antigos trocados pela logo nova, **sem fundo branco** (**afeta todas as telas**, pois a Navbar é global) |
+| Navbar adaptativa | Só na home (`/`): transparente sobre o topo, encolhe ao rolar e assume o tom (escuro ou claro) da seção que está por baixo. Nas demais telas é sempre clara |
 | Rodapé global (`Footer`) | Criado, com a logo, **usado somente na home** por enquanto |
 | Links da home com React Router (`Link`) | Aplicado |
 | Emojis na home | Removidos (ícones em SVG) |
@@ -328,9 +328,9 @@ Os degradês sobre as fotos usam o verde profundo `#0c3b38` com transparência. 
 - Sem o arquivo, o componente `Foto` não renderiza nada e o bloco continua legível (fundo em verde profundo no topo e no destaque principal).
 - A imagem do topo é decorativa (`alt` vazio); a do destaque tem texto alternativo descrevendo o que mostra. A do topo carrega com prioridade e as demais, de forma preguiçosa.
 - **Logo:** `src/assets/logo-jaboatao360.webp`, versão horizontal recortada das margens vazias a partir do PNG original, com fundo transparente (640 px de largura, cerca de 38 KB). Usada no rodapé.
-- **Logo na Navbar:** `src/assets/logo-jaboatao360-navbar.webp`, versão da logo com 400 px de largura (cerca de 20 KB). Substitui o ícone SVG desenhado à mão e o texto "Jaboatão 360", já que o nome faz parte da logo. A imagem tem `alt="Jaboatão 360"` e 40 px de altura no celular e 44 px no computador, tamanho em que o nome continua legível; o slogan fica pequeno demais para leitura.
+- **Logo na Navbar:** duas versões, ambas com fundo transparente e 400 px de largura (cerca de 20 KB cada): `logo-jaboatao360-navbar.webp` (colorida, para fundos claros) e `logo-jaboatao360-navbar-branca.webp` (a mesma logo com o texto azul-marinho convertido em branco, para fundos escuros). Elas substituem o ícone SVG e o texto "Jaboatão 360", já que o nome faz parte da logo, e não há mais placa branca atrás dela. A versão clara só é carregada na home. A imagem tem `alt="Jaboatão 360"`; a outra é decorativa (`alt` vazio).
 - **Favicon:** `public/favicon-32.png` (32 px) e `public/favicon.png` (192 px), referenciados em `index.html`. Foram recortados do arquivo enviado e centralizados em um quadrado, mantendo os cantos transparentes.
-- **Navbar na home:** na rota `/`, a barra usa um degradê horizontal de `#0c3b38` para `#0c4e47`, que continua o verde escuro do degradê do topo, com links em `#cbe7df` e branco. Como o texto azul-marinho da logo some sobre fundo escuro, a logo fica sobre uma placa branca arredondada. Ao rolar a página (mais de 40 px), o degradê some com uma transição suave e a barra volta ao estilo claro e translúcido, para não cobrir o conteúdo; o texto dos links e a placa da logo acompanham. Nas outras telas nada muda. Para estender a barra escura a todas as telas, basta remover a condição `pathname === '/'` em `Navbar.jsx`.
+- **Navbar na home:** inspirada no padrão de barra transparente sobre o topo (template Canvas, usado pela referência). Na rota `/`, a barra fica fixa sobre o topo da página, sem fundo, com links e logo claros sobre a foto. Ao rolar mais de 40 px, ela encolhe (menos altura e logo menor) e ganha fundo translúcido com desfoque. O tom do fundo acompanha a seção que está por baixo do meio da barra: sobre seções escuras (topo e chamada final) usa `#0c3b38` translúcido, texto e logo claros; sobre seções claras usa `#f6f9f8` translúcido, texto escuro e logo colorida. A troca tem transição de 0,3 s. Cada seção declara seu tom em `data-nav-tema="escura"` ou `"clara"`. Nas outras telas nada muda.
 - **Pendências:** as duas fotos têm 730×449 px, abaixo do ideal para tela cheia; conferir licença e crédito de cada uma e confirmar que a foto do destaque realmente mostra a Igreja de Nossa Senhora do Pilar.
 
 ### 10.5 Rodapé global
@@ -344,6 +344,7 @@ Os degradês sobre as fotos usam o verde profundo `#0c3b38` com transparência. 
 - Foco visível, inclusive no card inteiro (`:has(:focus-visible)`); no rodapé e na faixa escura, o contorno usa a cor sol.
 - Links repetidos ganham texto para leitor de tela (por exemplo, "no mapa" e "faixa de preço"), e elementos decorativos usam `aria-hidden`.
 - Contraste conferido par a par, todos acima de 4,5:1 (WCAG AA), inclusive no pior caso do texto branco sobre as fotos com degradê (cerca de 5:1, considerando a parte mais clara possível da imagem). O menor valor entre cores sólidas foi 5,2:1 (texto `#cbe7df` sobre `#12665d`).
+- Na barra, o texto claro sobre a foto do topo é protegido por um sombreamento escuro no alto do hero (contraste de cerca de 6:1 no pior caso).
 - Mobile-first: grades de 1 coluna que passam a 2 e 3 ou 4 em telas maiores. A home não usa animações de entrada.
 
 ### 10.7 Arquivos criados e alterados
@@ -357,8 +358,8 @@ frontend/src/
 ├── components/
 │   ├── Footer.jsx                  (novo — rodapé global, com a logo)
 │   ├── Footer.css                  (novo)
-│   ├── Navbar.jsx                  (alterado — logo no lugar do ícone e do texto; escura no topo da home e clara ao rolar)
-│   ├── Navbar.css                  (novo — estilo da barra na home: escura no topo, clara ao rolar)
+│   ├── Navbar.jsx                  (alterado — logo nova e comportamento adaptativo na home)
+│   ├── Navbar.css                  (novo — barra transparente sobre o topo da home que se adapta à seção)
 │   └── home/                       (novo)
 │       ├── HomeHero.jsx
 │       ├── Foto.jsx
@@ -372,6 +373,7 @@ frontend/src/
 └── assets/
     ├── logo-jaboatao360.webp       (novo — logo do projeto)
     ├── logo-jaboatao360-navbar.webp (novo — logo leve para a Navbar)
+    ├── logo-jaboatao360-navbar-branca.webp (novo — logo com texto claro, para fundos escuros)
     └── jaboatao/                   (novo — hero.webp, pilar.webp e LEIA-ME.txt)
 frontend/index.html                 (alterado — links do favicon)
 frontend/public/                    (novos — favicon.png e favicon-32.png)
@@ -386,6 +388,7 @@ README.md                           (alterado — versão, home, estrutura, foto
 - **Visual:** a home foi validada na estrutura (renderização no servidor), mas ainda não foi conferida em navegador e dispositivos reais.
 - **CSS sem uso:** as regras `.hero`, `.ondas`, `.onda*` e `.dest*` em `src/index.css` deixaram de ser usadas pela home e podem ser removidas em uma limpeza futura.
 - **Fotos:** `hero.webp` e `pilar.webp` têm 730×449 px e ficam ampliadas no topo em telas grandes; o degradê escuro reduz o efeito, mas fotos de 1600 px ou mais dão resultado melhor.
+- **Navbar adaptativa:** ao criar uma seção nova na home, defina `data-nav-tema` nela; sem o atributo, a barra considera o tom claro.
 - **Favicon antigo:** o arquivo `public/favicon.svg` não é mais referenciado e pode ser removido.
 - **Dados:** os números dos indicadores são reais em relação ao catálogo, mas o catálogo continua demonstrativo.
 - **Rodapé:** os links são os mesmos da Navbar; não há contatos nem redes sociais, que precisam ser definidos pela equipe.

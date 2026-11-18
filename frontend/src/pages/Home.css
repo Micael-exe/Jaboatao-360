@@ -41,14 +41,14 @@
 /* Hero: foto de fundo com degradê */
 .home-hero {
   position: relative; isolation: isolate; display: flex; align-items: flex-end;
-  min-height: 32rem; overflow: hidden; background: var(--h-mare); color: var(--h-branco);
+  min-height: 34rem; overflow: hidden; background: var(--h-mare); color: var(--h-branco);
 }
 .home-hero-foto { position: absolute; inset: 0; z-index: -2; height: 100%; object-position: center 45%; }
 .home-hero-veu {
   position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(180deg, rgb(12 59 56 / 0.4) 0%, rgb(12 59 56 / 0.9) 100%);
+  background: linear-gradient(180deg, rgb(12 59 56 / 0.78) 0%, rgb(12 59 56 / 0.5) 30%, rgb(12 59 56 / 0.9) 100%);
 }
-.home-hero-conteudo { width: 100%; padding-block: 4rem 2rem; }
+.home-hero-conteudo { width: 100%; padding-block: 7rem 2rem; }
 .home-hero-titulo { max-width: 16ch; font-size: clamp(2.5rem, 7vw, 4.25rem); font-weight: 600; line-height: 1.04; color: var(--h-branco); }
 .home-hero-texto { max-width: 34rem; margin-top: 1rem; font-size: 1.0625rem; line-height: 1.6; }
 .home-hero-acoes { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.75rem; }
@@ -60,10 +60,11 @@
 .home-stat dd { margin: 0; font-family: var(--font-display, inherit); font-size: 1.5rem; font-weight: 600; line-height: 1; }
 .home-stat dt { font-size: 0.9375rem; }
 @media (min-width: 900px) {
-  .home-hero { min-height: 38rem; }
-  .home-hero-conteudo { padding-block: 6rem 2.5rem; }
+  .home-hero { min-height: 40rem; }
+  .home-hero-conteudo { padding-block: 8rem 2.5rem; }
   .home-hero-veu {
     background:
+      linear-gradient(180deg, rgb(12 59 56 / 0.78) 0%, rgb(12 59 56 / 0) 9rem),
       linear-gradient(90deg, rgb(12 59 56 / 0.94) 0%, rgb(12 59 56 / 0.76) 66%, rgb(12 59 56 / 0.08) 100%),
       linear-gradient(0deg, rgb(12 59 56 / 0.55) 0%, rgb(12 59 56 / 0) 40%);
   }
