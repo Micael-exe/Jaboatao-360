@@ -8,6 +8,7 @@ Plataforma digital de turismo e comércio local de Jaboatão dos Guararapes – 
 
 [![CI](https://github.com/Micael-exe/jaboatao-360/actions/workflows/ci.yml/badge.svg)](https://github.com/Micael-exe/jaboatao-360/actions/workflows/ci.yml)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.3-12665d)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
@@ -31,6 +32,7 @@ Plataforma digital de turismo e comércio local de Jaboatão dos Guararapes – 
 - [Qualidade e CI/CD](#qualidade-e-cicd)
 - [Guia de contribuição](#guia-de-contribuição)
 - [Roadmap](#roadmap)
+- [Histórico de versões](#histórico-de-versões)
 - [Impacto e ODS](#impacto-e-ods)
 - [Documentação](#documentação)
 - [Contexto acadêmico e equipe](#contexto-acadêmico-e-equipe)
@@ -90,7 +92,8 @@ Uma plataforma que reúne descoberta de lugares, planejamento de roteiros e vitr
 | **Comércio local** | Vitrine de estabelecimentos e experiências com busca, filtros por tipo e categoria, favoritos e atalho para adicionar ao roteiro. |
 | **Perfil do usuário** | Gestão de conta, preferências (interesses, ritmo, orçamento, notificações) e histórico de visitas, com resumo de atividades. |
 | **Favoritos** | Marcação de estabelecimentos favoritos (roteiros salvos já ficam registrados na tela de roteiros). |
-| **Institucional** | Páginas Início e Sobre. |
+| **Página inicial** | Hero com foto de fundo e degradê, indicadores calculados dos dados, atalhos para as telas, atrativos com foto em destaque e lista, comércio local, chamada final e rodapé com a logo do projeto. |
+| **Institucional** | Página Sobre com identidade própria no padrão da home: topo com a foto dentro de um círculo com escala de graus (o 360 do nome), índice lateral que acompanha a rolagem, capítulos em coluna de leitura, blocos por público (turistas e moradores, empreendedores), tecnologias por função, chamada final e rodapé. |
 
 ### Planejadas
 
@@ -132,6 +135,8 @@ flowchart LR
 - **Dados centralizados:** os dados de exemplo ficam em `src/data/dados.js`, facilitando a troca por chamadas à API.
 - **Persistência isolada em um hook:** `useLocalStorage` encapsula o armazenamento; migrar para o backend altera um ponto, não as telas.
 - **Componentes de página independentes:** cada tela é um módulo em `src/pages`, com seus próprios testes.
+- **Conteúdo da home separado:** textos, destaques e atalhos ficam em `src/data/home.js`, e os números da faixa de indicadores são calculados a partir de `dados.js`, sem valores digitados à mão.
+- **Fotos por convenção de nome:** a home procura as imagens em `src/assets/jaboatao/` pelo nome do arquivo. Sem a foto, o bloco aparece sem imagem, sem ícone quebrado.
 
 ---
 
@@ -175,8 +180,13 @@ jaboatao-360/
 ├── frontend/
 │   ├── public/
 │   ├── src/
-│   │   ├── components/         # Componentes compartilhados (Navbar)
-│   │   ├── data/               # Dados demonstrativos
+│   │   ├── assets/
+│   │   │   ├── jaboatao/       # Fotos da home (ver "Fotos da página inicial")
+│   │   │   ├── logo-jaboatao360.webp  # Logo do projeto
+│   │   │   ├── logo-jaboatao360-navbar.webp  # Versão leve da logo para a Navbar
+│   │   │   └── logo-jaboatao360-navbar-branca.webp  # Logo com texto claro, para fundos escuros
+│   │   ├── components/         # Navbar (com Navbar.css), Footer e componentes da home (components/home)
+│   │   ├── data/               # Dados demonstrativos (dados.js) e conteúdo da home (home.js)
 │   │   ├── hooks/              # Hooks reutilizáveis (useLocalStorage)
 │   │   ├── pages/              # Telas: Home, Mapa, Roteiros, Comercio, Perfil, Sobre
 │   │   ├── test/               # Configuração global dos testes
@@ -232,6 +242,22 @@ Todos executados dentro de `frontend/`:
 | `npm run lint` | Analisa o código com o ESLint |
 | `npm test` | Executa os testes uma vez |
 | `npm run test:watch` | Executa os testes em modo contínuo |
+
+### Fotos da página inicial
+
+A home carrega as fotos de `frontend/src/assets/jaboatao/`, pelo **nome do arquivo** (jpg, jpeg, png, webp ou avif):
+
+| Arquivo | Onde aparece |
+|---|---|
+| `hero` | Fundo do topo da página, com degradê escuro por cima (já incluída) |
+| `pilar` | Destaque principal de atrativos: Igreja de Nossa Senhora do Pilar (já incluída) |
+| `piedade` | Miniatura na lista: Praia de Piedade |
+| `candeias` | Miniatura na lista: Praia de Candeias |
+| `guararapes` | Miniatura na lista: Parque Histórico Nacional dos Guararapes |
+| `barra-de-jangada` | Miniatura na lista: Praia de Barra de Jangada |
+| `morro-da-conceicao` | Miniatura na lista: Morro da Conceição |
+
+Recomendações: WebP, 1600 px de largura para o `hero` e 1000 px para os cards, até ~200 KB cada. Confira a licença de cada foto, dê o crédito exigido (por exemplo, Wikimedia Commons) e revise os textos alternativos em `src/data/home.js`. Sem o arquivo, o bloco aparece sem imagem. Como o `hero` ocupa a largura da tela, prefira uma foto de pelo menos 1600 px.
 
 ---
 
@@ -357,6 +383,19 @@ Exemplo: `fix(roteiros): corrige geração de ids duplicados`
 
 ---
 
+## Histórico de versões
+
+| Versão | Entrega |
+|---|---|
+| **1.3** | Redesign da página Sobre com identidade própria: topo com a foto em círculo e escala de graus, índice lateral que acompanha a rolagem, capítulos em coluna de leitura, blocos por público, tecnologias agrupadas por função, chamada final e rodapé. A Navbar adaptativa passa a valer também em `/sobre`. |
+| **1.2** | Redesign da página inicial: hero com foto e degradê, indicadores reais, atalhos, atrativos com foto em destaque, comércio local, chamada final e rodapé global com a logo nova (usado só na home) e logo nova na Navbar, que fica transparente sobre o topo da home e se adapta à cor da seção ao rolar, e favicon novo. Visual mais sóbrio, sem emojis, ícones decorativos ou animações em cada bloco. Links com React Router e sem novas dependências. |
+| **1.1** | Redesign visual "Maré": nova paleta, tipografia, navbar com menu para celular e animações, em todas as telas. |
+| **1.0** | Telas de Roteiros, Comércio local e Perfil, testes automatizados e pipeline de CI. |
+
+Detalhes de cada versão em [`docs/DOCUMENTACAO.md`](docs/DOCUMENTACAO.md).
+
+---
+
 ## Impacto e ODS
 
 O projeto busca contribuir para:
@@ -378,7 +417,7 @@ O projeto busca contribuir para:
 
 | Documento | Conteúdo |
 |---|---|
-| [`docs/DOCUMENTACAO.md`](docs/DOCUMENTACAO.md) | Telas, arquivos, testes, uso de IA e pipeline |
+| [`docs/DOCUMENTACAO.md`](docs/DOCUMENTACAO.md) | Telas, arquivos, testes, uso de IA, pipeline, redesign visual e redesign da home (v1.2) |
 
 ---
 
