@@ -8,7 +8,11 @@ Plataforma digital de turismo e comércio local de Jaboatão dos Guararapes – 
 
 [![CI](https://github.com/Micael-exe/jaboatao-360/actions/workflows/ci.yml/badge.svg)](https://github.com/Micael-exe/jaboatao-360/actions/workflows/ci.yml)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
+<<<<<<< HEAD
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.3-12665d)
+=======
 ![Versão](https://img.shields.io/badge/vers%C3%A3o-1.2-12665d)
+>>>>>>> origin/main
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
@@ -93,7 +97,11 @@ Uma plataforma que reúne descoberta de lugares, planejamento de roteiros e vitr
 | **Perfil do usuário** | Gestão de conta, preferências (interesses, ritmo, orçamento, notificações) e histórico de visitas, com resumo de atividades. |
 | **Favoritos** | Marcação de estabelecimentos favoritos (roteiros salvos já ficam registrados na tela de roteiros). |
 | **Página inicial** | Hero com foto de fundo e degradê, indicadores calculados dos dados, atalhos para as telas, atrativos com foto em destaque e lista, comércio local, chamada final e rodapé com a logo do projeto. |
+<<<<<<< HEAD
+| **Institucional** | Página Sobre com identidade própria no padrão da home: topo com a foto dentro de um círculo com escala de graus (o 360 do nome), índice lateral que acompanha a rolagem, capítulos em coluna de leitura, blocos por público (turistas e moradores, empreendedores), tecnologias por função, chamada final e rodapé. |
+=======
 | **Institucional** | Página Sobre. |
+>>>>>>> origin/main
 
 ### Planejadas
 
@@ -387,6 +395,10 @@ Exemplo: `fix(roteiros): corrige geração de ids duplicados`
 
 | Versão | Entrega |
 |---|---|
+<<<<<<< HEAD
+| **1.3** | Redesign da página Sobre com identidade própria: topo com a foto em círculo e escala de graus, índice lateral que acompanha a rolagem, capítulos em coluna de leitura, blocos por público, tecnologias agrupadas por função, chamada final e rodapé. A Navbar adaptativa passa a valer também em `/sobre`. |
+=======
+>>>>>>> origin/main
 | **1.2** | Redesign da página inicial: hero com foto e degradê, indicadores reais, atalhos, atrativos com foto em destaque, comércio local, chamada final e rodapé global com a logo nova (usado só na home) e logo nova na Navbar, que fica transparente sobre o topo da home e se adapta à cor da seção ao rolar, e favicon novo. Visual mais sóbrio, sem emojis, ícones decorativos ou animações em cada bloco. Links com React Router e sem novas dependências. |
 | **1.1** | Redesign visual "Maré": nova paleta, tipografia, navbar com menu para celular e animações, em todas as telas. |
 | **1.0** | Telas de Roteiros, Comércio local e Perfil, testes automatizados e pipeline de CI. |

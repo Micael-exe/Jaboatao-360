@@ -1,0 +1,95 @@
+/* Página Sobre. Reaproveita os tokens e a chamada final de Home.css (a página usa a classe .home).
+   Somente cores da paleta do projeto. */
+.sobre { --h-verde-esc: var(--color-green-800, #0c4e47); }
+
+/* Topo: o 360 do nome vira um círculo, com a foto dentro de uma escala de graus */
+.sobre-hero {
+  position: relative; isolation: isolate; overflow: hidden; color: var(--h-branco);
+  background: linear-gradient(120deg, var(--h-mare) 0%, var(--h-verde-esc) 100%);
+  padding: 7rem 0 4.5rem;
+}
+.sobre-hero-grid { display: grid; gap: 3.5rem; align-items: center; }
+.sobre-hero-titulo { max-width: 17ch; font-size: clamp(2.25rem, 6vw, 4rem); font-weight: 600; line-height: 1.05; letter-spacing: -0.03em; color: var(--h-branco); }
+.sobre-hero-texto { max-width: 34rem; margin-top: 1.25rem; font-size: 1.125rem; line-height: 1.6; }
+
+.sobre-disco { position: relative; width: min(18rem, 72vw); aspect-ratio: 1; margin-inline: auto; border-radius: 50%; background: var(--h-mare); }
+.sobre-foto-disco { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+/* Escala de graus: marcas a cada 5 graus e, a cada 30, uma marca mais longa */
+.sobre-dial {
+  position: absolute; inset: -1.5rem; z-index: -1; border-radius: 50%;
+  background: repeating-conic-gradient(from -0.4deg, rgb(245 181 68 / 0.85) 0deg 0.8deg, transparent 0.8deg 5deg);
+  animation: sobre-girar 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.sobre-dial::after {
+  content: ""; position: absolute; inset: -0.9rem; border-radius: 50%;
+  background: repeating-conic-gradient(from -0.8deg, var(--h-sol) 0deg 1.6deg, transparent 1.6deg 30deg);
+}
+@keyframes sobre-girar { from { transform: rotate(-25deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .sobre-dial { animation: none; } }
+
+@media (min-width: 900px) {
+  .sobre-hero { padding: 9rem 0 6rem; }
+  .sobre-hero-grid { grid-template-columns: 1.15fr 0.85fr; gap: 4rem; }
+  .sobre-disco { width: min(25rem, 100%); }
+  .sobre-dial { inset: -1.75rem; }
+}
+
+/* Corpo: índice lateral e capítulos em coluna de leitura */
+.sobre-corpo { padding-top: 3rem; }
+.sobre-grid { display: grid; gap: 2rem; }
+
+.sobre-indice-titulo { margin-bottom: 0.5rem; font-size: 0.9375rem; font-weight: 600; color: var(--h-titulo); }
+.sobre-indice ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem; }
+.sobre-indice a {
+  display: block; white-space: nowrap; padding: 0.35rem 0.85rem; border: 1px solid var(--h-borda); border-radius: 999px;
+  font-size: 0.9375rem; color: var(--h-texto); text-decoration: none;
+}
+.sobre-indice a:hover { border-color: var(--h-verde); color: var(--h-verde); }
+.sobre-indice a[aria-current] { border-color: var(--h-verde); background: var(--h-verde); color: var(--h-branco); }
+
+.sobre-capitulo { scroll-margin-top: 6rem; }
+.sobre-capitulo + .sobre-capitulo { margin-top: 3.5rem; padding-top: 3.5rem; border-top: 1px solid var(--h-borda); }
+.sobre-h2 { margin-bottom: 1.5rem; font-size: clamp(1.875rem, 4vw, 2.75rem); line-height: 1.08; letter-spacing: -0.02em; color: var(--h-titulo); }
+.sobre-prosa { max-width: 40rem; font-size: 1.0625rem; line-height: 1.75; color: var(--h-texto); }
+.sobre-prosa p + p { margin-top: 1.1rem; }
+.sobre-prosa strong { color: var(--h-titulo); }
+.sobre-lead { font-size: clamp(1.25rem, 2.4vw, 1.5rem); font-weight: 500; line-height: 1.45; color: var(--h-titulo); }
+
+@media (prefers-reduced-motion: no-preference) { html:has(.sobre) { scroll-behavior: smooth; } }
+
+@media (min-width: 1024px) {
+  .sobre-grid { grid-template-columns: 12rem minmax(0, 1fr); gap: 4rem; }
+  .sobre-indice { position: sticky; top: 6rem; align-self: start; }
+  .sobre-indice ul { flex-direction: column; gap: 0; overflow: visible; border-left: 1px solid var(--h-borda); padding: 0; }
+  .sobre-indice a {
+    margin-left: -1px; padding: 0.4rem 0 0.4rem 1rem; border: 0; border-left: 2px solid transparent; border-radius: 0; background: none;
+  }
+  .sobre-indice a:hover { border-left-color: var(--h-g300, #9fd1c5); color: var(--h-verde); }
+  .sobre-indice a[aria-current] { border-left-color: var(--h-verde); background: none; color: var(--h-verde); font-weight: 600; }
+}
+
+/* Listas em linhas com divisória fina */
+.sobre-lista { list-style: none; margin: 0; padding: 0; }
+.sobre-lista li { padding: 0.8rem 0; border-top: 1px solid var(--h-borda); line-height: 1.45; color: var(--h-titulo); }
+.sobre-lista li:first-child { padding-top: 0; border-top: 0; }
+.sobre-objetivos { max-width: 40rem; }
+.sobre-objetivos li { padding: 1rem 0; font-family: var(--font-display, inherit); font-size: clamp(1.2rem, 2.2vw, 1.45rem); line-height: 1.3; }
+.sobre-objetivos li:first-child { padding-top: 0; }
+
+/* Proposta */
+.sobre-figura { aspect-ratio: 16 / 9; margin-top: 2rem; border-radius: 0.5rem; }
+.sobre-publicos { display: grid; gap: 2rem; margin-top: 2.5rem; }
+.sobre-publico { padding-top: 1rem; border-top: 2px solid var(--h-verde); }
+.sobre-publico h3 { margin-bottom: 0.4rem; font-size: 1.25rem; color: var(--h-titulo); }
+.sobre-publico > p { margin-bottom: 1rem; font-size: 0.9375rem; color: var(--h-texto); }
+.sobre-publico .sobre-lista li { font-size: 1rem; }
+.sobre-despedida { margin-top: 2.5rem; font-family: var(--font-display, inherit); font-size: 1.375rem; font-weight: 600; color: var(--h-verde); }
+@media (min-width: 640px) { .sobre-publicos { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+
+/* Tecnologias agrupadas por função */
+.sobre-stack { max-width: 40rem; margin: 1.25rem 0 0; }
+.sobre-stack > div { display: grid; gap: 0.15rem; padding: 0.8rem 0; border-top: 1px solid var(--h-borda); }
+.sobre-stack dt { font-size: 0.9375rem; font-weight: 600; color: var(--h-titulo); }
+.sobre-stack dd { margin: 0; color: var(--h-texto); }
+@media (min-width: 640px) { .sobre-stack > div { grid-template-columns: 11rem 1fr; gap: 1rem; } }

@@ -2,7 +2,11 @@
 
 Projeto **Jaboatão 360** · Frontend (React + Vite + Tailwind)
 
+<<<<<<< HEAD
+Versão da documentação: **1.3** · Atualizado em 18/11/2026
+=======
 Versão da documentação: **1.2** · Atualizado em 10/11/2026
+>>>>>>> origin/main
 
 Este documento resume o que foi desenvolvido nesta entrega: três novas telas, testes automatizados, o uso de IA para apoiar os cenários de teste e a pipeline do GitHub Actions.
 
@@ -288,7 +292,11 @@ Esta etapa redesenhou **somente a home** (`/`), com base na organização de se�
 | Logo nova do projeto | Aplicada no rodapé da home |
 | Favicon | Trocado pelo ícone novo (`index.html` e `public/`) |
 | Marca da Navbar | Ícone e texto antigos trocados pela logo nova, **sem fundo branco** (**afeta todas as telas**, pois a Navbar é global) |
+<<<<<<< HEAD
+| Navbar adaptativa | Só na home (`/`) e em Sobre (`/sobre`): transparente sobre o topo, encolhe ao rolar e assume o tom (escuro ou claro) da seção que está por baixo. Nas demais telas é sempre clara |
+=======
 | Navbar adaptativa | Só na home (`/`): transparente sobre o topo, encolhe ao rolar e assume o tom (escuro ou claro) da seção que está por baixo. Nas demais telas é sempre clara |
+>>>>>>> origin/main
 | Rodapé global (`Footer`) | Criado, com a logo, **usado somente na home** por enquanto |
 | Links da home com React Router (`Link`) | Aplicado |
 | Emojis na home | Removidos (ícones em SVG) |
@@ -330,12 +338,20 @@ Os degradês sobre as fotos usam o verde profundo `#0c3b38` com transparência. 
 - **Logo:** `src/assets/logo-jaboatao360.webp`, versão horizontal recortada das margens vazias a partir do PNG original, com fundo transparente (640 px de largura, cerca de 38 KB). Usada no rodapé.
 - **Logo na Navbar:** duas versões, ambas com fundo transparente e 400 px de largura (cerca de 20 KB cada): `logo-jaboatao360-navbar.webp` (colorida, para fundos claros) e `logo-jaboatao360-navbar-branca.webp` (a mesma logo com o texto azul-marinho convertido em branco, para fundos escuros). Elas substituem o ícone SVG e o texto "Jaboatão 360", já que o nome faz parte da logo, e não há mais placa branca atrás dela. A versão clara só é carregada na home. A imagem tem `alt="Jaboatão 360"`; a outra é decorativa (`alt` vazio).
 - **Favicon:** `public/favicon-32.png` (32 px) e `public/favicon.png` (192 px), referenciados em `index.html`. Foram recortados do arquivo enviado e centralizados em um quadrado, mantendo os cantos transparentes.
+<<<<<<< HEAD
+- **Navbar na home:** inspirada no padrão de barra transparente sobre o topo (template Canvas, usado pela referência). Nas rotas `/` e `/sobre`, a barra fica fixa sobre o topo da página, sem fundo, com links e logo claros sobre a foto. Ao rolar mais de 40 px, ela encolhe (menos altura e logo menor) e ganha fundo translúcido com desfoque. O tom do fundo acompanha a seção que está por baixo do meio da barra: sobre seções escuras (topo e chamada final) usa `#0c3b38` translúcido, texto e logo claros; sobre seções claras usa `#f6f9f8` translúcido, texto escuro e logo colorida. A troca tem transição de 0,3 s. Cada seção declara seu tom em `data-nav-tema="escura"` ou `"clara"`. Nas outras telas nada muda.
+=======
 - **Navbar na home:** inspirada no padrão de barra transparente sobre o topo (template Canvas, usado pela referência). Na rota `/`, a barra fica fixa sobre o topo da página, sem fundo, com links e logo claros sobre a foto. Ao rolar mais de 40 px, ela encolhe (menos altura e logo menor) e ganha fundo translúcido com desfoque. O tom do fundo acompanha a seção que está por baixo do meio da barra: sobre seções escuras (topo e chamada final) usa `#0c3b38` translúcido, texto e logo claros; sobre seções claras usa `#f6f9f8` translúcido, texto escuro e logo colorida. A troca tem transição de 0,3 s. Cada seção declara seu tom em `data-nav-tema="escura"` ou `"clara"`. Nas outras telas nada muda.
+>>>>>>> origin/main
 - **Pendências:** as duas fotos têm 730×449 px, abaixo do ideal para tela cheia; conferir licença e crédito de cada uma e confirmar que a foto do destaque realmente mostra a Igreja de Nossa Senhora do Pilar.
 
 ### 10.5 Rodapé global
 
+<<<<<<< HEAD
+`src/components/Footer.jsx` tem a logo, a navegação (Início, Mapa, Roteiros, Comércio local, Perfil e Sobre), uma nota de que os dados são demonstrativos e o ano atual. O fundo é claro para combinar com a logo. Ele é chamado em `Home.jsx` e `Sobre.jsx`. Para usá-lo em todas as telas, renderize-o em `App.jsx` após as rotas e remova as chamadas dessas duas páginas para não duplicar.
+=======
 `src/components/Footer.jsx` tem a logo, a navegação (Início, Mapa, Roteiros, Comércio local, Perfil e Sobre), uma nota de que os dados são demonstrativos e o ano atual. O fundo é claro para combinar com a logo. Por decisão da equipe, ele só é chamado em `Home.jsx`. Para usá-lo em todas as telas, renderize-o em `App.jsx` após as rotas e remova a chamada de `Home.jsx` para não duplicar.
+>>>>>>> origin/main
 
 ### 10.6 Acessibilidade
 
@@ -408,6 +424,84 @@ Para evitar o aspecto de página gerada por modelo, a home foi simplificada:
 
 | Versão | Seções | Resumo |
 |---|---|---|
+<<<<<<< HEAD
+| **1.3** | 12 | Redesign da página Sobre no padrão da home e Navbar adaptativa também em `/sobre` |
 | **1.2** | 10 | Redesign da página inicial com fotos e degradê, logo nova, rodapé global (só na home) e visual mais sóbrio |
 | **1.1** | 9 | Redesign visual "Maré" em todo o frontend (paleta, tipografia, navbar, animações) |
 | **1.0** | 1 a 8 | Telas de Roteiros, Comércio local e Perfil, testes automatizados, uso de IA nos cenários de teste e pipeline de CI |
+
+---
+
+## 12. Redesign da página Sobre (versão 1.3)
+
+Esta etapa redesenhou somente a página Sobre (`/sobre`). Ela mantém a família visual da home (cores, tipografia, Navbar adaptativa, chamada final e rodapé) e a lógica da página "Quem somos" do viagem20.com.br (apresentar a plataforma, mostrar uma imagem, separar os benefícios por público e fechar com a identidade do projeto), mas tem identidade própria. As outras telas, as rotas, os dados e os testes existentes não foram alterados. A única mudança fora da página é a condição de rota da Navbar (seção 12.6).
+
+### 12.1 Conceito
+
+O "360" do nome é um círculo completo. O topo mostra a foto da igreja dentro de um círculo, cercado por uma escala de graus, como o mostrador de uma bússola: marcas a cada 5 graus e uma marca mais longa a cada 30. Esse é o único elemento ousado da página; o restante é quieto: texto em coluna de leitura, linhas finas e um índice lateral.
+
+- **Escala de graus:** feita só com CSS (`repeating-conic-gradient`), nas cores sol `#f5b544` e verde profundo. Na abertura da página ela gira 25 graus até a posição final, uma única vez, em 1,4 s. Para quem reduz movimento no sistema, ela aparece parada.
+- **Título do topo:** em vez de "Sobre", usa uma frase própria do projeto, "Os atrativos de Jaboatão merecem ser mais conhecidos.", que resume a problemática. O nome da página continua na Navbar.
+
+### 12.2 Estrutura da página
+
+| Bloco | Conteúdo |
+|---|---|
+| Topo | Fundo em degradê verde escuro, título, frase de apresentação da plataforma e a foto da igreja (`pilar.webp`) no círculo com escala de graus |
+| Índice | "Nesta página", com os cinco capítulos. No computador fica fixo ao lado do texto e destaca o capítulo que está sendo lido; no celular vira uma fileira de atalhos com rolagem lateral |
+| A problemática | Primeira frase em destaque, seguida do restante do texto |
+| Motivação | Primeira frase em destaque, seguida do restante do texto |
+| Objetivos | Os 5 objetivos em linhas com divisórias finas e fonte maior |
+| Nossa proposta | Texto da proposta, foto do lago (`hero.webp`), as colunas **Para turistas e moradores** e **Para empreendedores locais** e a frase "Boa visita a Jaboatão!" |
+| Um projeto acadêmico | Texto do curso de ADS e as tecnologias agrupadas por função: Interface, Servidor, Banco de dados, Mapas e Hospedagem |
+| Chamada final e rodapé | Os mesmos componentes da home |
+
+### 12.3 Conteúdo
+
+- **Mantidos do projeto:** problemática, motivação, objetivos, proposta e contexto acadêmico, com a mesma redação; só os travessões foram trocados por vírgulas e dois-pontos. Em problemática e motivação, o texto foi dividido em uma frase de abertura em destaque e o restante.
+- **Escritos nesta etapa:** o título do topo, a frase de apresentação, os textos introdutórios dos dois públicos, as listas de benefícios e a despedida. As listas vieram dos textos do projeto e das telas existentes (mapa, atrativos, comércio local e roteiros). Para empreendedores, os itens são objetivos do projeto, e não funcionalidades de cadastro, que o MVP não tem.
+- **Definido na revisão:** o agrupamento das tecnologias por função. A lista de tecnologias é a mesma de antes.
+- **Da referência:** apenas a ordem e a lógica da página. Textos e imagens do site de referência não foram usados.
+
+### 12.4 Reaproveitamento da home
+
+`Sobre.jsx` usa a classe `.home` e importa `Home.css`, para compartilhar as variáveis de cor, o container e a chamada final. Também reutiliza `Foto`, `CtaBand` e `Footer`. Os estilos próprios ficam em `src/pages/Sobre.css`, com prefixo `sobre-`.
+
+### 12.5 Paleta e acessibilidade
+
+- Somente as cores já usadas na home. O texto branco sobre o degradê do topo tem contraste de 9,6:1 a 12,4:1, e o menor contraste de texto no corpo da página é 6,4:1 (verde `#12665d` sobre `#f6f9f8`).
+- Um `h1` no topo, `h2` por capítulo e `h3` nas colunas de público. Capítulos com `aria-labelledby`, índice em `nav` rotulada com `aria-current` no item ativo e tecnologias em lista de definição (`dl`).
+- A foto do círculo e a do lago têm texto alternativo. A escala de graus é decorativa e fica oculta para leitores de tela.
+- A rolagem suave até os capítulos só vale para quem não reduz movimento. Sem suporte a `IntersectionObserver`, o índice funciona, só não destaca o capítulo atual.
+- Sem os arquivos das fotos, o círculo fica liso e a foto do lago não aparece; o restante continua legível.
+
+### 12.6 Navbar
+
+A Navbar adaptativa da seção 10 passa a valer também em `/sobre`: a condição de rota em `Navbar.jsx` inclui as duas páginas. Cada bloco da Sobre declara seu tom em `data-nav-tema`.
+
+### 12.7 Arquivos criados e alterados
+
+```
+frontend/src/
+├── pages/
+│   ├── Sobre.jsx                   (alterado — nova página, com o índice que acompanha a rolagem)
+│   └── Sobre.css                   (novo)
+└── components/
+    ├── Navbar.jsx                  (alterado — condição de rota inclui /sobre)
+    └── Navbar.css                  (alterado — apenas comentários)
+docs/DOCUMENTACAO.md                (este documento — seção 12 e histórico)
+README.md                           (alterado — versão 1.3, Institucional e histórico)
+```
+
+### 12.8 Limitações e pendências
+
+- **Testes:** a página Sobre não tem testes unitários (nem tinha antes). Ficam para a etapa de testes.
+- **Pipeline e visual:** esta etapa foi entregue sem rodar `lint`, `test` e `build` e sem conferir no navegador, inclusive o desenho da escala de graus e o comportamento do índice. Execute `cd frontend && npm run lint && npm test && npm run build` antes do Pull Request.
+- **Acoplamento:** a Sobre depende de `Home.css`. Se a home mudar, a Sobre acompanha.
+- **Fotos:** a foto da igreja aparece na home e no topo da Sobre, e a do lago aparece no topo da home e na proposta da Sobre. Falta confirmar que a da igreja mostra a Igreja de Nossa Senhora do Pilar, descobrir o local da do lago e definir licença e crédito das duas.
+- **Conteúdo novo:** revise o título do topo e as listas de benefícios, escritos a partir dos textos do projeto.
+=======
+| **1.2** | 10 | Redesign da página inicial com fotos e degradê, logo nova, rodapé global (só na home) e visual mais sóbrio |
+| **1.1** | 9 | Redesign visual "Maré" em todo o frontend (paleta, tipografia, navbar, animações) |
+| **1.0** | 1 a 8 | Telas de Roteiros, Comércio local e Perfil, testes automatizados, uso de IA nos cenários de teste e pipeline de CI |
+>>>>>>> origin/main

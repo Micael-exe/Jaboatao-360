@@ -1,7 +1,14 @@
+<<<<<<< HEAD
+/* Navbar das páginas com topo em foto (início e sobre). Somente cores da paleta do projeto.
+   Padrão de barra transparente sobre o topo que, ao rolar, encolhe e assume o tom da seção
+   que está por baixo dela:
+     nav--home    sempre nessas páginas (a barra fica fixa sobre o conteúdo)
+=======
 /* Navbar da página inicial. Somente cores da paleta do projeto.
    Padrão de barra transparente sobre o topo que, ao rolar, encolhe e assume o tom da seção
    que está por baixo dela:
      nav--home    sempre na home (a barra fica fixa sobre o conteúdo)
+>>>>>>> origin/main
      nav--escura  a seção por baixo é escura  (texto e logo claros)
      nav--clara   a seção por baixo é clara   (texto escuro e logo colorida)
      nav--rolou   a página foi rolada         (barra encolhe e ganha fundo translúcido)
