@@ -17,10 +17,16 @@ export default function Navbar() {
   const { pathname } = useLocation()
   const [aberto, setAberto] = useState(false)
   const barra = useRef(null)
+<<<<<<< HEAD
   // Páginas com topo em foto: início e sobre. Nas demais, a barra continua clara e fixa no fluxo
   const naHome = pathname === '/' || pathname === '/sobre'
 
   // Nas páginas com topo em foto: a barra fica transparente sobre o topo e, ao rolar, encolhe e assume o tom
+=======
+  const naHome = pathname === '/'
+
+  // Só na home: a barra fica transparente sobre o topo e, ao rolar, encolhe e assume o tom
+>>>>>>> origin/main
   // da seção que está por baixo dela. Cada seção declara seu tom em data-nav-tema.
   const [rolou, setRolou] = useState(false)
   const [tema, setTema] = useState('escura') // 'escura' = fundo escuro por baixo; 'clara' = fundo claro
