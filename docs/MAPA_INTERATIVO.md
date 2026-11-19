@@ -2,6 +2,9 @@
 
 Com a nova funcionalidade, quem abrir o mapa poderá escolher lugares pelas fotos e receber um roteiro com a ordem das visitas e o horário sugerido para cada parada.
 
+1. Implemente primeiro o filtro de interesses e confirme que a API retorna os lugares com as tags escolhidas.
+2. Use os lugares filtrados para montar os cartões com fotos. Registre os escolhidos ao deslizar para a direita e pule os demais ao deslizar para a esquerda.
+3. Com a seleção concluída, use o ponto de partida e os lugares escolhidos para gerar o roteiro com a rede neural e exibir o trajeto e os horários no mapa.
 ## 1. Escolher os interesses
 
 Ao abrir o mapa (`/mapa`), a pessoa verá a pergunta **“O que você gostaria de explorar em Jaboatão?”**. Poderá escolher um ou mais temas, como praias ou história. O mapa buscará na API os locais que tenham pelo menos uma das tags escolhidas. Se a busca vier vazia, a pessoa poderá mudar o filtro.
