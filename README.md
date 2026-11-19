@@ -418,6 +418,7 @@ O projeto busca contribuir para:
 | Documento | Conteúdo |
 |---|---|
 | [`docs/DOCUMENTACAO.md`](docs/DOCUMENTACAO.md) | Telas, arquivos, testes, uso de IA, pipeline, redesign visual e redesign da home (v1.2) |
+| [Nova funcionalidade do mapa interativo](docs/MAPA_INTERATIVO.md) | Escolha de lugares por fotos e sugestão de roteiro com horários de visita |
 
 ---
 
