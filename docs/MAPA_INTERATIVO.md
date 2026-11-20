@@ -87,3 +87,7 @@ Começando pela feira, a pessoa sairia de lá às 13:35 e chegaria ao museu às 
 | 4. Resultado | Usar a sequência validada para desenhar o percurso e preencher a lista de horários. | Conferir se mapa e lista mostram a mesma ordem e se cada lugar escolhido tem uma parada ou uma explicação visível. |
 
 **Decisões para a equipe validar antes de programar o cálculo.** Além da saída imediata e da prioridade descrita acima, é preciso definir qual meio de transporte servirá de referência e como estimar a duração de cada visita. Esses valores afetam diretamente o horário sugerido e podem mudar a ordem do passeio.
+
+## Histórico de versões
+
+Na atualização da versão 0.1 para a 0.2, a documentação do mapa interativo foi aprofundada. O foco foi definir as regras com mais rigor e reduzir ao máximo as chances de erros ou alucinações ao projetar e codificar a funcionalidade descrita no documento.
