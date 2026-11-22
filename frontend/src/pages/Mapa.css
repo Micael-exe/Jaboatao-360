@@ -1,0 +1,79 @@
+.map-pagina { max-width: 1120px; margin: auto; padding: clamp(20px, 4vw, 50px) 20px 64px; }
+.map-passos { display: flex; gap: clamp(6px, 2vw, 28px); margin: 0 0 24px; padding: 0; list-style: none; }
+.map-passos li { flex: 1; border-top: 3px solid #d3dfdb; padding-top: 8px; color: #53675f; font-size: .875rem; }
+.map-passos .atingido { border-color: #41857a; }
+.map-passos [aria-current] { color: #0b5148; font-weight: 750; }
+.map-abertura { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: 20px; }
+.map-capa { display: flex; align-items: end; min-height: 300px; border-radius: 22px; overflow: hidden; color: white;
+  background: linear-gradient(0deg, #092f2ee8, #0a34332b 67%), url('../assets/jaboatao/hero.webp') 44% center / cover; }
+.map-capa > div { padding: clamp(20px, 3vw, 40px); }
+.map-capa p { color: #e5f2ed; font-size: .9rem; }
+.map-capa h2 { font-size: clamp(2.4rem, 5vw, 4.3rem); font-weight: 650; line-height: .98; margin-top: 10px; max-width: 8ch; }
+.map-painel { background: white; border: 1px solid #d7e3df; border-radius: 22px; padding: clamp(18px, 3vw, 36px); min-width: 0; }
+.map-interno { max-width: 820px; margin: auto; }
+.map-painel h1 { font-size: clamp(1.8rem, 3.5vw, 2.7rem); line-height: 1.1; font-weight: 650; color: #113f39; }
+.map-painel h1:focus { outline: none; }
+.map-intro, .map-ajuda, .map-demo, .map-acoes small { color: #4d625a; }
+.map-intro { margin: 10px 0 22px; line-height: 1.55; }
+.map-ajuda { font-size: .91rem; margin: 12px 0; }
+.map-demo { font-size: .79rem; border-top: 1px solid #dce6e3; margin-top: 22px; padding-top: 12px; }
+.map-categoria { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 7px 0; margin: 0; border: 0; border-bottom: 1px solid #dce6e3; min-width: 0; }
+.map-categoria > span { font-weight: 600; }
+.map-categoria > div, .map-acoes { display: flex; gap: 8px; align-items: center; }
+.map-categoria label { position: relative; }
+.map-categoria input, .map-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.map-categoria label span { display: grid; place-items: center; width: 62px; min-height: 40px; border-radius: 30px; border: 1px solid #bbcfc8; color: #344f45; cursor: pointer; }
+.map-categoria input:checked + span { color: white; background: #135e53; border-color: #135e53; font-weight: 700; }
+.map-categoria input:focus-visible + span { outline: 3px solid #267e73; outline-offset: 2px; }
+.map-acoes { flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.map-pri, .map-sec, .map-link, .map-centro { min-height: 44px; cursor: pointer; font-weight: 650; }
+.map-pri, .map-sec, .map-centro { padding: 9px 20px; border-radius: 999px; }
+.map-pri { background: #115e51; color: white; border: 1px solid #115e51; }
+.map-sec, .map-centro { color: #114d43; background: #fff; border: 1px solid #a8c4b9; }
+.map-link { text-decoration: underline; text-underline-offset: 3px; color: #155f53; padding: 7px; }
+.map-pri:disabled, .map-sec:disabled { background: #e1e8e4; color: #56675f; border-color: #d5dfda; cursor: default; }
+.map-pri:not(:disabled):hover { background: #0b493e; }
+.map-sec:not(:disabled):hover, .map-centro:hover { background: #eff6f2; }
+.map-deck { max-width: 520px; margin: auto; overflow: clip; }
+.map-cartao { position: relative; border-radius: 16px; overflow: hidden; background: #174d44; color: white; cursor: grab; touch-action: pan-y; user-select: none; }
+.map-cartao:active { cursor: grabbing; }
+.map-cartao img, .map-semfoto { width: 100%; height: clamp(220px, 37vh, 380px); object-fit: cover; pointer-events: none; }
+.map-semfoto { display: grid; place-items: center; background: #d9e7e0; color: #284e43; }
+.map-legenda { padding: 14px 20px 18px; }
+.map-legenda span { color: #d4e7df; font-size: .83rem; }
+.map-legenda h2 { font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 650; line-height: 1.16; margin-top: 4px; }
+.map-acoes.duplas > * { flex: 1; }
+.map-navegar { justify-content: center; }
+.map-folha { width: 100%; height: clamp(270px, 48vh, 460px); isolation: isolate; border-radius: 14px; background: #dceae6; }
+.map-centro { position: absolute; right: 10px; top: 10px; z-index: 800; font-size: .84rem; }
+.map-pino, .map-numero { display: grid; place-items: center; background: #105b52; color: white; border: 2px solid white; border-radius: 50%; font-weight: 750; }
+.map-folha .map-pino { display: grid; place-items: center; box-shadow: 0 1px 4px #23483f80; }
+.map-paradas { padding: 0; margin: 16px 0; list-style: none; }
+.map-paradas li { display: flex; align-items: start; gap: 12px; padding: 16px 0; border-bottom: 1px solid #dce6e3; }
+.map-numero { flex: none; width: 30px; height: 30px; }
+.map-paradas h3, .map-fora h3, .map-folha h3 { font-weight: 700; }
+.map-paradas p, .map-fora p { font-size: .93rem; margin-top: 4px; }
+.map-semana { font-size: .85rem; margin: 8px 0 0; }
+.map-semana summary { cursor: pointer; color: #175e52; }
+.map-semana dl > div { display: flex; justify-content: space-between; gap: 14px; margin: 4px 0; }
+.map-fora { background: #faf5e8; border-radius: 14px; padding: 16px; margin-top: 16px; }
+.map-fora h2 { font-size: 1.15rem; font-weight: 700; }
+.map-fora > div { margin-top: 12px; }
+.map-erro { margin-top: 12px; color: #983e26; }
+@media (min-width: 701px) and (max-height: 800px) {
+  .map-pagina { padding-top: 22px; }
+  .map-passos { margin-bottom: 14px; }
+  .map-abertura .map-painel { padding: 22px 28px; }
+  .map-abertura .map-categoria { padding-block: 3px; }
+  .map-abertura .map-intro { margin-bottom: 12px; }
+  .map-abertura .map-demo { margin-top: 14px; }
+}
+@media (max-width: 700px) {
+  .map-abertura { grid-template-columns: 1fr; gap: 12px; }
+  .map-capa { min-height: 110px; background-position: center 58%; }
+  .map-capa h2 { max-width: none; font-size: 2rem; }
+  .map-capa > div { padding: 16px 20px; }
+  .map-pagina { padding-inline: 12px; }
+  .map-passos { margin-bottom: 14px; }
+  .map-categoria label span { min-height: 44px; }
+}

@@ -1,6 +1,58 @@
 # Mapa interativo do Jaboatão 360
 
-Ao abrir a tela `/mapa`, a pessoa poderá montar um passeio em Jaboatão mesmo sem saber o nome dos lugares que deseja visitar. Primeiro, ela responderá **Sim** ou **Não** para cada tipo de passeio que quiser avaliar. Na tela seguinte, verá fotos dos lugares que passaram pelo filtro e escolherá quais quer visitar. Com essas escolhas e um ponto de partida, o mapa mostrará por onde começar, em que ordem seguir e a que horas vale a pena chegar a cada parada.
+Na tela `/mapa`, a pessoa filtra os interesses com **Sim** ou **Não**, escolhe lugares pelas fotos e define a partida pelo GPS ou por um ponto no mapa. O roteiro mostra o trajeto de carro pelas ruas, as paradas numeradas e os horários sugeridos. Se uma visita inteira não couber no horário de funcionamento, o lugar aparece fora do trajeto com o motivo.
+
+## Como executar a demonstração
+
+Instale Node.js e npm. O projeto usa a série 22 do Node.js na integração contínua. Na raiz do repositório, execute os comandos abaixo.
+
+```sh
+cd frontend
+npm ci
+npm run dev
+```
+
+Abra o endereço indicado pelo Vite e acesse `/mapa`. Com `VITE_MAPA_LOCAIS_URL` em branco, o aplicativo usa o catálogo de demonstração incluído no projeto. A rede neural também já acompanha o código e roda no navegador. A conexão com a internet permite carregar as fotos externas, o mapa do OpenStreetMap e as rotas do OSRM.
+
+Para conferir o fluxo durante o dia, marque **Sim** em **Praias**, clique em **Ver lugares** e escolha duas fotos com **Quero visitar**. Clique em **Montar roteiro**, selecione **Escolher no mapa**, marque um ponto próximo às praias e clique em **Gerar roteiro**. O mapa e a lista devem mostrar a mesma ordem. Para usar o GPS, abra o site em HTTPS ou em `localhost` e permita o acesso à localização.
+
+## Como conectar os locais da equipe
+
+Copie `frontend/.env.example` para `frontend/.env.local` e defina as variáveis conforme o ambiente.
+
+| Variável | O que configurar |
+| --- | --- |
+| `VITE_MAPA_LOCAIS_URL` | Endereço completo do recurso que devolve os locais em JSON por `GET`. Se estiver em outro domínio, a API precisa permitir a leitura pelo navegador do site (CORS). |
+| `VITE_MAPA_OSRM_URL` | Endereço base do servidor que calcula os trajetos. A demonstração já usa um servidor público. Para usar uma instância própria, ela deve ter cobertura de Jaboatão e oferecer os serviços `table` e `route` com o perfil `driving`. |
+
+A API pode devolver uma lista ou um objeto com a lista na chave `locais`. Cada lugar precisa de um `id`, um `nome`, uma lista de `tags` e coordenadas numéricas em `lat` e `lng`. O exemplo abaixo representa um museu fictício.
+
+```json
+[
+  {
+    "id": "museu-exemplo",
+    "nome": "Museu de exemplo",
+    "tags": ["Museu"],
+    "lat": -8.17,
+    "lng": -34.92,
+    "foto": "/fotos/museu.webp",
+    "duracaoMin": 30,
+    "horarios": {
+      "0": [],
+      "1": [["10:00", "14:00"]],
+      "2": [["10:00", "14:00"]],
+      "3": [["10:00", "14:00"]],
+      "4": [["10:00", "14:00"]],
+      "5": [["10:00", "14:00"]],
+      "6": [["12:00", "15:00"]]
+    }
+  }
+]
+```
+
+Use em `foto` a imagem escolhida pela equipe. Um caminho relativo é resolvido a partir da URL da API. Em `horarios`, os dias vão de `0` (domingo) a `6` (sábado). Uma lista vazia indica que o local fecha naquele dia. Um dia omitido aparece como **Horário a confirmar**. Para uma pausa de almoço, envie dois intervalos no mesmo dia.
+
+Depois de mudar as variáveis, reinicie `npm run dev`. Para publicar, defina as variáveis no ambiente de compilação e execute `npm run build` na pasta `frontend`.
 
 ## 1. Filtrar por interesse
 
@@ -86,7 +138,7 @@ Começando pela feira, a pessoa sairia de lá às 13:35 e chegaria ao museu às 
 | 3. Origem e cálculo | Usar a seleção da etapa anterior, confirmar a origem e validar as sequências sugeridas pela rede. | Recusar o acesso à localização, marcar a origem manualmente e reproduzir o exemplo do museu e da feira. |
 | 4. Resultado | Usar a sequência validada para desenhar o percurso e preencher a lista de horários. | Conferir se mapa e lista mostram a mesma ordem e se cada lugar escolhido tem uma parada ou uma explicação visível. |
 
-**Decisões para a equipe validar antes de programar o cálculo.** Além da saída imediata e da prioridade descrita acima, é preciso definir qual meio de transporte servirá de referência e como estimar a duração de cada visita. Esses valores afetam diretamente o horário sugerido e podem mudar a ordem do passeio.
+O cálculo implementado considera saída imediata no fuso de Recife e deslocamento de carro. A API pode informar a duração da visita em minutos no campo `duracaoMin`. Quando esse valor estiver ausente ou for inválido, o planejador usará 30 minutos.
 
 ## Histórico de versões
 
