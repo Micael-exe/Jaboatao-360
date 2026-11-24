@@ -134,7 +134,7 @@ flowchart LR
 
 - **Dados centralizados:** os dados de exemplo ficam em `src/data/dados.js`, facilitando a troca por chamadas à API.
 - **Persistência isolada em um hook:** `useLocalStorage` encapsula o armazenamento; migrar para o backend altera um ponto, não as telas.
-- **Componentes de página independentes:** cada tela é um módulo em `src/pages`, com seus próprios testes.
+- **Componentes de página independentes:** cada tela é um módulo em `src/pages`. Os testes de interface ficam ao lado das telas cobertas.
 - **Conteúdo da home separado:** textos, destaques e atalhos ficam em `src/data/home.js`, e os números da faixa de indicadores são calculados a partir de `dados.js`, sem valores digitados à mão.
 - **Fotos por convenção de nome:** a home procura as imagens em `src/assets/jaboatao/` pelo nome do arquivo. Sem a foto, o bloco aparece sem imagem, sem ícone quebrado.
 
@@ -303,9 +303,62 @@ A cada `push` e a cada Pull Request, o GitHub Actions executa em ordem, dentro d
 
 Se qualquer etapa falhar, a pipeline fica vermelha e o resultado aparece no commit e no Pull Request. O badge **CI**, no topo deste arquivo, reflete o resultado da branch principal.
 
-### Testes automatizados
+### Verificação do frontend
 
-Os testes cobrem as três telas novas, o menu de navegação, o hook de persistência e a integridade dos dados, incluindo caminhos felizes, entradas inválidas, casos de borda e integração entre telas. A criação dos cenários contou com **apoio de IA**, sempre com revisão humana e validação pela pipeline.
+Resultados medidos em 24/11/2026 com Node.js 22.19.0, na revisão [`6711919`](https://github.com/Micael-exe/Jaboatao-360/commit/6711919420e9866f8c93e7e101029595428ba626). Execute os comandos dentro de `frontend/`.
+
+| Comando | Ferramenta | Resultado |
+|---|---|---|
+| `npm run lint` | ESLint 10.13.0 (`eslint .`) | 41 arquivos examinados, 0 erros e 0 avisos |
+| `npm run test` | Vitest 4.1.12 (`vitest run`) | 45 testes aprovados em 8 arquivos |
+| `npm run build` | Vite 8.3.5 (`vite build`) | 104 módulos transformados e 13 arquivos gerados em `dist/`, com 754,86 kB antes de compressão |
+
+#### Testes e cobertura
+
+| Arquivo de teste | Casos | Comportamentos verificados |
+|---|---:|---|
+| `planejar.test.js` | 11 | Filtros, horários de Recife, ordem das paradas e trechos inacessíveis |
+| `Roteiros.test.jsx` | 8 | Validação, criação, reordenação, duplicação e exclusão de roteiros |
+| `Comercio.test.jsx` | 6 | Busca, filtros, favoritos e inclusão de locais no roteiro |
+| `Perfil.test.jsx` | 5 | Edição do perfil, preferências, notificações e histórico de visitas |
+| `dados.test.js` | 5 | Integridade do catálogo, unicidade dos IDs e busca de itens |
+| `useLocalStorage.test.js` | 4 | Leitura, gravação, valor inicial e recuperação de JSON inválido |
+| `Navbar.test.jsx` | 3 | Destinos dos links e destaque da página atual |
+| `Mapa.test.jsx` | 3 | Seleção de lugares, preservação da origem e recuperação após falhas |
+
+O comando padrão executa os testes. Para medir a cobertura, os mesmos casos foram executados em uma cópia instrumentada com **Istanbul**, incluindo todos os 29 arquivos de aplicação `.js` e `.jsx` em `frontend/src/`. Testes, configuração, estilos e o script de treinamento ficaram fora dessa medição.
+
+| Métrica | Executados / total | Cobertura |
+|---|---:|---:|
+| Linhas executáveis | 423 / 570 | 74,21% |
+| Instruções | 520 / 718 | 72,42% |
+| Funções | 169 / 257 | 65,75% |
+| Ramificações | 311 / 452 | 68,80% |
+
+A lógica de rotas atingiu 98,27% das linhas em `rotas.js` e 97,77% em `planejar.js`. A tela `Mapa.jsx` atingiu 80,45%. Os testes simulam as respostas de rede e substituem `MapaFolha`, por isso a renderização real do Leaflet e a disponibilidade do serviço de rotas ficam fora da suíte. Dezesseis arquivos tiveram 0% das linhas executadas, incluindo `MapaFolha.jsx`, `Home.jsx` e `Sobre.jsx`.
+
+**Bibliotecas externas.** O Vitest executa os casos e fornece asserções e simulações (`vi`). O jsdom simula o navegador. A React Testing Library e a DOM Testing Library permitem renderizar componentes e localizar elementos. `user-event` simula cliques e digitação, `jest-dom` acrescenta verificações sobre o DOM e o `MemoryRouter` do React Router fornece navegação em memória.
+
+**Código do projeto.** Os arquivos `*.test.js` e `*.test.jsx` definem os cenários. Por exemplo, o teste de favoritos clica no botão, verifica a mudança na interface e confere o ID gravado no `localStorage`. O arquivo `src/test/setup.js` simula a rolagem, desmonta os componentes e limpa o armazenamento após cada caso. A criação dos cenários contou com apoio de IA, revisão humana e validação pela pipeline.
+
+#### Lint
+
+A configuração interna `eslint.config.js` aplica 81 regras a 40 arquivos JS/JSX, incluindo os 29 arquivos da aplicação, os 8 arquivos de teste, a preparação dos testes e as duas configurações de ferramentas. O 41º arquivo, `scripts/treinar-roteiro.mjs`, foi lido com zero regras ativas porque a configuração seleciona as extensões `.js` e `.jsx`.
+
+O ESLint usa os pacotes externos `@eslint/js` para as regras de JavaScript, `eslint-plugin-react-hooks` para o uso de hooks e suas dependências, `eslint-plugin-react-refresh` para exportações compatíveis com atualização durante o desenvolvimento e `globals` para reconhecer nomes disponíveis no navegador. A análise inclui páginas como `Home.jsx`, mesmo quando a suíte de testes não as executa.
+
+#### Build de produção
+
+A configuração interna `vite.config.js` registra os plugins externos `@vitejs/plugin-react` e `@tailwindcss/vite`. O Vite parte de `index.html` e `src/main.jsx`, usa o Rolldown para agrupar os módulos e integra o Tailwind CSS à geração dos estilos. O mapa usa `React.lazy()`, o que permite carregar seus arquivos quando o componente é necessário.
+
+| Saída | Tamanho | Com gzip |
+|---|---:|---:|
+| JavaScript principal | 319,08 kB | 100,27 kB |
+| JavaScript do mapa | 155,21 kB | 45,71 kB |
+| CSS principal | 40,62 kB | 9,73 kB |
+| CSS do mapa | 15,09 kB | 6,36 kB |
+
+Os outros nove arquivos são o HTML de entrada, cinco imagens WebP e três arquivos de ícones. Nesta verificação, os 13 arquivos reconstruídos foram idênticos aos distribuídos no ZIP da revisão analisada.
 
 ### Antes de abrir um Pull Request
 
