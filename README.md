@@ -8,7 +8,7 @@ Plataforma digital de turismo e comércio local de Jaboatão dos Guararapes – 
 
 [![CI](https://github.com/Micael-exe/jaboatao-360/actions/workflows/ci.yml/badge.svg)](https://github.com/Micael-exe/jaboatao-360/actions/workflows/ci.yml)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
-![Versão](https://img.shields.io/badge/vers%C3%A3o-1.3-12665d)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.7-12665d)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
@@ -62,6 +62,8 @@ Uma plataforma que reúne descoberta de lugares, planejamento de roteiros e vitr
 | Turistas e visitantes | Planejar passeios com praticidade |
 | Empreendedores e comerciantes | Divulgar estabelecimentos e experiências |
 
+Na entrada e no cadastro, as categorias de acesso são **Turista** (inclui moradores), **Empreendedor** e **Empresa**.
+
 ---
 
 ## Estado atual do projeto
@@ -90,7 +92,9 @@ Uma plataforma que reúne descoberta de lugares, planejamento de roteiros e vitr
 | **Mapa interativo** | Localização dos principais atrativos da cidade (Leaflet + OpenStreetMap). |
 | **Planejamento de roteiros** | Criação de roteiros com paradas de atrativos e comércios, horários, reordenação e salvamento. Roteiros salvos podem ser editados, duplicados e excluídos. |
 | **Comércio local** | Vitrine de estabelecimentos e experiências com busca, filtros por tipo e categoria, favoritos e atalho para adicionar ao roteiro. |
-| **Perfil do usuário** | Gestão de conta, preferências (interesses, ritmo, orçamento, notificações) e histórico de visitas, com resumo de atividades. |
+| **Perfil do usuário** | Gestão de conta, preferências (interesses, ritmo, orçamento, notificações) e histórico de visitas, com resumo de atividades. No padrão visual da home e da Sobre: topo escuro com o avatar (iniciais em uma cor da paleta) dentro da escala de graus, indicadores no topo e índice lateral entre Conta, Preferências e Histórico. Para empreendedores e empresas, a conta inclui o nome do negócio. |
+| **Login e cadastro** | Entrada (`/login`) e criação de conta (`/cadastro`) separadas por categoria: Turista, Empreendedor e Empresa. Cada categoria tem seu texto, seus campos e suas validações (por exemplo, CNPJ válido para empresa). A senha precisa ter 6 caracteres ou mais, com uma letra maiúscula, um número e um caractere especial. Demonstrativos: não há servidor e a senha não é guardada. |
+| **Acesso restrito** | Mapa, Roteiros, Comércio e Perfil só aparecem no menu e no rodapé depois do login ou cadastro. Acessar essas telas pela URL, sem sessão, leva para `/login`. |
 | **Favoritos** | Marcação de estabelecimentos favoritos (roteiros salvos já ficam registrados na tela de roteiros). |
 | **Página inicial** | Hero com foto de fundo e degradê, indicadores calculados dos dados, atalhos para as telas, atrativos com foto em destaque e lista, comércio local, chamada final e rodapé com a logo do projeto. |
 | **Institucional** | Página Sobre com identidade própria no padrão da home: topo com a foto dentro de um círculo com escala de graus (o 360 do nome), índice lateral que acompanha a rolagem, capítulos em coluna de leitura, blocos por público (turistas e moradores, empreendedores), tecnologias por função, chamada final e rodapé. |
@@ -137,6 +141,9 @@ flowchart LR
 - **Componentes de página independentes:** cada tela é um módulo em `src/pages`. Os testes de interface ficam ao lado das telas cobertas.
 - **Conteúdo da home separado:** textos, destaques e atalhos ficam em `src/data/home.js`, e os números da faixa de indicadores são calculados a partir de `dados.js`, sem valores digitados à mão.
 - **Fotos por convenção de nome:** a home procura as imagens em `src/assets/jaboatao/` pelo nome do arquivo. Sem a foto, o bloco aparece sem imagem, sem ícone quebrado.
+- **Mesmo padrão em home, Sobre, Perfil, login e cadastro:** as páginas com topo escuro compartilham `Home.css` (cores, container, botões, chamada final) e `Sobre.css` (topo e índice lateral). A Navbar adaptativa vale para todas elas.
+- **Acesso em um só lugar:** categorias, validações (e-mail e CNPJ) e a gravação da sessão ficam em `src/data/acesso.js`. As páginas `/login` e `/cadastro` usam o mesmo componente (`PaginaAcesso`). Trocar o login demonstrativo por uma API altera uma função, `iniciarSessao`.
+- **Rotas protegidas em um ponto:** `estaLogado()` (em `src/data/acesso.js`) decide quais caminhos aparecem na Navbar e no rodapé, e o componente `Protegida` em `App.jsx` envolve as telas restritas. A checagem fica no frontend, por isso só terá valor real de segurança quando houver backend.
 
 ---
 
@@ -185,10 +192,10 @@ jaboatao-360/
 │   │   │   ├── logo-jaboatao360.webp  # Logo do projeto
 │   │   │   ├── logo-jaboatao360-navbar.webp  # Versão leve da logo para a Navbar
 │   │   │   └── logo-jaboatao360-navbar-branca.webp  # Logo com texto claro, para fundos escuros
-│   │   ├── components/         # Navbar (com Navbar.css), Footer e componentes da home (components/home)
-│   │   ├── data/               # Dados demonstrativos (dados.js) e conteúdo da home (home.js)
+│   │   ├── components/         # Navbar (com Navbar.css), Footer, componentes da home (components/home) e de login e cadastro (components/acesso)
+│   │   ├── data/               # Dados demonstrativos (dados.js), conteúdo da home (home.js) e categorias e validações de acesso (acesso.js)
 │   │   ├── hooks/              # Hooks reutilizáveis (useLocalStorage)
-│   │   ├── pages/              # Telas: Home, Mapa, Roteiros, Comercio, Perfil, Sobre
+│   │   ├── pages/              # Telas: Home, Mapa, Roteiros, Comercio, Perfil, Sobre, Login, Cadastro
 │   │   ├── test/               # Configuração global dos testes
 │   │   ├── App.jsx             # Rotas da aplicação
 │   │   └── main.jsx            # Ponto de entrada
@@ -266,10 +273,12 @@ Recomendações: WebP, 1600 px de largura para o `hero` e 1000 px para os cards,
 | Rota | Tela | Descrição |
 |---|---|---|
 | `/` | Início | Apresentação do projeto e acesso rápido |
-| `/mapa` | Mapa | Mapa interativo dos atrativos |
-| `/roteiros` | Roteiros | Criação e gestão de roteiros |
-| `/comercio` | Comércio local | Vitrine de estabelecimentos e experiências |
-| `/perfil` | Perfil | Conta, preferências e histórico de visitas |
+| `/mapa` | Mapa | Mapa interativo dos atrativos. Exige login |
+| `/roteiros` | Roteiros | Criação e gestão de roteiros. Exige login |
+| `/comercio` | Comércio local | Vitrine de estabelecimentos e experiências. Exige login |
+| `/perfil` | Perfil | Conta, preferências e histórico de visitas. Exige login |
+| `/login` | Entrar | Login por categoria (Turista, Empreendedor e Empresa). Aceita `?categoria=` |
+| `/cadastro` | Cadastro | Criação de conta por categoria. Aceita `?categoria=` |
 | `/sobre` | Sobre | Informações do projeto |
 
 ---
@@ -283,7 +292,8 @@ Enquanto não há backend, as informações ficam no `localStorage` do navegador
 | `j360_roteiros` | Roteiros salvos |
 | `j360_rascunho` | Roteiro em andamento |
 | `j360_favoritos_comercio` | Estabelecimentos favoritados |
-| `j360_conta` | Dados da conta |
+| `j360_conta` | Dados da conta (para empreendedores e empresas, também o negócio, o ramo, o bairro e o CNPJ) |
+| `j360_sessao` | Categoria e e-mail de quem entrou, com a data e a hora. A senha nunca é guardada. Sem essa chave, as telas restritas redirecionam para o login |
 | `j360_preferencias` | Interesses e preferências |
 | `j360_visitas` | Histórico de visitas |
 
@@ -309,9 +319,11 @@ Resultados medidos em 24/11/2026 com Node.js 22.19.0, na revisão [`6711919`](ht
 
 | Comando | Ferramenta | Resultado |
 |---|---|---|
-| `npm run lint` | ESLint 10.13.0 (`eslint .`) | 41 arquivos examinados, 0 erros e 0 avisos |
-| `npm run test` | Vitest 4.1.12 (`vitest run`) | 45 testes aprovados em 8 arquivos |
-| `npm run build` | Vite 8.3.5 (`vite build`) | 104 módulos transformados e 13 arquivos gerados em `dist/`, com 754,86 kB antes de compressão |
+| `npm run lint` | ESLint 10.13.0 (`eslint .`) | 55 arquivos examinados, 0 erros e 0 avisos |
+| `npm run test` | Vitest 4.1.12 (`vitest run`) | 88 testes aprovados em 14 arquivos |
+| `npm run build` | Vite 8.3.5 (`vite build`) | 114 módulos transformados e 13 arquivos gerados em `dist/`, com 773,51 kB antes de compressão |
+
+> **Atenção:** os resultados acima foram medidos na versão 1.7. A tabela de cobertura por arquivo abaixo ainda não foi remedida, porque o pacote `@vitest/coverage-v8` não está instalado no projeto. Rode `npm run lint && npm test && npm run build` em `frontend/` para conferir os números.
 
 #### Testes e cobertura
 
@@ -426,7 +438,7 @@ Exemplo: `fix(roteiros): corrige geração de ids duplicados`
 
 | Fase | Entrega | Situação |
 |---|---|---|
-| **1. MVP web** | Telas de início, mapa, roteiros, comércio, perfil e sobre | Concluída |
+| **1. MVP web** | Telas de início, mapa, roteiros, comércio, perfil, login, cadastro e sobre | Concluída |
 | **2. Qualidade** | Testes automatizados e pipeline de CI | Concluída |
 | **3. Backend** | API REST, banco de dados e autenticação | Planejada |
 | **4. Integração** | Substituir `localStorage` e dados demonstrativos pela API | Planejada |
@@ -440,6 +452,10 @@ Exemplo: `fix(roteiros): corrige geração de ids duplicados`
 
 | Versão | Entrega |
 |---|---|
+| **1.7** | Link "Entrar" oculto na barra depois do login. Regra de senha no cadastro e no login: 6 caracteres ou mais, com uma letra maiúscula, um número e um caractere especial. Documentação atualizada e 88 testes em 14 arquivos. |
+| **1.6** | Acesso restrito: Mapa, Roteiros, Comércio e Perfil só aparecem no menu e no rodapé depois do login ou cadastro, e a URL direta sem sessão leva para `/login`. Botão "Continuar sem conta" removido do login. Verificação em `estaLogado()` e rota protegida em `App.jsx`. Documentação atualizada e 76 testes em 13 arquivos. |
+| **1.5** | Login e cadastro por categoria: Turista (usuário), Empreendedor e Empresa, em `/login` e `/cadastro`, com campos e validações próprios (inclui CNPJ para empresa), senha com botão mostrar/ocultar e link entre as duas telas. Demonstrativos, sem servidor e sem guardar a senha. O Perfil passa a ter as categorias Turista, Empreendedor e Empresa (em lugar de Morador) e o campo do nome do negócio. Link "Entrar" na Navbar. |
+| **1.4** | Redesign da página de Perfil no padrão da home e da Sobre: topo escuro com o avatar em disco com escala de graus, indicadores no topo, índice lateral e seções sem cartões. Emojis removidos; o avatar passa a ser as iniciais em uma de quatro cores da paleta. A Navbar adaptativa passa a valer também em `/perfil`. Rodapé na página. |
 | **1.3** | Redesign da página Sobre com identidade própria: topo com a foto em círculo e escala de graus, índice lateral que acompanha a rolagem, capítulos em coluna de leitura, blocos por público, tecnologias agrupadas por função, chamada final e rodapé. A Navbar adaptativa passa a valer também em `/sobre`. |
 | **1.2** | Redesign da página inicial: hero com foto e degradê, indicadores reais, atalhos, atrativos com foto em destaque, comércio local, chamada final e rodapé global com a logo nova (usado só na home) e logo nova na Navbar, que fica transparente sobre o topo da home e se adapta à cor da seção ao rolar, e favicon novo. Visual mais sóbrio, sem emojis, ícones decorativos ou animações em cada bloco. Links com React Router e sem novas dependências. |
 | **1.1** | Redesign visual "Maré": nova paleta, tipografia, navbar com menu para celular e animações, em todas as telas. |
@@ -470,7 +486,7 @@ O projeto busca contribuir para:
 
 | Documento | Conteúdo |
 |---|---|
-| [`docs/DOCUMENTACAO.md`](docs/DOCUMENTACAO.md) | Telas, arquivos, testes, uso de IA, pipeline, redesign visual e redesign da home (v1.2) |
+| [`docs/DOCUMENTACAO.md`](docs/DOCUMENTACAO.md) | Telas, arquivos, testes, uso de IA, pipeline, redesign visual, redesign da home (v1.2), da Sobre (v1.3) e do Perfil (v1.4) e login e cadastro (v1.5) |
 | [Nova funcionalidade do mapa interativo](docs/MAPA_INTERATIVO.md) | Escolha de lugares por fotos e sugestão de roteiro com horários de visita |
 
 ---

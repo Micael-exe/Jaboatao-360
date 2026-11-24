@@ -1,22 +1,37 @@
 import { useState } from 'react'
 import useLocalStorage from '../hooks/useLocalStorage'
+import CtaBand from '../components/home/CtaBand'
+import Footer from '../components/Footer'
 import { atrativos, interessesDisponiveis } from '../data/dados'
+import './Home.css' // tokens de cor, container, botões e chamada final compartilhados com a home
+import './Sobre.css' // topo com escala de graus, índice lateral e títulos de seção
+import './Perfil.css'
 
-const abas = [
-  { id: 'conta', label: '👤 Conta' },
-  { id: 'preferencias', label: '⚙️ Preferências' },
-  { id: 'historico', label: '📖 Histórico de visitas' },
+const secoes = [
+  { id: 'conta', rotulo: 'Conta' },
+  { id: 'preferencias', rotulo: 'Preferências' },
+  { id: 'historico', rotulo: 'Histórico de visitas' },
 ]
 
-const avatares = ['😀', '🧑‍🌾', '🧳', '🏖️', '🦜', '🌴']
+// Cores do avatar: todas vêm da paleta do projeto
+const tonsAvatar = [
+  { id: 'espuma', rotulo: 'Espuma' },
+  { id: 'sol', rotulo: 'Sol' },
+  { id: 'vivo', rotulo: 'Verde-maré' },
+  { id: 'claro', rotulo: 'Verde claro' },
+]
 
 const contaInicial = {
   nome: 'Visitante Jaboatão',
   email: 'visitante@exemplo.com',
   cidade: 'Jaboatão dos Guararapes',
-  tipoUsuario: 'Morador',
-  avatar: '😀',
+  tipoUsuario: 'Turista',
+  avatar: 'espuma',
 }
+
+const tiposConta = ['Turista', 'Empreendedor', 'Empresa']
+// Valores antigos (como "Morador") caem em Turista
+const tipoValido = (tipo) => (tiposConta.includes(tipo) ? tipo : 'Turista')
 
 const preferenciasIniciais = {
   interesses: ['praias', 'historia'],
@@ -30,8 +45,21 @@ const visitasIniciais = [
   { id: 2, atrativoId: 'a-4', data: '2026-08-02', nota: 'Visita guiada muito boa.' },
 ]
 
-const inputClasse =
-  'input'
+const notificacoes = [
+  ['novidades', 'Novidades e novos atrativos'],
+  ['roteiros', 'Lembretes dos meus roteiros'],
+  ['comercio', 'Ofertas do comércio local'],
+]
+
+const iniciais = (nome) => {
+  const partes = nome.trim().split(/\s+/).filter(Boolean)
+  if (partes.length === 0) return 'J'
+  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : ''
+  return (partes[0][0] + ultima).toUpperCase()
+}
+
+// Valores antigos (emoji salvo no navegador) caem na cor padrão
+const tomValido = (tom) => (tonsAvatar.some((t) => t.id === tom) ? tom : 'espuma')
 
 export default function Perfil() {
   const [aba, setAba] = useState('conta')
@@ -45,7 +73,7 @@ export default function Perfil() {
   const [salvoConta, setSalvoConta] = useState(false)
   const [novaVisita, setNovaVisita] = useState({ atrativoId: atrativos[0].id, data: '', nota: '' })
 
-  const nomeAtrativo = (id) => atrativos.find((a) => a.id === id)
+  const buscarAtrativo = (id) => atrativos.find((a) => a.id === id)
 
   const salvarConta = (e) => {
     e.preventDefault()
@@ -78,291 +106,331 @@ export default function Perfil() {
   const visitasOrdenadas = [...visitas].sort((a, b) => b.data.localeCompare(a.data))
   const atrativosUnicos = new Set(visitas.map((v) => v.atrativoId)).size
 
-  const estatisticas = [
-    { emoji: '📍', valor: visitas.length, label: 'Visitas' },
-    { emoji: '🗺️', valor: `${atrativosUnicos}/${atrativos.length}`, label: 'Atrativos conhecidos' },
-    { emoji: '🧭', valor: roteiros.length, label: 'Roteiros salvos' },
-    { emoji: '❤️', valor: favoritos.length, label: 'Favoritos' },
+  const numeros = [
+    { valor: visitas.length, rotulo: 'Visitas' },
+    { valor: `${atrativosUnicos}/${atrativos.length}`, rotulo: 'Atrativos conhecidos' },
+    { valor: roteiros.length, rotulo: 'Roteiros salvos' },
+    { valor: favoritos.length, rotulo: 'Favoritos' },
   ]
 
   return (
-    <main className="page">
-      <h1 className="page-title">Perfil do usuário</h1>
-      <p className="page-lead">
-        Gerencie sua conta, ajuste suas preferências e acompanhe os lugares que já visitou.
-      </p>
-
-      <div className="notice">
-        Dados demonstrativos — as informações ficam salvas apenas neste navegador, sem login real.
-      </div>
-
-      {/* Cabeçalho do perfil */}
-      <section className="panel mb-6">
-        <div className="flex items-center gap-4 mb-5">
-          <div className="text-5xl bg-green-50 border border-green-200 rounded-full w-20 h-20 flex items-center justify-center">
-            {conta.avatar}
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-800">{conta.nome}</h2>
-            <p className="text-sm text-gray-500">{conta.email}</p>
-            <span className="tag">
-              {conta.tipoUsuario}
-            </span>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {estatisticas.map((s) => (
-            <div key={s.label} className="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
-              <div className="text-2xl">{s.emoji}</div>
-              <div className="text-xl font-bold text-green-700">{s.valor}</div>
-              <div className="text-xs text-gray-600">{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Abas */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {abas.map((a) => (
-          <button
-            key={a.id}
-            onClick={() => setAba(a.id)}
-            className={`chip ${aba === a.id ? 'chip-on' : ''}`}
-          >
-            {a.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Conta */}
-      {aba === 'conta' && (
-        <form
-          onSubmit={salvarConta}
-          className="panel space-y-4"
-        >
-          <h2 className="text-xl font-bold text-gray-800">Dados da conta</h2>
-
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-2">Avatar</label>
-            <div className="flex gap-2">
-              {avatares.map((a) => (
-                <button
-                  type="button"
-                  key={a}
-                  onClick={() => setFormConta({ ...formConta, avatar: a })}
-                  className={`avatar-btn ${formConta.avatar === a ? 'avatar-on' : ''}`}
-                >
-                  {a}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="home sobre perfil">
+      <main>
+        <section className="sobre-hero" aria-labelledby="perfil-titulo-pagina" data-nav-tema="escura">
+          <div className="home-container sobre-hero-grid">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Nome</label>
-              <input
-                className={inputClasse}
-                value={formConta.nome}
-                onChange={(e) => setFormConta({ ...formConta, nome: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">E-mail</label>
-              <input
-                type="email"
-                className={inputClasse}
-                value={formConta.email}
-                onChange={(e) => setFormConta({ ...formConta, email: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Cidade</label>
-              <input
-                className={inputClasse}
-                value={formConta.cidade}
-                onChange={(e) => setFormConta({ ...formConta, cidade: e.target.value })}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Perfil</label>
-              <select
-                className={inputClasse}
-                value={formConta.tipoUsuario}
-                onChange={(e) => setFormConta({ ...formConta, tipoUsuario: e.target.value })}
-              >
-                <option>Morador</option>
-                <option>Turista</option>
-                <option>Empreendedor</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              type="submit"
-              className="btn"
-            >
-              Salvar alterações
-            </button>
-            {salvoConta && <span className="text-sm text-green-700">✅ Dados atualizados!</span>}
-          </div>
-        </form>
-      )}
-
-      {/* Preferências */}
-      {aba === 'preferencias' && (
-        <div className="space-y-6">
-          <section className="panel">
-            <h2 className="text-xl font-bold text-gray-800 mb-3">Meus interesses</h2>
-            <div className="flex flex-wrap gap-2">
-              {interessesDisponiveis.map((i) => {
-                const ativo = prefs.interesses.includes(i.id)
-                return (
-                  <button
-                    key={i.id}
-                    onClick={() => alternarInteresse(i.id)}
-                    className={`chip ${ativo ? 'chip-on' : ''}`}
-                  >
-                    {i.emoji} {i.label}
-                  </button>
-                )
-              })}
-            </div>
-          </section>
-
-          <section className="panel grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
-                Ritmo dos passeios
-              </label>
-              <select
-                className={inputClasse}
-                value={prefs.ritmo}
-                onChange={(e) => setPrefs({ ...prefs, ritmo: e.target.value })}
-              >
-                <option value="tranquilo">Tranquilo (poucas paradas)</option>
-                <option value="moderado">Moderado</option>
-                <option value="intenso">Intenso (muitas paradas)</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
-                Faixa de gastos
-              </label>
-              <select
-                className={inputClasse}
-                value={prefs.orcamento}
-                onChange={(e) => setPrefs({ ...prefs, orcamento: e.target.value })}
-              >
-                <option value="$">$ — Econômico</option>
-                <option value="$$">$$ — Intermediário</option>
-                <option value="$$$">$$$ — Premium</option>
-              </select>
-            </div>
-          </section>
-
-          <section className="panel">
-            <h2 className="text-xl font-bold text-gray-800 mb-3">Notificações</h2>
-            <div className="space-y-2 text-sm text-gray-700">
-              {[
-                ['novidades', 'Novidades e novos atrativos'],
-                ['roteiros', 'Lembretes dos meus roteiros'],
-                ['comercio', 'Ofertas do comércio local'],
-              ].map(([chave, label]) => (
-                <label key={chave} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={prefs.notificacoes[chave]}
-                    onChange={() => alternarNotificacao(chave)}
-                    className="accent-green-700 w-4 h-4"
-                  />
-                  {label}
-                </label>
-              ))}
-            </div>
-            <p className="text-xs text-gray-400 mt-4">As alterações são salvas automaticamente.</p>
-          </section>
-        </div>
-      )}
-
-      {/* Histórico */}
-      {aba === 'historico' && (
-        <div className="space-y-6">
-          <form
-            onSubmit={registrarVisita}
-            className="panel"
-          >
-            <h2 className="text-xl font-bold text-gray-800 mb-3">Registrar nova visita</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-              <select
-                className={inputClasse}
-                value={novaVisita.atrativoId}
-                onChange={(e) => setNovaVisita({ ...novaVisita, atrativoId: e.target.value })}
-              >
-                {atrativos.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.emoji} {a.nome}
-                  </option>
+              <p className="perfil-eyebrow">Perfil</p>
+              <h1 id="perfil-titulo-pagina" className="sobre-hero-titulo">{conta.nome}</h1>
+              <p className="sobre-hero-texto">
+                {tipoValido(conta.tipoUsuario)}
+                {conta.cidade ? `, ${conta.cidade}` : ''}. {conta.email}
+              </p>
+              <dl className="home-stats" aria-label="Seu resumo no Jaboatão 360">
+                {numeros.map(({ valor, rotulo }) => (
+                  <div key={rotulo} className="home-stat">
+                    <dt>{rotulo}</dt>
+                    <dd>{valor}</dd>
+                  </div>
                 ))}
-              </select>
-              <input
-                type="date"
-                className={inputClasse}
-                value={novaVisita.data}
-                onChange={(e) => setNovaVisita({ ...novaVisita, data: e.target.value })}
-                required
-              />
+              </dl>
             </div>
-            <input
-              className={`${inputClasse} mb-3`}
-              placeholder="Anotação (opcional)"
-              value={novaVisita.nota}
-              onChange={(e) => setNovaVisita({ ...novaVisita, nota: e.target.value })}
-            />
-            <button
-              type="submit"
-              className="btn"
-            >
-              + Registrar visita
-            </button>
-          </form>
 
-          <section>
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Visitas realizadas</h2>
-            {visitasOrdenadas.length === 0 ? (
-              <p className="text-gray-500 text-sm">Nenhuma visita registrada ainda.</p>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {visitasOrdenadas.map((v) => {
-                  const a = nomeAtrativo(v.atrativoId)
-                  return (
-                    <div
-                      key={v.id}
-                      className="card"
+            {/* O avatar vira um disco dentro da escala de graus, como na página Sobre */}
+            <div className="sobre-disco perfil-disco">
+              <span className="sobre-dial" aria-hidden="true" />
+              <span className={`perfil-avatar perfil-tom--${tomValido(conta.avatar)}`} aria-hidden="true">
+                {iniciais(conta.nome)}
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <div className="home-section sobre-corpo" data-nav-tema="clara">
+          <div className="home-container sobre-grid">
+            <nav className="sobre-indice perfil-indice" aria-label="Seções do perfil">
+              <p className="sobre-indice-titulo">Seu perfil</p>
+              <ul>
+                {secoes.map(({ id, rotulo }) => (
+                  <li key={id}>
+                    <button
+                      type="button"
+                      onClick={() => setAba(id)}
+                      aria-current={aba === id ? 'true' : undefined}
                     >
-                      <div className="tile">{a?.emoji}</div>
-                      <span className="tag">
-                        {new Date(v.data + 'T00:00:00').toLocaleDateString('pt-BR')}
-                      </span>
-                      <h3 className="text-lg font-bold text-gray-800 mt-1 mb-2">{a?.nome}</h3>
-                      {v.nota && <p className="text-gray-500 text-sm mb-3">“{v.nota}”</p>}
-                      <button
-                        onClick={() => setVisitas((lista) => lista.filter((x) => x.id !== v.id))}
-                        className="text-sm text-red-600 font-medium hover:underline"
-                      >
-                        Remover
+                      {rotulo}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div className="perfil-conteudo">
+              <p className="notice">
+                Dados demonstrativos: as informações ficam salvas apenas neste navegador, sem login real.
+              </p>
+
+              {aba === 'conta' && (
+                <section aria-labelledby="perfil-conta-titulo">
+                  <h2 id="perfil-conta-titulo" className="sobre-h2">Dados da conta</h2>
+                  <form onSubmit={salvarConta} className="perfil-form">
+                    <fieldset className="perfil-tons">
+                      <legend>Cor do avatar</legend>
+                      <div className="perfil-tons-lista">
+                        {tonsAvatar.map((t) => (
+                          <button
+                            type="button"
+                            key={t.id}
+                            aria-label={`Cor do avatar: ${t.rotulo}`}
+                            aria-pressed={tomValido(formConta.avatar) === t.id}
+                            onClick={() => setFormConta({ ...formConta, avatar: t.id })}
+                            className={`perfil-tom perfil-tom--${t.id}`}
+                          />
+                        ))}
+                      </div>
+                    </fieldset>
+
+                    <div className="perfil-campos">
+                      <div className="perfil-campo">
+                        <label htmlFor="perfil-nome">Nome</label>
+                        <input
+                          id="perfil-nome"
+                          className="input"
+                          value={formConta.nome}
+                          onChange={(e) => setFormConta({ ...formConta, nome: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="perfil-campo">
+                        <label htmlFor="perfil-email">E-mail</label>
+                        <input
+                          id="perfil-email"
+                          type="email"
+                          className="input"
+                          value={formConta.email}
+                          onChange={(e) => setFormConta({ ...formConta, email: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="perfil-campo">
+                        <label htmlFor="perfil-cidade">Cidade</label>
+                        <input
+                          id="perfil-cidade"
+                          className="input"
+                          value={formConta.cidade}
+                          onChange={(e) => setFormConta({ ...formConta, cidade: e.target.value })}
+                        />
+                      </div>
+                      <div className="perfil-campo">
+                        <label htmlFor="perfil-tipo">Perfil</label>
+                        <select
+                          id="perfil-tipo"
+                          className="input"
+                          value={tipoValido(formConta.tipoUsuario)}
+                          onChange={(e) => setFormConta({ ...formConta, tipoUsuario: e.target.value })}
+                        >
+                          {tiposConta.map((t) => (
+                            <option key={t}>{t}</option>
+                          ))}
+                        </select>
+                      </div>
+                      {tipoValido(formConta.tipoUsuario) !== 'Turista' && (
+                        <div className="perfil-campo">
+                          <label htmlFor="perfil-negocio">
+                            {tipoValido(formConta.tipoUsuario) === 'Empresa' ? 'Nome da empresa' : 'Nome do negócio'}
+                          </label>
+                          <input
+                            id="perfil-negocio"
+                            className="input"
+                            value={formConta.negocio ?? ''}
+                            onChange={(e) => setFormConta({ ...formConta, negocio: e.target.value })}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="perfil-acoes">
+                      <button type="submit" className="home-btn home-btn--verde">
+                        Salvar alterações
+                      </button>
+                      {salvoConta && (
+                        <span className="perfil-status" role="status">Dados atualizados.</span>
+                      )}
+                    </div>
+                  </form>
+                </section>
+              )}
+
+              {aba === 'preferencias' && (
+                <section aria-labelledby="perfil-prefs-titulo">
+                  <h2 id="perfil-prefs-titulo" className="sobre-h2">Preferências</h2>
+
+                  <div className="perfil-bloco">
+                    <h3 className="perfil-h3">Meus interesses</h3>
+                    <div className="perfil-chips">
+                      {interessesDisponiveis.map((i) => {
+                        const ativo = prefs.interesses.includes(i.id)
+                        return (
+                          <button
+                            type="button"
+                            key={i.id}
+                            aria-pressed={ativo}
+                            onClick={() => alternarInteresse(i.id)}
+                            className={`chip ${ativo ? 'chip-on' : ''}`}
+                          >
+                            {i.label}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="perfil-bloco">
+                    <h3 className="perfil-h3">Passeios</h3>
+                    <div className="perfil-campos">
+                      <div className="perfil-campo">
+                        <label htmlFor="perfil-ritmo">Ritmo dos passeios</label>
+                        <select
+                          id="perfil-ritmo"
+                          className="input"
+                          value={prefs.ritmo}
+                          onChange={(e) => setPrefs({ ...prefs, ritmo: e.target.value })}
+                        >
+                          <option value="tranquilo">Tranquilo (poucas paradas)</option>
+                          <option value="moderado">Moderado</option>
+                          <option value="intenso">Intenso (muitas paradas)</option>
+                        </select>
+                      </div>
+                      <div className="perfil-campo">
+                        <label htmlFor="perfil-orcamento">Faixa de gastos</label>
+                        <select
+                          id="perfil-orcamento"
+                          className="input"
+                          value={prefs.orcamento}
+                          onChange={(e) => setPrefs({ ...prefs, orcamento: e.target.value })}
+                        >
+                          <option value="$">$ — Econômico</option>
+                          <option value="$$">$$ — Intermediário</option>
+                          <option value="$$$">$$$ — Premium</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="perfil-bloco">
+                    <h3 className="perfil-h3">Notificações</h3>
+                    <ul className="sobre-lista perfil-notificacoes">
+                      {notificacoes.map(([chave, rotulo]) => (
+                        <li key={chave}>
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={prefs.notificacoes[chave]}
+                              onChange={() => alternarNotificacao(chave)}
+                            />
+                            {rotulo}
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="perfil-nota">As alterações são salvas automaticamente.</p>
+                  </div>
+                </section>
+              )}
+
+              {aba === 'historico' && (
+                <section aria-labelledby="perfil-hist-titulo">
+                  <h2 id="perfil-hist-titulo" className="sobre-h2">Histórico de visitas</h2>
+
+                  <form onSubmit={registrarVisita} className="perfil-form perfil-bloco">
+                    <h3 className="perfil-h3">Registrar nova visita</h3>
+                    <div className="perfil-campos">
+                      <div className="perfil-campo">
+                        <label htmlFor="visita-atrativo">Atrativo</label>
+                        <select
+                          id="visita-atrativo"
+                          className="input"
+                          value={novaVisita.atrativoId}
+                          onChange={(e) => setNovaVisita({ ...novaVisita, atrativoId: e.target.value })}
+                        >
+                          {atrativos.map((a) => (
+                            <option key={a.id} value={a.id}>{a.nome}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="perfil-campo">
+                        <label htmlFor="visita-data">Data da visita</label>
+                        <input
+                          id="visita-data"
+                          type="date"
+                          className="input"
+                          value={novaVisita.data}
+                          onChange={(e) => setNovaVisita({ ...novaVisita, data: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="perfil-campo">
+                      <label htmlFor="visita-nota">Anotação (opcional)</label>
+                      <input
+                        id="visita-nota"
+                        className="input"
+                        value={novaVisita.nota}
+                        onChange={(e) => setNovaVisita({ ...novaVisita, nota: e.target.value })}
+                      />
+                    </div>
+                    <div className="perfil-acoes">
+                      <button type="submit" className="home-btn home-btn--verde">
+                        + Registrar visita
                       </button>
                     </div>
-                  )
-                })}
-              </div>
-            )}
-          </section>
+                  </form>
+
+                  <div className="perfil-bloco">
+                    <h3 className="perfil-h3">Visitas realizadas</h3>
+                    {visitasOrdenadas.length === 0 ? (
+                      <p className="perfil-vazio">Nenhuma visita registrada ainda.</p>
+                    ) : (
+                      <ul className="perfil-visitas">
+                        {visitasOrdenadas.map((v) => {
+                          const a = buscarAtrativo(v.atrativoId)
+                          return (
+                            <li key={v.id} className="perfil-visita">
+                              <p className="perfil-visita-data">
+                                {new Date(v.data + 'T00:00:00').toLocaleDateString('pt-BR')}
+                              </p>
+                              <div className="perfil-visita-corpo">
+                                <h4 className="perfil-visita-nome">{a?.nome}</h4>
+                                {a && (
+                                  <p className="perfil-visita-meta">{a.categoria}, {a.bairro}</p>
+                                )}
+                                {v.nota && <p className="perfil-visita-nota">“{v.nota}”</p>}
+                              </div>
+                              <button
+                                type="button"
+                                className="perfil-remover"
+                                onClick={() => setVisitas((lista) => lista.filter((x) => x.id !== v.id))}
+                              >
+                                Remover
+                              </button>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                </section>
+              )}
+            </div>
+          </div>
         </div>
-      )}
-    </main>
+
+        <CtaBand
+          titulo="Monte seu próximo roteiro"
+          texto="Escolha os lugares que quer visitar e salve o roteiro para consultar depois."
+          acao={{ to: '/roteiros', rotulo: 'Montar roteiro' }}
+        />
+      </main>
+      <Footer />
+    </div>
   )
 }
