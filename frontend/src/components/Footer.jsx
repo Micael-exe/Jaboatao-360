@@ -1,17 +1,22 @@
 import { Link } from 'react-router-dom'
 import logo from '../assets/logo-jaboatao360.webp'
+import { estaLogado } from '../data/acesso'
 import './Footer.css'
 
+// 'restrito' indica os caminhos que só aparecem depois do login ou cadastro
 const links = [
   { to: '/', rotulo: 'Início' },
-  { to: '/mapa', rotulo: 'Mapa' },
-  { to: '/roteiros', rotulo: 'Roteiros' },
-  { to: '/comercio', rotulo: 'Comércio local' },
-  { to: '/perfil', rotulo: 'Perfil' },
+  { to: '/mapa', rotulo: 'Mapa', restrito: true },
+  { to: '/roteiros', rotulo: 'Roteiros', restrito: true },
+  { to: '/comercio', rotulo: 'Comércio local', restrito: true },
+  { to: '/perfil', rotulo: 'Perfil', restrito: true },
   { to: '/sobre', rotulo: 'Sobre' },
 ]
 
 export default function Footer() {
+  const logado = estaLogado()
+  const linksVisiveis = links.filter(({ restrito }) => logado || !restrito)
+
   return (
     <footer className="foot" data-nav-tema="clara">
       <div className="foot-container">
@@ -34,7 +39,7 @@ export default function Footer() {
           <nav aria-label="Rodapé">
             <p className="foot-titulo">Navegue</p>
             <ul className="foot-lista">
-              {links.map((l) => (
+              {linksVisiveis.map((l) => (
                 <li key={l.to}>
                   <Link to={l.to}>{l.rotulo}</Link>
                 </li>

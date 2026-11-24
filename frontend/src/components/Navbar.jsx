@@ -2,23 +2,26 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import logoColorida from '../assets/logo-jaboatao360-navbar.webp'
 import logoBranca from '../assets/logo-jaboatao360-navbar-branca.webp'
+import { estaLogado } from '../data/acesso'
 import './Navbar.css'
 
+// 'restrito' indica os caminhos que só aparecem depois do login ou cadastro
 const links = [
   { to: '/', label: 'Início' },
-  { to: '/mapa', label: 'Mapa' },
-  { to: '/roteiros', label: 'Roteiros' },
-  { to: '/comercio', label: 'Comércio' },
-  { to: '/perfil', label: 'Perfil' },
+  { to: '/mapa', label: 'Mapa', restrito: true },
+  { to: '/roteiros', label: 'Roteiros', restrito: true },
+  { to: '/comercio', label: 'Comércio', restrito: true },
+  { to: '/perfil', label: 'Perfil', restrito: true },
   { to: '/sobre', label: 'Sobre' },
+  { to: '/login', label: 'Entrar', visitante: true },
 ]
 
 export default function Navbar() {
   const { pathname } = useLocation()
   const [aberto, setAberto] = useState(false)
   const barra = useRef(null)
-  // Páginas com topo em foto: início e sobre. Nas demais, a barra continua clara e fixa no fluxo
-  const naHome = pathname === '/' || pathname === '/sobre'
+  // Páginas com topo escuro: início, sobre, perfil, login e cadastro. Nas demais, a barra continua clara e fixa no fluxo
+  const naHome = pathname === '/' || pathname === '/sobre' || pathname === '/perfil' || pathname === '/login' || pathname === '/cadastro'
 
   // Nas páginas com topo em foto: a barra fica transparente sobre o topo e, ao rolar, encolhe e assume o tom
   // da seção que está por baixo dela. Cada seção declara seu tom em data-nav-tema.
@@ -56,6 +59,10 @@ export default function Navbar() {
       window.removeEventListener('resize', agendar)
     }
   }, [naHome])
+
+  const logado = estaLogado()
+  // 'visitante' são os caminhos de quem ainda não entrou; 'restrito', os que exigem login
+  const linksVisiveis = links.filter(({ restrito, visitante }) => (logado ? !visitante : !restrito))
 
   const classeHome = naHome ? `nav--home nav--${tema} ${rolou ? 'nav--rolou' : ''}` : ''
 
@@ -98,7 +105,7 @@ export default function Navbar() {
         <div
           className={`nav-menu ${aberto ? 'flex' : 'hidden'} md:flex absolute md:static left-0 right-0 top-full flex-col md:flex-row gap-1 md:gap-7 px-5 py-4 md:p-0 bg-[#f6f9f8] md:bg-transparent border-b border-gray-200 md:border-0`}
         >
-          {links.map(({ to, label }) => (
+          {linksVisiveis.map(({ to, label }) => (
             <Link
               key={to}
               to={to}

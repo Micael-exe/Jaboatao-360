@@ -1,0 +1,96 @@
+/* Página Perfil. Reaproveita os tokens de Home.css e o topo, o índice e os títulos de Sobre.css
+   (a página usa as classes .home e .sobre). Somente cores da paleta do projeto. */
+
+/* Topo */
+.perfil-eyebrow {
+  margin-bottom: 0.75rem; font-size: 0.875rem; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--h-sol);
+}
+.perfil .sobre-hero-titulo { max-width: 18ch; overflow-wrap: anywhere; }
+.perfil .home-stats { margin-top: 2rem; }
+
+/* Avatar: iniciais dentro do disco com a escala de graus */
+.perfil-disco { width: min(13rem, 56vw); }
+.perfil-avatar {
+  display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%;
+  font-family: var(--font-display, inherit); font-size: clamp(3rem, 9vw, 5rem); font-weight: 600; letter-spacing: -0.03em;
+}
+@media (min-width: 900px) { .perfil-disco { width: min(16rem, 100%); } }
+
+.perfil-tom--espuma { background: var(--h-espuma); color: var(--h-mare); }
+.perfil-tom--sol { background: var(--h-sol); color: var(--h-mare); }
+.perfil-tom--vivo { background: var(--h-verde-vivo); color: var(--h-branco); }
+.perfil-tom--claro { background: var(--color-green-300, #9fd1c5); color: var(--h-mare); }
+
+/* Índice lateral com botões (mesmo desenho do índice da Sobre) */
+.perfil-indice button {
+  display: block; width: 100%; white-space: nowrap; padding: 0.35rem 0.85rem; cursor: pointer;
+  border: 1px solid var(--h-borda); border-radius: 999px; background: none;
+  font: inherit; font-size: 0.9375rem; color: var(--h-texto); text-align: left;
+}
+.perfil-indice button:hover { border-color: var(--h-verde); color: var(--h-verde); }
+.perfil-indice button[aria-current] { border-color: var(--h-verde); background: var(--h-verde); color: var(--h-branco); }
+@media (min-width: 1024px) {
+  .perfil-indice button {
+    margin-left: -1px; padding: 0.4rem 0 0.4rem 1rem; border: 0; border-left: 2px solid transparent;
+    border-radius: 0; white-space: normal;
+  }
+  .perfil-indice button:hover { border-left-color: var(--color-green-300, #9fd1c5); }
+  .perfil-indice button[aria-current] { border-left-color: var(--h-verde); background: none; color: var(--h-verde); font-weight: 600; }
+}
+
+/* Conteúdo */
+.perfil-conteudo { min-width: 0; }
+.perfil .notice { margin-bottom: 2rem; }
+.perfil-bloco + .perfil-bloco, .perfil-form.perfil-bloco + .perfil-bloco { margin-top: 2.5rem; padding-top: 2.5rem; border-top: 1px solid var(--h-borda); }
+.perfil-h3 { margin-bottom: 1rem; font-size: 1.25rem; color: var(--h-titulo); }
+
+/* Formulários */
+.perfil-form { display: grid; gap: 1.5rem; max-width: 40rem; }
+.perfil-form.perfil-bloco { margin-top: 0; }
+.perfil-campos { display: grid; gap: 1.25rem; max-width: 40rem; }
+@media (min-width: 640px) { .perfil-campos { grid-template-columns: 1fr 1fr; } }
+.perfil-campo label, .perfil-tons legend { display: block; margin-bottom: 0.4rem; font-size: 0.9375rem; font-weight: 600; color: var(--h-titulo); }
+.perfil .input { min-height: 2.75rem; border-radius: 0.5rem; font-size: 1rem; }
+.perfil-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+.home-btn--verde { background: var(--h-verde); color: var(--h-branco); cursor: pointer; }
+.home-btn--verde:hover { background: var(--h-verde-esc, #0c4e47); }
+.perfil-status { font-size: 0.9375rem; font-weight: 600; color: var(--h-verde); }
+
+.perfil-tons { margin: 0; padding: 0; border: 0; }
+.perfil-tons legend { padding: 0; }
+.perfil-tons-lista { display: flex; gap: 0.75rem; }
+.perfil-tom {
+  width: 2.75rem; height: 2.75rem; cursor: pointer; border: 1px solid var(--h-borda); border-radius: 50%;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+.perfil-tom:hover { transform: scale(1.06); }
+.perfil-tom[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--h-branco), 0 0 0 4px var(--h-verde); }
+
+/* Preferências */
+.perfil-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.perfil .chip { min-height: 2.5rem; padding-inline: 1.1rem; font-size: 0.9375rem; }
+.perfil-notificacoes { max-width: 40rem; }
+.perfil-notificacoes label { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
+.perfil-notificacoes input { flex: none; width: 1.15rem; height: 1.15rem; accent-color: var(--h-verde); }
+.perfil-nota { margin-top: 1rem; font-size: 0.875rem; color: var(--h-texto-2); }
+
+/* Histórico: linhas com filete, como a lista de atrativos da home */
+.perfil-visitas { list-style: none; margin: 0; padding: 0; max-width: 44rem; }
+.perfil-visita {
+  display: grid; gap: 0.5rem 1.5rem; padding: 1.1rem 0; border-top: 1px solid var(--h-borda);
+}
+.perfil-visita:last-child { border-bottom: 1px solid var(--h-borda); }
+.perfil-visita-data { font-size: 0.875rem; font-weight: 600; color: var(--h-verde); }
+.perfil-visita-nome { font-family: var(--font-display, inherit); font-size: 1.1875rem; line-height: 1.25; color: var(--h-titulo); }
+.perfil-visita-meta { margin-top: 0.15rem; font-size: 0.875rem; color: var(--h-texto-2); }
+.perfil-visita-nota { margin-top: 0.5rem; line-height: 1.55; color: var(--h-texto); }
+.perfil-remover {
+  justify-self: start; align-self: start; padding: 0.25rem 0; border: 0; background: none; cursor: pointer;
+  font: inherit; font-size: 0.9375rem; font-weight: 600; color: var(--color-red-600, #c2412d); text-underline-offset: 4px;
+}
+.perfil-remover:hover { text-decoration: underline; }
+.perfil-vazio { color: var(--h-texto-2); }
+@media (min-width: 640px) {
+  .perfil-visita { grid-template-columns: 6rem 1fr auto; align-items: start; }
+}

@@ -2,7 +2,7 @@
 
 Projeto **Jaboatão 360** · Frontend (React + Vite + Tailwind)
 
-Versão da documentação: **1.3** · Atualizado em 18/11/2026
+Versão da documentação: **1.7** · Atualizado em 24/11/2026
 
 Este documento resume o que foi desenvolvido nesta entrega: três novas telas, testes automatizados, o uso de IA para apoiar os cenários de teste e a pipeline do GitHub Actions.
 
@@ -50,6 +50,8 @@ Gerenciamento da conta, preferências e histórico de visitas.
 - **Conta:** nome, e-mail, cidade, tipo de perfil e avatar.
 - **Preferências:** interesses, ritmo dos passeios, faixa de gastos e notificações (salvas automaticamente).
 - **Histórico de visitas:** registrar e remover visitas.
+
+A tela foi redesenhada na versão 1.4 (seção 13) e ganhou as categorias Turista, Empreendedor e Empresa na versão 1.5 (seção 14). A descrição acima é a da versão 1.0.
 
 ### 2.4 Armazenamento
 Como ainda não há backend, os dados ficam no `localStorage` do navegador (chaves iniciadas por `j360_`). Os dados de exemplo ficam centralizados em `src/data/dados.js`, o que facilita trocar por chamadas à API no futuro.
@@ -191,7 +193,7 @@ No GitHub: **Settings → Branches → Add branch protection rule** na `main` �
 
 ## 8. Limitações e próximos passos
 
-- Os dados são demonstrativos e ficam só no navegador; não há login nem sincronização.
+- Os dados são demonstrativos e ficam só no navegador; não há sincronização. O login e o cadastro existem desde a versão 1.5, mas são demonstrativos (seção 14).
 - Ainda não há testes de ponta a ponta (E2E) nem de cobertura mínima; podem entrar em uma próxima etapa.
 - Quando o backend existir, trocar `dados.js` e o `useLocalStorage` por chamadas à API (já há `axios` instalado) e adicionar um job de testes do backend na pipeline.
 - A pipeline usa `npm install`. Depois que o `package-lock.json` estiver atualizado e commitado, pode-se trocar por `npm ci`, que é mais rápido e reprodutível.
@@ -335,7 +337,7 @@ Os degradês sobre as fotos usam o verde profundo `#0c3b38` com transparência. 
 
 ### 10.5 Rodapé global
 
-`src/components/Footer.jsx` tem a logo, a navegação (Início, Mapa, Roteiros, Comércio local, Perfil e Sobre), uma nota de que os dados são demonstrativos e o ano atual. O fundo é claro para combinar com a logo. Ele é chamado em `Home.jsx` e `Sobre.jsx`. Para usá-lo em todas as telas, renderize-o em `App.jsx` após as rotas e remova as chamadas dessas duas páginas para não duplicar.
+`src/components/Footer.jsx` tem a logo, a navegação (Início, Mapa, Roteiros, Comércio local, Perfil e Sobre), uma nota de que os dados são demonstrativos e o ano atual. O fundo é claro para combinar com a logo. Ele é chamado em `Home.jsx`, `Sobre.jsx`, `Perfil.jsx` e `PaginaAcesso.jsx` (login e cadastro). Para usá-lo em todas as telas, renderize-o em `App.jsx` após as rotas e remova as chamadas dessas duas páginas para não duplicar.
 
 ### 10.6 Acessibilidade
 
@@ -408,6 +410,10 @@ Para evitar o aspecto de página gerada por modelo, a home foi simplificada:
 
 | Versão | Seções | Resumo |
 |---|---|---|
+| **1.7** | 16 | Link "Entrar" oculto depois do login e regra de senha (maiúscula, número e caractere especial) no cadastro e no login |
+| **1.6** | 15 | Acesso restrito ao mapa, roteiros, comércio e perfil (menu, rodapé e rotas), botão "Continuar sem conta" removido e documentação e testes atualizados |
+| **1.5** | 14 | Login e cadastro por categoria (Turista, Empreendedor e Empresa), categorias novas no Perfil e link "Entrar" na Navbar |
+| **1.4** | 13 | Redesign da página de Perfil no padrão da home e da Sobre, sem emojis, com índice lateral |
 | **1.3** | 12 | Redesign da página Sobre no padrão da home e Navbar adaptativa também em `/sobre` |
 | **1.2** | 10 | Redesign da página inicial com fotos e degradê, logo nova, rodapé global (só na home) e visual mais sóbrio |
 | **1.1** | 9 | Redesign visual "Maré" em todo o frontend (paleta, tipografia, navbar, animações) |
@@ -483,3 +489,361 @@ README.md                           (alterado — versão 1.3, Institucional e h
 - **Acoplamento:** a Sobre depende de `Home.css`. Se a home mudar, a Sobre acompanha.
 - **Fotos:** a foto da igreja aparece na home e no topo da Sobre, e a do lago aparece no topo da home e na proposta da Sobre. Falta confirmar que a da igreja mostra a Igreja de Nossa Senhora do Pilar, descobrir o local da do lago e definir licença e crédito das duas.
 - **Conteúdo novo:** revise o título do topo e as listas de benefícios, escritos a partir dos textos do projeto.
+
+---
+
+## 13. Redesign da página de Perfil (versão 1.4)
+
+Esta etapa redesenhou a página de Perfil (`/perfil`) para seguir o padrão da home e da Sobre: topo escuro em degradê, tipografia, botões, Navbar adaptativa, chamada final e rodapé. A lógica, as chaves do `localStorage` e os dados da página foram mantidos. As mudanças de comportamento estão na seção 13.3.
+
+### 13.1 Conceito
+
+O avatar deixou de ser um emoji e virou as iniciais do nome em um disco, dentro da mesma escala de graus do topo da Sobre (o "360" do nome). Os quatro números do resumo (visitas, atrativos conhecidos, roteiros salvos e favoritos) usam a faixa de indicadores da home. As abas viraram o índice lateral da Sobre, e os cartões deram lugar a títulos grandes, filetes finos e formulários em coluna de leitura.
+
+### 13.2 Estrutura da página
+
+| Bloco | Conteúdo |
+|---|---|
+| Topo | Nome como título principal, tipo de perfil, cidade e e-mail, faixa com os quatro números e o avatar no disco com a escala de graus |
+| Índice | "Seu perfil", com Conta, Preferências e Histórico de visitas. No computador fica fixo ao lado do conteúdo; no celular vira uma fileira de atalhos |
+| Conta | Cor do avatar (quatro cores da paleta), nome, e-mail, cidade, tipo de perfil e, para empreendedores e empresas, o nome do negócio |
+| Preferências | Interesses, ritmo dos passeios, faixa de gastos e notificações, salvos automaticamente |
+| Histórico de visitas | Formulário para registrar visitas e lista em linhas com data, atrativo, categoria, bairro, anotação e o botão Remover |
+| Chamada final e rodapé | Convite para montar um roteiro e o rodapé global |
+
+### 13.3 O que foi mantido e o que mudou
+
+**Mantido:** as chaves `j360_conta`, `j360_preferencias`, `j360_visitas`, `j360_roteiros` e `j360_favoritos_comercio`, a rotina de salvar, registrar e remover, e os textos que os testes consultam ("Salvar alterações", "+ Registrar visita", "Remover" e os nomes das seções).
+
+**Mudou:**
+
+- **Avatar:** o campo `avatar` da conta passa a guardar uma cor (`espuma`, `sol`, `vivo` ou `claro`) em vez de um emoji. Um emoji salvo antes é tratado como `espuma`.
+- **Emojis:** removidos de toda a página (avatar, resumo, interesses, atrativos e mensagem de confirmação), seguindo a decisão da equipe de evitar emojis nas telas.
+- **Mensagem ao salvar:** "Dados atualizados.", anunciada para leitores de tela (`role="status"`).
+- **Interesses:** os botões informam o estado ligado ou desligado (`aria-pressed`).
+
+### 13.4 Reaproveitamento
+
+`Perfil.jsx` usa as classes `.home`, `.sobre` e `.perfil` e importa `Home.css`, `Sobre.css` e `Perfil.css`. Os estilos próprios ficam em `src/pages/Perfil.css`, com prefixo `perfil-`. Como a página agora usa `Link` (chamada final e rodapé), o teste dela renderiza dentro de um `MemoryRouter`.
+
+### 13.5 Navbar
+
+A condição de rota em `Navbar.jsx` inclui `/perfil`: a barra fica transparente sobre o topo e assume o tom de cada seção, como na home e na Sobre. Cada bloco da página declara o tom em `data-nav-tema`.
+
+### 13.6 Acessibilidade
+
+- Um `h1` (o nome), `h2` por seção e `h3` nos blocos. O índice é uma `nav` rotulada, com `aria-current` no item ativo.
+- Todos os campos têm `label` ligado ao campo (`htmlFor`) e altura mínima de 44 px.
+- As cores do avatar são decorativas: o disco fica oculto para leitores de tela e o botão de cada cor tem nome ("Cor do avatar: Sol").
+- Somente cores da paleta do projeto.
+
+### 13.7 Arquivos criados e alterados
+
+```
+frontend/src/
+├── pages/
+│   ├── Perfil.jsx                  (alterado — nova página)
+│   ├── Perfil.css                  (novo)
+│   └── Perfil.test.jsx             (alterado — MemoryRouter e teste da cor do avatar)
+└── components/
+    ├── Navbar.jsx                  (alterado — condição de rota inclui /perfil)
+    └── Navbar.css                  (alterado — apenas comentários)
+```
+
+### 13.8 Limitações e pendências
+
+- **Pipeline e visual:** esta etapa foi entregue sem rodar `lint`, `test` e `build` e sem conferir no navegador. Execute `cd frontend && npm run lint && npm test && npm run build` antes do Pull Request.
+- **Acoplamento:** o Perfil depende de `Home.css` e de `Sobre.css`. Se a home ou a Sobre mudarem, o Perfil acompanha.
+- **CSS sem uso:** as regras `.avatar-btn`, `.avatar-on` e `.panel` em `src/index.css` deixaram de ser usadas pelo Perfil. Confirme que nenhuma outra tela as usa antes de removê-las.
+- **Dados de interesses:** o campo `emoji` de `interessesDisponiveis` e dos atrativos continua nos dados, mas não é mais exibido no Perfil.
+
+---
+
+## 14. Login e cadastro (versão 1.5)
+
+Esta etapa criou as páginas `/login` e `/cadastro`, uma entrada e um cadastro para cada categoria de usuário, no mesmo padrão visual do Perfil e da Sobre. São **demonstrativos**: não há servidor e a senha nunca é guardada.
+
+### 14.1 Escopo
+
+| Item | Situação |
+|------|----------|
+| Login por categoria (`/login`) | Criado |
+| Cadastro por categoria (`/cadastro`) | Criado |
+| Categorias Turista, Empreendedor e Empresa no Perfil | Aplicadas (substituem Morador) |
+| Campo do nome do negócio no Perfil (empreendedor e empresa) | Criado |
+| Link "Entrar" na Navbar | Criado |
+| Botão "Sair" | **Não criado** |
+| Autenticação real, backend e recuperação de senha | Fora do escopo |
+
+### 14.2 Categorias
+
+| Categoria | Para quem |
+|---|---|
+| **Turista** | Turistas e moradores que usam o guia para conhecer a cidade e organizar passeios |
+| **Empreendedor** | Quem toca um negócio próprio, como quiosque, passeio guiado ou ateliê |
+| **Empresa** | Empresas com CNPJ, como restaurantes, hotéis e agências de turismo |
+
+O índice lateral "Eu sou" troca de categoria, e a escolha fica na URL (`/login?categoria=empresa`), o que permite linkar direto para cada uma. Cada categoria tem seu texto, uma lista "O que você acessa" e um formulário próprio, montado do zero ao trocar de categoria (campos e erros não se misturam).
+
+### 14.3 Login
+
+| Categoria | Campos | Extra |
+|---|---|---|
+| Turista | E-mail e senha | Tinha o botão "Continuar sem conta", removido na versão 1.6 (seção 15) |
+| Empreendedor | E-mail e senha | |
+| Empresa | E-mail corporativo e senha | |
+
+Validações: e-mail em formato válido e senha que segue a regra do cadastro (ver 14.4). A senha tem o botão Mostrar/Ocultar. Como não há servidor, qualquer e-mail válido com senha que siga a regra entra, e a página avisa isso.
+
+### 14.4 Cadastro
+
+| Categoria | Campos |
+|---|---|
+| Turista | Nome, e-mail, cidade de origem (opcional), senha e confirmação |
+| Empreendedor | Seu nome, e-mail, nome do negócio, ramo de atuação, bairro (opcional), senha e confirmação |
+| Empresa | Nome do responsável, e-mail corporativo, nome da empresa, CNPJ, ramo de atuação, senha e confirmação |
+
+Validações, nesta ordem: nome (2 letras ou mais), e-mail, nome do negócio ou da empresa, CNPJ (pelos dígitos verificadores, aceitando com ou sem pontuação), ramo, senha e confirmação igual à senha. A senha precisa ter pelo menos 6 caracteres, com uma letra maiúscula, um número e um caractere especial (qualquer símbolo que não seja letra, número ou espaço). A mesma regra vale no login. A primeira falha aparece em uma mensagem em português. O ramo é escolhido em uma lista fixa: Gastronomia, Artesanato, Passeios e turismo, Hospedagem, Comércio em geral e Outro. O CNPJ é gravado só com os números. A validação confere apenas o formato e os dígitos, e não consulta a Receita Federal.
+
+### 14.5 O que acontece ao entrar ou cadastrar
+
+A função `iniciarSessao` (`src/data/acesso.js`) grava no `localStorage`:
+
+- `j360_sessao`: categoria, e-mail e data e hora da entrada.
+- `j360_conta`: nome, cidade, avatar, e-mail e tipo de perfil. No **login**, o que já estava salvo na conta é mantido e só o e-mail e o tipo mudam. No **cadastro**, a conta é criada de novo com os dados informados, mantendo apenas o avatar. Empreendedores e empresas também guardam `negocio`, `ramo`, `bairro` e, só para empresas, `cnpj`.
+
+Depois disso, o usuário vai para `/perfil`. A senha não é gravada em nenhum lugar.
+
+### 14.6 Mudanças no Perfil
+
+O campo "Perfil" da conta oferece Turista, Empreendedor e Empresa. Um valor antigo (como "Morador") é tratado como Turista. Para empreendedores e empresas, aparece o campo "Nome do negócio" ou "Nome da empresa", que grava em `negocio`.
+
+### 14.7 Estrutura do código
+
+- `src/data/acesso.js`: categorias, ramos, validações (`emailValido`, `cnpjValido`) e `iniciarSessao`.
+- `src/components/acesso/PaginaAcesso.jsx`: layout compartilhado (topo, índice de categorias, aviso, formulário, chamada final e rodapé).
+- `FormularioLogin.jsx` e `FormularioCadastro.jsx`: formulários de cada modo, com os campos de cada categoria.
+- `Campo.jsx` e `CampoSenha.jsx`: campo com rótulo e campo de senha com mostrar/ocultar.
+- `src/pages/Login.jsx` e `Cadastro.jsx`: páginas finas que chamam `PaginaAcesso`.
+- `src/pages/Acesso.css`: estilos próprios, com prefixo `acesso-`. Os formulários e botões vêm de `Perfil.css`.
+
+### 14.8 Testes escritos (não executados)
+
+| Arquivo | Casos | Comportamentos |
+|---|---:|---|
+| `Login.test.jsx` | 8 | Categoria inicial e URL, troca de categoria, recusa de e-mail e senha inválidos, entrada com gravação da sessão, mostrar senha, link para o cadastro e, na versão 1.5, "Continuar sem conta" (removido na 1.6) |
+| `Cadastro.test.jsx` | 6 | Campos de cada categoria, cadastro de turista (sem gravar a senha), senhas diferentes, empreendedor com negócio e ramo, CNPJ inválido e válido, link para o login |
+| `acesso.test.js` | 6 | Categorias, e-mail, CNPJ, nome gerado do e-mail e as duas formas de `iniciarSessao` |
+| `Perfil.test.jsx` | 6 | Os cinco casos anteriores mais a troca de cor do avatar |
+
+### 14.9 Navbar
+
+Foi acrescentado o link "Entrar" (`/login`). As rotas `/login` e `/cadastro` usam a Navbar transparente sobre o topo escuro, como a home. O cadastro é acessado pelo link da página de login ou direto pela URL.
+
+### 14.10 Arquivos criados e alterados
+
+```
+frontend/src/
+├── App.jsx                         (alterado — rotas /login e /cadastro)
+├── data/
+│   ├── acesso.js                   (novo)
+│   └── acesso.test.js              (novo)
+├── pages/
+│   ├── Login.jsx                   (novo)
+│   ├── Login.test.jsx              (novo)
+│   ├── Cadastro.jsx                (novo)
+│   ├── Cadastro.test.jsx           (novo)
+│   ├── Acesso.css                  (novo)
+│   └── Perfil.jsx                  (alterado — categorias e campo do negócio)
+└── components/
+    ├── Navbar.jsx                  (alterado — link Entrar e rotas com topo escuro)
+    └── acesso/                     (novo)
+        ├── PaginaAcesso.jsx
+        ├── FormularioLogin.jsx
+        ├── FormularioCadastro.jsx
+        ├── Campo.jsx
+        └── CampoSenha.jsx
+docs/DOCUMENTACAO.md                (este documento — seções 13 e 14 e histórico)
+README.md                           (alterado — versão 1.5, funcionalidades, rotas, estrutura, persistência e histórico)
+```
+
+### 14.11 Limitações e pendências
+
+- **Sem servidor:** o login não confere a senha nem se a conta existe. Quando houver backend, só `iniciarSessao` e os formulários precisam trocar para chamadas à API.
+- **Sem "Sair":** quem entra continua com a sessão gravada até limpar os dados do navegador.
+- **Dados do negócio:** o ramo, o bairro e o CNPJ são gravados no cadastro, mas o Perfil só mostra e edita o nome do negócio.
+- **Sem recuperação de senha** e sem confirmação de e-mail.
+- **Navbar:** não há link "Cadastrar" na barra, só o "Entrar".
+- **Pipeline e visual:** esta etapa foi entregue sem rodar `lint`, `test` e `build` e sem conferir no navegador. Execute `cd frontend && npm run lint && npm test && npm run build` antes do Pull Request.
+- **Acoplamento:** login e cadastro dependem de `Home.css`, `Sobre.css` e `Perfil.css`.
+
+---
+
+## 15. Acesso restrito a mapa, roteiros, comércio e perfil (versão 1.6)
+
+Esta etapa faz com que os caminhos de Mapa, Roteiros, Comércio e Perfil só apareçam depois do login ou do cadastro. Sem sessão, essas telas também não abrem pela URL. Continua demonstrativo: não há servidor, e a verificação usa a mesma sessão gravada em `j360_sessao` (seção 14.5).
+
+### 15.1 Escopo
+
+| Item | Situação |
+|------|----------|
+| Mapa, Roteiros, Comércio e Perfil ocultos no menu sem login | Feito |
+| Os mesmos quatro links ocultos no rodapé sem login | Feito |
+| Rotas protegidas: acesso direto sem sessão redireciona para `/login` | Feito |
+| Botão "Continuar sem conta" removido da tela de login | Feito |
+| CTA da tela de acesso passa a levar para `/sobre` (página pública) | Feito |
+| Botões da home e links internos que apontam para as telas restritas | Pendente (ver 15.7) |
+| Botão "Sair" | Não criado |
+
+### 15.2 Comportamento
+
+| Situação | Menu e rodapé | Acesso pela URL |
+|---|---|---|
+| Sem sessão | Início, Sobre e Entrar aparecem. Mapa, Roteiros, Comércio e Perfil ficam ocultos | `/mapa`, `/roteiros`, `/comercio` e `/perfil` levam para `/login` |
+| Com sessão (após login ou cadastro) | Os oito caminhos aparecem | As telas abrem normalmente |
+
+As páginas públicas (`/`, `/sobre`, `/login` e `/cadastro`) continuam abertas para todos. O link "Entrar" permanece visível mesmo com sessão ativa.
+
+### 15.3 Como funciona
+
+- **`estaLogado()`** (`src/data/acesso.js`): retorna verdadeiro quando existe uma sessão válida em `j360_sessao`. Uma sessão corrompida conta como ausência de login.
+- **Navbar e Footer:** os links de Mapa, Roteiros, Comércio e Perfil estão marcados com `restrito: true` e são filtrados conforme `estaLogado()`.
+- **`Protegida` (`App.jsx`):** envolve as quatro rotas restritas. Sem sessão, renderiza `<Navigate to="/login" replace />`. O `replace` evita que o botão Voltar do navegador devolva a pessoa a uma tela restrita.
+- **Atualização após o login:** `iniciarSessao` grava a sessão antes do redirecionamento para `/perfil`. Como a Navbar e o Footer são lidos a cada navegação, os links aparecem sem recarregar a página.
+
+### 15.4 Arquivos criados e alterados
+
+```
+frontend/src/
+├── App.jsx                         (alterado — componente Protegida nas rotas restritas)
+├── App.test.jsx                    (novo — redirecionamento e acesso das rotas)
+├── data/
+│   ├── acesso.js                   (alterado — função estaLogado e botão removido do fluxo)
+│   └── sessao.test.js              (novo — testes de estaLogado)
+├── components/
+│   ├── Navbar.jsx                  (alterado — links restritos filtrados por sessão)
+│   ├── Navbar.test.jsx             (alterado — casos sem login e com login)
+│   ├── Footer.jsx                  (alterado — links restritos filtrados por sessão)
+│   └── acesso/
+│       ├── FormularioLogin.jsx     (alterado — botão "Continuar sem conta" removido)
+│       └── PaginaAcesso.jsx        (alterado — CTA aponta para /sobre)
+└── pages/
+    └── Login.test.jsx              (alterado — teste do "Continuar sem conta" removido)
+docs/DOCUMENTACAO.md                (este documento — seção 15, histórico e seção 14)
+README.md                           (alterado — versão 1.6, funcionalidades, rotas, persistência, decisões e histórico)
+```
+
+### 15.5 Testes
+
+| Arquivo | Alteração | Casos antes → depois |
+|---|---|---:|
+| `Navbar.test.jsx` | Novo caso: links ocultos sem login. Os demais casos passam a rodar com sessão | 3 → 4 |
+| `Login.test.jsx` | Removido o caso de "Continuar sem conta" e ajustado o caso da troca de categoria | 8 → 7 |
+| `sessao.test.js` | Novo: sem sessão, após login, sessão apagada e sessão corrompida | 0 → 4 |
+| `App.test.jsx` | Novo: redirecionamento das quatro rotas sem sessão, acesso com sessão e página pública aberta | 0 → 6 |
+
+No total, o projeto passou de 11 para 13 arquivos de teste e de 66 para 76 testes.
+
+### 15.6 Resultados medidos
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` | 54 arquivos examinados, 0 erros e 0 avisos |
+| `npm run test` | 76 testes aprovados em 13 arquivos |
+| `npm run build` | 114 módulos transformados e 13 arquivos gerados, com 773,38 kB antes de compressão |
+
+A cobertura por arquivo não foi medida, porque `@vitest/coverage-v8` não está instalado no projeto.
+
+### 15.7 Limitações e pendências
+
+- **Botões da home ainda levam às telas restritas.** "Ver o mapa" e "Montar roteiro" do hero, os destaques de atrativos, os cards de comércio e as chamadas finais de Home, Sobre e Perfil continuam apontando para as rotas protegidas. Sem login, eles levam para `/login` em vez de ficarem ocultos. Também há um link de Comércio para Roteiros nessa mesma situação.
+- **Sem "Sair":** a sessão só desaparece ao limpar os dados do navegador.
+- **"Entrar" continua visível** mesmo com sessão ativa.
+- **Proteção apenas no frontend:** quem edita o `localStorage` consegue abrir as telas. Quando houver backend, a verificação precisa acontecer na API.
+- **Cobertura por arquivo** ainda não foi remedida (ver 15.6).
+
+---
+
+## 16. Entrar oculto depois do login e regra de senha (versão 1.7)
+
+Esta versão atende a dois pedidos feitos depois da 1.6: o link "Entrar" não deve aparecer depois do login, e a senha precisa de mais requisitos.
+
+### 16.1 Escopo
+
+| Item | Situação |
+|------|----------|
+| Link "Entrar" oculto na Navbar quando há sessão | Feito |
+| Senha com 6 caracteres ou mais, uma letra maiúscula, um número e um caractere especial | Feito no cadastro e no login |
+| Mensagem de erro da senha em português, igual nos dois formulários | Feito |
+| Aviso do login demonstrativo atualizado para a nova regra | Feito |
+| Dica das regras da senha visível antes do envio | Não feito (ver 16.7) |
+| Botão "Sair" | Não criado |
+
+### 16.2 Link "Entrar"
+
+O link "Entrar" da Navbar está marcado com `visitante: true`. Sem sessão, ele aparece; com sessão, some. Os demais caminhos seguem a regra da 1.6 (seção 15.2): Mapa, Roteiros, Comércio e Perfil só aparecem com login. A Navbar e o rodapé são lidos a cada navegação, então o link some logo após o login, sem recarregar a página.
+
+### 16.3 Regra de senha
+
+A função `senhaValida` (`src/data/acesso.js`) exige:
+
+- **6 caracteres ou mais;**
+- **uma letra maiúscula:** a senha precisa ser diferente da sua versão em minúsculas. Letras com acento também contam;
+- **um número:** qualquer dígito de 0 a 9;
+- **um caractere especial:** qualquer símbolo que não seja letra, número ou espaço, como `!`, `@`, `#`, `$`, `%`, `&`, `-` e `_`. O espaço não conta.
+
+A mensagem de erro é a mesma nos dois formulários, definida em `mensagemSenha`:
+
+> A senha precisa ter pelo menos 6 caracteres, com uma letra maiúscula, um número e um caractere especial.
+
+No login, a regra é aplicada também. Como o login é demonstrativo e nenhuma senha é guardada, isso só afeta quem tenta entrar com uma senha que não segue a regra.
+
+### 16.4 Arquivos criados e alterados
+
+```
+frontend/src/
+├── data/
+│   ├── acesso.js                   (alterado — senhaValida e mensagemSenha)
+│   └── senha.test.js               (novo — 9 casos da regra de senha)
+├── components/
+│   ├── Navbar.jsx                  (alterado — link Entrar oculto com sessão)
+│   ├── Navbar.test.jsx             (alterado — caso do Entrar oculto)
+│   └── acesso/
+│       ├── FormularioCadastro.jsx  (alterado — regra de senha)
+│       ├── FormularioLogin.jsx     (alterado — regra de senha)
+│       └── PaginaAcesso.jsx        (alterado — aviso do login)
+└── pages/
+    ├── Cadastro.test.jsx           (alterado — senhas de teste e caso de senha recusada)
+    └── Login.test.jsx              (alterado — senhas de teste e caso de senha recusada)
+docs/DOCUMENTACAO.md                (este documento — seção 16, histórico e seção 14.4)
+README.md                           (alterado — versão 1.7, regra de senha, resultados e histórico)
+```
+
+### 16.5 Testes
+
+| Arquivo | Alteração | Casos antes → depois |
+|---|---|---:|
+| `Navbar.test.jsx` | Novo caso: "Entrar" some depois do login | 4 → 5 |
+| `Login.test.jsx` | Novo caso: senha fora da regra é recusada. Senhas de teste trocadas | 7 → 8 |
+| `Cadastro.test.jsx` | Novo caso: senhas sem maiúscula, sem número ou sem caractere especial são recusadas. Senhas de teste trocadas | 6 → 7 |
+| `senha.test.js` | Novo: senhas aceitas e recusadas pela regra | 0 → 9 |
+
+No total, o projeto passou de 76 para 88 testes e de 13 para 14 arquivos de teste.
+
+### 16.6 Resultados medidos
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint` | 55 arquivos examinados, 0 erros e 0 avisos |
+| `npm run test` | 88 testes aprovados em 14 arquivos |
+| `npm run build` | 114 módulos transformados e 13 arquivos gerados, com 773,51 kB antes de compressão |
+
+### 16.7 Limitações e pendências
+
+- **Dica das regras:** a pessoa só descobre a regra ao errar. Uma dica visível abaixo do campo de senha no cadastro seria o próximo passo.
+- **Login acessível com sessão:** a tela `/login` continua abrindo pela URL mesmo com sessão ativa. Só o link "Entrar" da barra some.
+- **Sem "Sair":** a sessão só desaparece ao limpar os dados do navegador (seção 14.11).
+- **Regra apenas no frontend:** como toda a autenticação demonstrativa, a validação não é segurança real até existir backend.
+- **Cobertura por arquivo** ainda não foi remedida (ver 15.6).
+
+
