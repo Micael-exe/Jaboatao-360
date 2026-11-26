@@ -8,7 +8,7 @@ Plataforma digital de turismo e comércio local de Jaboatão dos Guararapes – 
 
 [![CI](https://github.com/Micael-exe/jaboatao-360/actions/workflows/ci.yml/badge.svg)](https://github.com/Micael-exe/jaboatao-360/actions/workflows/ci.yml)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
-![Versão](https://img.shields.io/badge/vers%C3%A3o-1.7-12665d)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.9-12665d)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
@@ -28,7 +28,7 @@ Plataforma digital de turismo e comércio local de Jaboatão dos Guararapes – 
 - [Estrutura do repositório](#estrutura-do-repositório)
 - [Primeiros passos](#primeiros-passos)
 - [Rotas da aplicação](#rotas-da-aplicação)
-- [Persistência de dados (MVP)](#persistência-de-dados-mvp)
+- [Persistência de dados](#persistência-de-dados)
 - [Qualidade e CI/CD](#qualidade-e-cicd)
 - [Guia de contribuição](#guia-de-contribuição)
 - [Roadmap](#roadmap)
@@ -68,13 +68,21 @@ Na entrada e no cadastro, as categorias de acesso são **Turista** (inclui morad
 
 ## Estado atual do projeto
 
-> **Fase atual: MVP web (frontend).** O projeto foi concebido como uma plataforma completa, e esta etapa entrega a interface web navegável, com dados demonstrativos salvos no navegador. Backend, aplicativo mobile e integrações de IA fazem parte do [roadmap](#roadmap).
+> **Fase atual: MVP web com contas e persistência no MySQL.** Uma pessoa pode entrar em outro navegador e recuperar seus roteiros, preferências e histórico.
 
 | Camada | Situação |
 |---|---|
+| Frontend web | React e Vite, com catálogo inicial de atrativos e comércios |
+| Backend | API Node.js de cadastro, autenticação, sessão e dados pessoais |
+| Banco de dados | MySQL 8 com migrações SQL versionadas |
+| Verificação de e-mail | Abstract no cadastro e na alteração de endereço |
+| Testes e CI | Frontend, API de e-mail e integração com MySQL |
+| Aplicativo mobile e assistente de IA | Planejados |
+
+---|---|
 | Frontend web (React + Vite) | Implementado (MVP) |
 | Testes automatizados e CI | Implementado |
-| Backend / API REST | Planejado |
+| Backend / API REST | Verificação de e-mail implementada. Autenticação e persistência planejadas |
 | Banco de dados | Planejado |
 | Aplicativo mobile | Planejado |
 | Assistente com IA | Planejado |
@@ -93,7 +101,7 @@ Na entrada e no cadastro, as categorias de acesso são **Turista** (inclui morad
 | **Planejamento de roteiros** | Criação de roteiros com paradas de atrativos e comércios, horários, reordenação e salvamento. Roteiros salvos podem ser editados, duplicados e excluídos. |
 | **Comércio local** | Vitrine de estabelecimentos e experiências com busca, filtros por tipo e categoria, favoritos e atalho para adicionar ao roteiro. |
 | **Perfil do usuário** | Gestão de conta, preferências (interesses, ritmo, orçamento, notificações) e histórico de visitas, com resumo de atividades. No padrão visual da home e da Sobre: topo escuro com o avatar (iniciais em uma cor da paleta) dentro da escala de graus, indicadores no topo e índice lateral entre Conta, Preferências e Histórico. Para empreendedores e empresas, a conta inclui o nome do negócio. |
-| **Login e cadastro** | Entrada (`/login`) e criação de conta (`/cadastro`) separadas por categoria: Turista, Empreendedor e Empresa. Cada categoria tem seu texto, seus campos e suas validações (por exemplo, CNPJ válido para empresa). A senha precisa ter 6 caracteres ou mais, com uma letra maiúscula, um número e um caractere especial. Demonstrativos: não há servidor e a senha não é guardada. |
+| **Login e cadastro** | Entrada (`/login`) e criação de conta (`/cadastro`) separadas por categoria: Turista, Empreendedor e Empresa. Cada categoria tem seu texto, seus campos e suas validações (por exemplo, CNPJ válido para empresa). A senha precisa ter 6 caracteres ou mais, com uma letra maiúscula, um número e um caractere especial. No cadastro, o servidor verifica a entregabilidade do endereço antes de criar a sessão. O servidor guarda um hash da senha com salt individual. Em Perfil → Dados da conta, **Sair da conta** encerra a sessão. |
 | **Acesso restrito** | Mapa, Roteiros, Comércio e Perfil só aparecem no menu e no rodapé depois do login ou cadastro. Acessar essas telas pela URL, sem sessão, leva para `/login`. |
 | **Favoritos** | Marcação de estabelecimentos favoritos (roteiros salvos já ficam registrados na tela de roteiros). |
 | **Página inicial** | Hero com foto de fundo e degradê, indicadores calculados dos dados, atalhos para as telas, atrativos com foto em destaque e lista, comércio local, chamada final e rodapé com a logo do projeto. |
@@ -106,7 +114,6 @@ Na entrada e no cadastro, as categorias de acesso são **Turista** (inclui morad
 | **Assistente com IA** | Roteiros personalizados conforme interesses, tempo e orçamento. |
 | **QR Codes** | Informações históricas e curiosidades nos locais visitados. |
 | **Passaporte Jaboatão** | Conquistas e gamificação para incentivar a exploração. |
-| **Contas e autenticação** | Login real e sincronização entre dispositivos. |
 | **App mobile** | Versão nativa para uso durante os passeios. |
 
 ---
@@ -116,34 +123,23 @@ Na entrada e no cadastro, as categorias de acesso são **Turista** (inclui morad
 ### Hoje (MVP)
 
 ```mermaid
-flowchart LR
-    U([Usuário]) --> F["Frontend Web<br/>React + Vite + Tailwind"]
-    F --> L[("localStorage<br/>dados demonstrativos")]
-    F --> M["Mapa<br/>Leaflet + OpenStreetMap"]
-```
-
-### Visão de destino
-
-```mermaid
-flowchart LR
-    U([Usuário]) --> W["Frontend Web"]
-    U --> A["App Mobile"]
-    W --> API["API REST<br/>Django + DRF"]
-    A --> API
-    API --> DB[("MySQL")]
-    API --> IA["Serviço de IA<br/>roteiros personalizados"]
+flowchart TD
+    F["Frontend React"] --> A["API Node.js"]
+    F --> M["Mapa interativo"]
+    A --> D[("MySQL 8")]
+    A --> E["Abstract"]
 ```
 
 ### Decisões de design
 
-- **Dados centralizados:** os dados de exemplo ficam em `src/data/dados.js`, facilitando a troca por chamadas à API.
-- **Persistência isolada em um hook:** `useLocalStorage` encapsula o armazenamento; migrar para o backend altera um ponto, não as telas.
+- **Catálogo.** O frontend exibe os locais de `frontend/src/data/dados.js`. A migração sincroniza seus identificadores com o banco para que favoritos, visitas e paradas possam referenciá-los.
+- **Dados por conta.** A interface usa `useDadosConta`. O módulo `src/data/banco.js` envia as alterações e mantém em memória a última revisão confirmada.
 - **Componentes de página independentes:** cada tela é um módulo em `src/pages`. Os testes de interface ficam ao lado das telas cobertas.
 - **Conteúdo da home separado:** textos, destaques e atalhos ficam em `src/data/home.js`, e os números da faixa de indicadores são calculados a partir de `dados.js`, sem valores digitados à mão.
 - **Fotos por convenção de nome:** a home procura as imagens em `src/assets/jaboatao/` pelo nome do arquivo. Sem a foto, o bloco aparece sem imagem, sem ícone quebrado.
-- **Mesmo padrão em home, Sobre, Perfil, login e cadastro:** as páginas com topo escuro compartilham `Home.css` (cores, container, botões, chamada final) e `Sobre.css` (topo e índice lateral). A Navbar adaptativa vale para todas elas.
-- **Acesso em um só lugar:** categorias, validações (e-mail e CNPJ) e a gravação da sessão ficam em `src/data/acesso.js`. As páginas `/login` e `/cadastro` usam o mesmo componente (`PaginaAcesso`). Trocar o login demonstrativo por uma API altera uma função, `iniciarSessao`.
-- **Rotas protegidas em um ponto:** `estaLogado()` (em `src/data/acesso.js`) decide quais caminhos aparecem na Navbar e no rodapé, e o componente `Protegida` em `App.jsx` envolve as telas restritas. A checagem fica no frontend, por isso só terá valor real de segurança quando houver backend.
+- **Identidade visual das páginas:** as páginas com topo escuro compartilham `Home.css` (cores, container, botões, chamada final) e `Sobre.css` (topo e índice lateral). A Navbar adaptativa vale para todas elas.
+- **Acesso.** As regras de formato compartilhadas estão em `src/data/regras.js`. A API autentica a sessão e determina a conta que pode ler ou gravar. O componente `Protegida` cuida da navegação.
+- **Evolução do esquema.** Cada alteração estrutural entra em um arquivo numerado em `backend/banco/migracoes/`. A seção 20 da [documentação técnica](docs/DOCUMENTACAO.md) explica como adicionar um campo.
 
 ---
 
@@ -158,8 +154,9 @@ flowchart LR
 | Estilização | Tailwind CSS 4 |
 | Roteamento | React Router 7 |
 | Mapas | Leaflet + React Leaflet (dados do OpenStreetMap) |
-| Requisições HTTP | Axios (preparado para a futura API) |
-| Testes | Vitest, React Testing Library, user-event, jsdom |
+| Verificação de e-mail | Node.js, Fetch e Abstract Email Intelligence API v1 |
+| Contas e persistência | Node.js, mysql2, MySQL 8 e InnoDB |
+| Testes | Vitest, React Testing Library, user-event, jsdom e node:test |
 | Qualidade de código | ESLint 10 (com regras de React Hooks e React Refresh) |
 | CI | GitHub Actions |
 
@@ -167,8 +164,6 @@ flowchart LR
 
 | Área | Tecnologia |
 |---|---|
-| Backend | Python, Django, Django REST Framework |
-| Banco de dados | MySQL |
 | Mobile | React Native, TypeScript, Expo |
 | IA | Serviço de recomendação de roteiros |
 
@@ -181,9 +176,11 @@ jaboatao-360/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml              # Pipeline: lint, testes e build
-├── backend/                    # Reservado para a API (planejado)
+├── backend/                    # API de contas, sessões e verificação de e-mail
+│   └── banco/                  # Acesso ao MySQL, migrações SQL e testes de integração
 ├── docs/
-│   └── DOCUMENTACAO.md         # Documentação técnica da entrega
+│   ├── DOCUMENTACAO.md         # Documentação técnica da entrega
+│   └── MAPA_INTERATIVO.md      # Fluxo e apresentação do mapa
 ├── frontend/
 │   ├── public/
 │   ├── src/
@@ -194,7 +191,7 @@ jaboatao-360/
 │   │   │   └── logo-jaboatao360-navbar-branca.webp  # Logo com texto claro, para fundos escuros
 │   │   ├── components/         # Navbar (com Navbar.css), Footer, componentes da home (components/home) e de login e cadastro (components/acesso)
 │   │   ├── data/               # Dados demonstrativos (dados.js), conteúdo da home (home.js) e categorias e validações de acesso (acesso.js)
-│   │   ├── hooks/              # Hooks reutilizáveis (useLocalStorage)
+│   │   ├── hooks/              # Hooks de sessão e dados por conta
 │   │   ├── pages/              # Telas: Home, Mapa, Roteiros, Comercio, Perfil, Sobre, Login, Cadastro
 │   │   ├── test/               # Configuração global dos testes
 │   │   ├── App.jsx             # Rotas da aplicação
@@ -215,27 +212,41 @@ Os testes ficam ao lado do código que validam (`*.test.js` / `*.test.jsx`).
 
 | Ferramenta | Versão recomendada |
 |---|---|
-| Node.js | 22 LTS (mínimo 20.19) |
+| Node.js | 22.19 ou superior da série 22 |
+| MySQL Server | 8.0.16 ou superior da série 8, com InnoDB |
 | npm | Incluído com o Node.js |
-| Git | Qualquer versão recente |
 
 ### Instalação
 
-```bash
-# 1. Clone o repositório
-git clone https://github.com/Micael-exe/jaboatao-360.git
+**1. Prepare o MySQL.** No MySQL Workbench ou no cliente `mysql`, conecte-se como administrador. O exemplo usa o banco e o usuário definidos em `backend/.env.example`. Troque a senha do exemplo antes de executar.
 
-# 2. Entre na pasta do frontend
-cd jaboatao-360/frontend
+```sql
+CREATE DATABASE IF NOT EXISTS jaboatao360 CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+CREATE USER IF NOT EXISTS 'j360_app'@'localhost' IDENTIFIED BY 'SUBSTITUA_POR_SUA_SENHA';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, REFERENCES
+    ON jaboatao360.* TO 'j360_app'@'localhost';
+```
 
-# 3. Instale as dependências
+**2. Configure o backend.** Copie `backend/.env.example` para `backend/.env.local`. Preencha `DB_PASSWORD` com a senha escolhida e `ABSTRACT_API_KEY` com a chave da Email Intelligence API. Se você está atualizando da versão 1.8.2, transfira essa chave de `frontend/.env.local` para `backend/.env.local`. Confira o host, a porta e o nome do banco.
+
+**3. Inicie a API.** Em um terminal, a partir da raiz do projeto, execute:
+
+```sh
+cd backend
 npm install
+npm run migrate
+npm start
+```
 
-# 4. Inicie o servidor de desenvolvimento
+**4. Inicie o site.** Em um segundo terminal, a partir da raiz, execute:
+
+```sh
+cd frontend
+npm ci
 npm run dev
 ```
 
-A aplicação ficará disponível em `http://localhost:5173`.
+Abra `http://localhost:5173`. A API atende na porta 3001 e o Vite encaminha as requisições a `/api`. Em produção, sirva o frontend por HTTPS, encaminhe `/api/*` para o backend preservando o cabeçalho `Host` e defina `NODE_ENV=production`. Mantenha `frontend/src/data/` na mesma estrutura relativa ao backend, pois a API importa as regras e o catálogo compartilhados. Execute as migrações antes de iniciar a nova versão.
 
 ### Scripts disponíveis
 
@@ -283,12 +294,19 @@ Recomendações: WebP, 1600 px de largura para o `hero` e 1000 px para os cards,
 
 ---
 
-## Persistência de dados (MVP)
+## Persistência de dados
 
-Enquanto não há backend, as informações ficam no `localStorage` do navegador. Os dados são **privados a cada navegador** e podem ser apagados ao limpar os dados do site.
-
-| Chave | Conteúdo |
+| O que a pessoa faz | O que fica salvo na conta |
 |---|---|
+| Cadastra ou edita o perfil | Nome, e-mail, cidade, categoria, avatar e dados do negócio conforme a categoria |
+| Ajusta preferências | Interesses, ritmo, orçamento e opções de notificações |
+| Marca um comércio ou registra uma visita | Favoritos, atrativo visitado, data e anotação |
+| Planeja um passeio | Rascunho, roteiros salvos, data, ordem e horário de cada parada |
+| Salva o resultado do mapa | Roteiro disponível em **Meus roteiros**, inclusive com nomes dos locais de catálogos externos |
+
+Quem usava o MVP demonstrativo pode optar por importar os dados no cadastro com o mesmo e-mail, no navegador original. Uma conta já criada no MySQL recebe os novos campos por migração. A seção 20 de [DOCUMENTACAO.md](docs/DOCUMENTACAO.md) descreve os dois fluxos.
+
+---|---|
 | `j360_roteiros` | Roteiros salvos |
 | `j360_rascunho` | Roteiro em andamento |
 | `j360_favoritos_comercio` | Estabelecimentos favoritados |
@@ -305,15 +323,16 @@ Para reiniciar os dados em desenvolvimento: **DevTools (F12) → Application →
 
 ### Pipeline
 
-A cada `push` e a cada Pull Request, o GitHub Actions executa em ordem, dentro de `frontend/`:
+A cada push e Pull Request, o GitHub Actions executa dois trabalhos independentes.
 
-1. **Lint:** `npm run lint`
-2. **Testes:** `npm test`
-3. **Build:** `npm run build`
+| Trabalho | Verificações |
+|---|---|
+| Frontend | Instalação, ESLint, Vitest e build do Vite |
+| Backend | MySQL 8 isolado, instalação do driver mysql2, testes da Abstract com respostas simuladas e testes de integração de contas e migrações |
 
 Se qualquer etapa falhar, a pipeline fica vermelha e o resultado aparece no commit e no Pull Request. O badge **CI**, no topo deste arquivo, reflete o resultado da branch principal.
 
-### Verificação do frontend
+### Verificação histórica do frontend
 
 Resultados medidos em 24/11/2026 com Node.js 22.19.0, na revisão [`6711919`](https://github.com/Micael-exe/Jaboatao-360/commit/6711919420e9866f8c93e7e101029595428ba626). Execute os comandos dentro de `frontend/`.
 
@@ -440,8 +459,8 @@ Exemplo: `fix(roteiros): corrige geração de ids duplicados`
 |---|---|---|
 | **1. MVP web** | Telas de início, mapa, roteiros, comércio, perfil, login, cadastro e sobre | Concluída |
 | **2. Qualidade** | Testes automatizados e pipeline de CI | Concluída |
-| **3. Backend** | API REST, banco de dados e autenticação | Planejada |
-| **4. Integração** | Substituir `localStorage` e dados demonstrativos pela API | Planejada |
+| **3. Backend** | Verificação de e-mail, banco de dados e autenticação | Concluída |
+| **4. Integração** | Dados pessoais das telas ligados à API e importação opcional dos registros locais | Concluída |
 | **5. Inteligência** | Assistente de IA para roteiros personalizados | Planejada |
 | **6. Engajamento** | QR Codes e Passaporte Jaboatão (gamificação) | Planejada |
 | **7. Mobile** | Aplicativo nativo | Planejada |
@@ -452,6 +471,10 @@ Exemplo: `fix(roteiros): corrige geração de ids duplicados`
 
 | Versão | Entrega |
 |---|---|
+| **1.9** | Contas e sessões no MySQL, dados de turismo por usuário e migrações versionadas. |
+| **1.8.2** | O cadastro passou a consultar a Abstract. Configuração e migração na seção 19 de [DOCUMENTACAO.md](docs/DOCUMENTACAO.md). |
+| **1.8.1** | A verificação de e-mail passou a usar a Verifalia. Configuração e migração na seção 18 de [DOCUMENTACAO.md](docs/DOCUMENTACAO.md). |
+| **1.8** | API de verificação de e-mail no cadastro, saída pelo Perfil e redesign de Mapa, Roteiros e Comércio. |
 | **1.7** | Link "Entrar" oculto na barra depois do login. Regra de senha no cadastro e no login: 6 caracteres ou mais, com uma letra maiúscula, um número e um caractere especial. Documentação atualizada e 88 testes em 14 arquivos. |
 | **1.6** | Acesso restrito: Mapa, Roteiros, Comércio e Perfil só aparecem no menu e no rodapé depois do login ou cadastro, e a URL direta sem sessão leva para `/login`. Botão "Continuar sem conta" removido do login. Verificação em `estaLogado()` e rota protegida em `App.jsx`. Documentação atualizada e 76 testes em 13 arquivos. |
 | **1.5** | Login e cadastro por categoria: Turista (usuário), Empreendedor e Empresa, em `/login` e `/cadastro`, com campos e validações próprios (inclui CNPJ para empresa), senha com botão mostrar/ocultar e link entre as duas telas. Demonstrativos, sem servidor e sem guardar a senha. O Perfil passa a ter as categorias Turista, Empreendedor e Empresa (em lugar de Morador) e o campo do nome do negócio. Link "Entrar" na Navbar. |
@@ -486,7 +509,7 @@ O projeto busca contribuir para:
 
 | Documento | Conteúdo |
 |---|---|
-| [`docs/DOCUMENTACAO.md`](docs/DOCUMENTACAO.md) | Telas, arquivos, testes, uso de IA, pipeline, redesign visual, redesign da home (v1.2), da Sobre (v1.3) e do Perfil (v1.4) e login e cadastro (v1.5) |
+| [`docs/DOCUMENTACAO.md`](docs/DOCUMENTACAO.md) | Telas, arquivos, testes, uso de IA, pipeline, redesign visual, redesign da home (v1.2), da Sobre (v1.3) e do Perfil (v1.4) e evolução de cadastro, sessão, modelo de dados e migrações até a v1.9 |
 | [Nova funcionalidade do mapa interativo](docs/MAPA_INTERATIVO.md) | Escolha de lugares por fotos e sugestão de roteiro com horários de visita |
 
 ---

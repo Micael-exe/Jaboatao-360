@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { autenticar, contaAntiga, lerLegado } from '../../data/banco'
 import Campo from './Campo'
 import CampoSenha from './CampoSenha'
-import { cnpjValido, emailValido, iniciarSessao, mensagemSenha, ramos, senhaValida } from '../../data/acesso'
+import { cnpjValido, emailValido, mensagemSenha, ramos, senhaValida } from '../../data/acesso'
 
 const rotuloNome = {
   turista: 'Nome',
@@ -19,6 +20,12 @@ export default function FormularioCadastro({ categoria }) {
   const [v, setV] = useState(vazio)
   const [erro, setErro] = useState('')
 
+  const [importar, setImportar] = useState(false)
+  const antiga = contaAntiga(v.email)
+  const [verificando, setVerificando] = useState(false)
+  const pedido = useRef(null)
+  useEffect(() => () => pedido.current?.abort(), [])
+
   const turista = categoria.id === 'turista'
   const empresa = categoria.id === 'empresa'
   const id = (campo) => `cadastro-${categoria.id}-${campo}`
@@ -26,7 +33,7 @@ export default function FormularioCadastro({ categoria }) {
 
   const validar = () => {
     if (v.nome.trim().length < 2) return 'Informe o seu nome.'
-    if (!emailValido(v.email)) return 'Informe um e-mail válido.'
+    if (!emailValido(v.email.trim())) return 'Informe um e-mail válido.'
     if (!turista && !v.negocio.trim()) {
       return empresa ? 'Informe o nome da empresa.' : 'Informe o nome do negócio.'
     }
@@ -37,32 +44,40 @@ export default function FormularioCadastro({ categoria }) {
     return ''
   }
 
-  const cadastrar = (e) => {
+  const cadastrar = async (e) => {
     e.preventDefault()
+    if (pedido.current) return
     const problema = validar()
     if (problema) {
       setErro(problema)
       return
     }
-    iniciarSessao({
-      categoria,
-      email: v.email,
-      modo: 'cadastro',
-      dados: {
-        nome: v.nome.trim(),
-        cidade: v.cidade.trim(),
-        negocio: turista ? undefined : v.negocio.trim(),
-        ramo: turista ? undefined : v.ramo,
-        bairro: turista ? undefined : v.bairro.trim(),
-        cnpj: empresa ? v.cnpj.replace(/\D/g, '') : undefined,
-      },
-    })
-    navigate('/perfil')
+    const controle = new AbortController()
+    pedido.current = controle
+    setVerificando(true)
+    setErro('')
+    try {
+      const legado = importar && antiga ? lerLegado(v.email) : null
+      await autenticar('cadastro', {
+        email: v.email.trim(), senha: v.senha, categoria: categoria.id, legado,
+        conta: { nome: v.nome.trim(), cidade: v.cidade.trim() || (legado && antiga.cidade) || 'Jaboatão dos Guararapes',
+          avatar: legado && ['espuma','sol','vivo','claro'].includes(antiga.avatar) ? antiga.avatar : 'espuma',
+          negocio: v.negocio.trim(), ramo: v.ramo, bairro: v.bairro.trim(), cnpj: v.cnpj },
+      }, controle.signal)
+    } catch (falha) {
+      if (!controle.signal.aborted) setErro(falha.message)
+      return
+    } finally {
+      pedido.current = null
+      if (!controle.signal.aborted) setVerificando(false)
+    }
+    if (controle.signal.aborted) return
+    navigate('/perfil', { state: { emailAceito: v.email.trim() } })
   }
 
   return (
     <form onSubmit={cadastrar} className="perfil-form acesso-cadastro" noValidate>
-      <div className="perfil-campos">
+      <fieldset className="perfil-campos" disabled={verificando}>
         <Campo id={id('nome')} rotulo={rotuloNome[categoria.id]} autoComplete="name" value={v.nome} onChange={muda('nome')} required />
         <Campo
           id={id('email')}
@@ -110,6 +125,11 @@ export default function FormularioCadastro({ categoria }) {
           </>
         )}
 
+        {antiga && <label>
+          <input type="checkbox" checked={importar} onChange={e => setImportar(e.target.checked)} />{' '}
+          Importar meus roteiros, favoritos, preferências e visitas deste navegador
+        </label>}
+
         <CampoSenha
           id={id('senha')}
           valor={v.senha}
@@ -123,12 +143,14 @@ export default function FormularioCadastro({ categoria }) {
           aoMudar={(valor) => setV((atual) => ({ ...atual, confirmar: valor }))}
           autoComplete="new-password"
         />
-      </div>
+      </fieldset>
 
       {erro && <p className="acesso-erro" role="alert">{erro}</p>}
 
       <div className="perfil-acoes">
-        <button type="submit" className="home-btn home-btn--verde">Criar conta</button>
+        <button type="submit" className="home-btn home-btn--verde" disabled={verificando}>
+          {verificando ? 'Verificando e-mail…' : 'Criar conta'}
+        </button>
       </div>
     </form>
   )

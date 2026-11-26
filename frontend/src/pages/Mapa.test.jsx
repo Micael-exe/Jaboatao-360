@@ -1,3 +1,5 @@
+import { simularConta } from '../test/conta'
+import { snapshot } from '../data/banco'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, it, vi } from 'vitest'
@@ -31,6 +33,7 @@ it('repete uma consulta com falha e permite alterar um filtro sem resultados', a
   expect(within(screen.getByRole('group', { name: 'Praias' })).getByRole('radio', { name: 'Sim' })).toBeChecked()
 })
 it('encerra antes da última foto, preserva a origem após falha e exclui o lugar pulado', async () => {
+  simularConta()
   gerarRoteiro.mockRejectedValueOnce(new Error()).mockResolvedValueOnce({
     relogio: { dia: 5, minuto: 780 }, fora: [], tracados: [],
     paradas: [{ local: demonstracao[0], viagem: 20, chegada: 800, inicio: 800, fim: 840 }],
@@ -48,6 +51,9 @@ it('encerra antes da última foto, preserva a origem após falha e exclui o luga
   expect(await screen.findByRole('heading', { name: 'Seu roteiro' })).toBeVisible()
   expect(gerarRoteiro.mock.calls[1].slice(0, 2)).toEqual([{ lat: -8.18, lng: -34.92 }, [demonstracao[0]]])
   expect(screen.getByText('13:20–14:00')).toBeVisible()
+  await pessoa.click(screen.getByRole('button', { name: 'Salvar em Meus roteiros' }))
+  expect(screen.getByRole('button', { name: 'Salvo em Meus roteiros' })).toBeDisabled()
+  expect(snapshot().dados.roteiros[0].paradas[0]).toMatchObject({ref: demonstracao[0].id, hora:'13:20'})
 })
 it('permite rever a seleção se todas as fotos foram puladas', async () => {
   const pessoa = await inicio()

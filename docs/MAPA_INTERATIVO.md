@@ -4,13 +4,7 @@ Na tela `/mapa`, a pessoa filtra os interesses com **Sim** ou **Não**, escolhe 
 
 ## Como executar a demonstração
 
-Instale Node.js e npm. O projeto usa a série 22 do Node.js na integração contínua. Na raiz do repositório, execute os comandos abaixo.
-
-```sh
-cd frontend
-npm ci
-npm run dev
-```
+Prepare o MySQL, aplique as migrações e inicie a API e o frontend seguindo os [primeiros passos do README](../README.md#primeiros-passos). Entre com uma conta cadastrada para acessar o mapa.
 
 Abra o endereço indicado pelo Vite e acesse `/mapa`. Com `VITE_MAPA_LOCAIS_URL` em branco, o aplicativo usa o catálogo de demonstração incluído no projeto. A rede neural também já acompanha o código e roda no navegador. A conexão com a internet permite carregar as fotos externas, o mapa do OpenStreetMap e as rotas do OSRM.
 
@@ -140,6 +134,27 @@ Começando pela feira, a pessoa sairia de lá às 13:35 e chegaria ao museu às 
 
 O cálculo implementado considera saída imediata no fuso de Recife e deslocamento de carro. A API pode informar a duração da visita em minutos no campo `duracaoMin`. Quando esse valor estiver ausente ou for inválido, o planejador usará 30 minutos.
 
+## Apresentação da tela (projeto 1.8)
+
+O topo de `/mapa` usa a foto panorâmica da Home, um degradê verde para a leitura do título e a Navbar adaptativa. Em telas largas, o índice das quatro etapas fica à esquerda e acompanha a rolagem. No celular, ele fica acima do conteúdo. A etapa atual recebe destaque visual e continua identificada para leitores de tela por `aria-current="step"`.
+
+A coluna principal reúne o filtro, a seleção de fotos, a partida ou o resultado, conforme a etapa. Ao avançar, o foco vai para o título dessa área. Os controles **Sim** e **Não** têm área de toque de pelo menos 44 px. A seleção, o GPS, os horários, o Leaflet e o cálculo de rotas seguem o fluxo descrito nas seções 1 a 5.
+
+| Arquivo | Papel na apresentação |
+|---|---|
+| `frontend/src/pages/Mapa.jsx` e `Mapa.css` | Estrutura das etapas, índice responsivo e painel de trabalho. |
+| `frontend/src/components/PaginaGuia.jsx` e `frontend/src/pages/Guia.css` | Cabeçalho, largura de leitura e cores compartilhadas com as telas de Roteiros e Comércio. |
+
+## Salvar o passeio na conta (projeto 1.9)
+
+Depois de gerar um passeio com ao menos uma visita, use **Salvar em Meus roteiros**. Abra a tela **Roteiros** para consultar ou editar o passeio. A conta guarda a data local de Recife, a ordem, o horário sugerido e a referência de cada parada. Para os locais fornecidos por um catálogo externo, guarda também o nome apresentado no momento da escolha.
+
+O ponto de partida, a posição do GPS, o desenho do trajeto e os locais que ficaram fora do passeio são usados apenas durante o planejamento. O botão confirma a gravação após a resposta da API e permite tentar novamente em caso de falha.
+
 ## Histórico de versões
 
 Na atualização da versão 0.1 para a 0.2, a documentação do mapa interativo foi aprofundada. O foco foi definir as regras com mais rigor e reduzir ao máximo as chances de erros ou alucinações ao projetar e codificar a funcionalidade descrita no documento.
+
+Na versão 1.8 do projeto, a tela recebeu a apresentação descrita acima. Os três testes de interface do mapa passaram na suíte do frontend.
+
+Na versão 1.9, o resultado do mapa passou a poder ser salvo na conta e reaberto na tela de Roteiros.

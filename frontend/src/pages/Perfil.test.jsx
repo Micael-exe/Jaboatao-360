@@ -1,4 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { simularConta } from '../test/conta'
+import { snapshot } from '../data/banco'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
@@ -10,6 +12,8 @@ const renderPerfil = () =>
       <Perfil />
     </MemoryRouter>,
   )
+
+beforeEach(() => simularConta())
 
 describe('Tela de Perfil', () => {
   it('mostra os dados iniciais e o resumo', () => {
@@ -28,7 +32,7 @@ describe('Tela de Perfil', () => {
 
     expect(screen.getByText(/Dados atualizados/)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Maria' })).toBeInTheDocument()
-    expect(JSON.parse(localStorage.getItem('j360_conta')).nome).toBe('Maria')
+    expect(snapshot().dados.conta.nome).toBe('Maria')
   })
 
   it('troca a cor do avatar ao salvar', async () => {
@@ -36,7 +40,7 @@ describe('Tela de Perfil', () => {
     renderPerfil()
     await user.click(screen.getByRole('button', { name: 'Cor do avatar: Sol' }))
     await user.click(screen.getByRole('button', { name: 'Salvar alterações' }))
-    expect(JSON.parse(localStorage.getItem('j360_conta')).avatar).toBe('sol')
+    expect(snapshot().dados.conta.avatar).toBe('sol')
   })
 
   it('salva interesses automaticamente', async () => {
@@ -44,7 +48,7 @@ describe('Tela de Perfil', () => {
     renderPerfil()
     await user.click(screen.getByRole('button', { name: /Preferências/ }))
     await user.click(screen.getByRole('button', { name: /Aventura/ }))
-    expect(JSON.parse(localStorage.getItem('j360_preferencias')).interesses).toContain('aventura')
+    expect(snapshot().dados.preferencias.interesses).toContain('aventura')
   })
 
   it('liga e desliga notificações', async () => {
@@ -61,15 +65,15 @@ describe('Tela de Perfil', () => {
     const user = userEvent.setup()
     renderPerfil()
     await user.click(screen.getByRole('button', { name: /Histórico de visitas/ }))
-    expect(screen.getAllByRole('button', { name: 'Remover' })).toHaveLength(2)
+    expect(screen.queryAllByRole('button', { name: 'Remover' })).toHaveLength(0)
 
     fireEvent.change(document.querySelector('input[type="date"]'), {
       target: { value: '2026-10-01' },
     })
     await user.click(screen.getByRole('button', { name: '+ Registrar visita' }))
-    expect(screen.getAllByRole('button', { name: 'Remover' })).toHaveLength(3)
+    expect(screen.getAllByRole('button', { name: 'Remover' })).toHaveLength(1)
 
     await user.click(screen.getAllByRole('button', { name: 'Remover' })[0])
-    expect(screen.getAllByRole('button', { name: 'Remover' })).toHaveLength(2)
+    expect(screen.queryAllByRole('button', { name: 'Remover' })).toHaveLength(0)
   })
 })

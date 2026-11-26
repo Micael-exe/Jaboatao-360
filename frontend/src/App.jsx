@@ -1,3 +1,5 @@
+import { Fragment, useSyncExternalStore } from 'react'
+import { aviso, observar, versaoDaConta } from './data/banco'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Home from './pages/Home'
 import Mapa from './pages/Mapa'
@@ -8,17 +10,20 @@ import Perfil from './pages/Perfil'
 import Login from './pages/Login'
 import Cadastro from './pages/Cadastro'
 import Navbar from './components/Navbar'
-import { estaLogado } from './data/acesso'
+import useSessao from './hooks/useSessao'
 
 // Sem login ou cadastro, a tela não abre: a pessoa é levada para a entrada
 function Protegida({ children }) {
-  return estaLogado() ? children : <Navigate to="/login" replace />
+  const versao = useSyncExternalStore(observar, versaoDaConta)
+  return useSessao() ? <Fragment key={versao}>{children}</Fragment> : <Navigate to="/login" replace />
 }
 
 function App() {
+  const mensagem = useSyncExternalStore(observar, aviso)
   return (
     <BrowserRouter>
       <Navbar />
+      {mensagem && <p className="notice" role="alert" style={{ position: 'fixed', bottom: 0, left: 12, zIndex: 1200 }}>{mensagem}</p>}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/mapa" element={<Protegida><Mapa /></Protegida>} />

@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import Navbar from './Navbar'
 
-const entrar = () => localStorage.setItem('j360_sessao', JSON.stringify({ categoria: 'turista', email: 'ana@exemplo.com' }))
+import { simularConta as entrar } from '../test/conta'
 
 const renderNavbar = (rota = '/') =>
   render(

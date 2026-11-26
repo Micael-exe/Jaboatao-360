@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { autenticar } from '../../data/banco'
 import Campo from './Campo'
 import CampoSenha from './CampoSenha'
-import { emailValido, iniciarSessao, mensagemSenha, senhaValida } from '../../data/acesso'
+import { emailValido, mensagemSenha, senhaValida } from '../../data/acesso'
 
 export default function FormularioLogin({ categoria }) {
   const navigate = useNavigate()
@@ -12,7 +13,8 @@ export default function FormularioLogin({ categoria }) {
 
   const id = (campo) => `login-${categoria.id}-${campo}`
 
-  const entrar = (e) => {
+  const [ocupado, setOcupado] = useState(false)
+  const entrar = async (e) => {
     e.preventDefault()
     if (!emailValido(email)) {
       setErro('Informe um e-mail válido.')
@@ -22,8 +24,14 @@ export default function FormularioLogin({ categoria }) {
       setErro(mensagemSenha)
       return
     }
-    iniciarSessao({ categoria, email, modo: 'login' })
-    navigate('/perfil')
+    if (ocupado) return
+    setOcupado(true)
+    setErro('')
+    try {
+      await autenticar('login', { categoria: categoria.id, email, senha })
+      navigate('/perfil')
+    } catch (falha) { setErro(falha.message) }
+    finally { setOcupado(false) }
   }
 
   return (
@@ -47,7 +55,7 @@ export default function FormularioLogin({ categoria }) {
       {erro && <p className="acesso-erro" role="alert">{erro}</p>}
 
       <div className="perfil-acoes">
-        <button type="submit" className="home-btn home-btn--verde">Entrar</button>
+        <button type="submit" disabled={ocupado} className="home-btn home-btn--verde">Entrar</button>
       </div>
     </form>
   )

@@ -1,0 +1,12 @@
+{
+  "name": "jaboatao-360-api",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.19" },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env.local servidor.mjs",
+    "migrate": "node --env-file-if-exists=.env.local banco/migrar.mjs",
+    "test": "node --env-file-if-exists=.env.teste.local --test verificar-email.test.mjs banco/contas.test.mjs"
+  },
+  "dependencies": { "mysql2": "^3.15.3" }
+}

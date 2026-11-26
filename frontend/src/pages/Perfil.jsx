@@ -1,5 +1,8 @@
 import { useState } from 'react'
-import useLocalStorage from '../hooks/useLocalStorage'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { aguardarGravacao, informar, sair } from '../data/banco'
+import { ramos } from '../data/acesso'
+import useDadosConta from '../hooks/useLocalStorage'
 import CtaBand from '../components/home/CtaBand'
 import Footer from '../components/Footer'
 import { atrativos, interessesDisponiveis } from '../data/dados'
@@ -40,10 +43,7 @@ const preferenciasIniciais = {
   notificacoes: { novidades: true, roteiros: true, comercio: false },
 }
 
-const visitasIniciais = [
-  { id: 1, atrativoId: 'a-1', data: '2026-09-12', nota: 'Dia lindo, água calma!' },
-  { id: 2, atrativoId: 'a-4', data: '2026-08-02', nota: 'Visita guiada muito boa.' },
-]
+const visitasIniciais = []
 
 const notificacoes = [
   ['novidades', 'Novidades e novos atrativos'],
@@ -62,12 +62,14 @@ const iniciais = (nome) => {
 const tomValido = (tom) => (tonsAvatar.some((t) => t.id === tom) ? tom : 'espuma')
 
 export default function Perfil() {
+  const navigate = useNavigate()
+  const { state } = useLocation()
   const [aba, setAba] = useState('conta')
-  const [conta, setConta] = useLocalStorage('j360_conta', contaInicial)
-  const [prefs, setPrefs] = useLocalStorage('j360_preferencias', preferenciasIniciais)
-  const [visitas, setVisitas] = useLocalStorage('j360_visitas', visitasIniciais)
-  const [roteiros] = useLocalStorage('j360_roteiros', [])
-  const [favoritos] = useLocalStorage('j360_favoritos_comercio', [])
+  const [conta, setConta] = useDadosConta('j360_conta', contaInicial)
+  const [prefs, setPrefs] = useDadosConta('j360_preferencias', preferenciasIniciais)
+  const [visitas, setVisitas] = useDadosConta('j360_visitas', visitasIniciais)
+  const [roteiros] = useDadosConta('j360_roteiros', [])
+  const [favoritos] = useDadosConta('j360_favoritos_comercio', [])
 
   const [formConta, setFormConta] = useState(conta)
   const [salvoConta, setSalvoConta] = useState(false)
@@ -75,9 +77,10 @@ export default function Perfil() {
 
   const buscarAtrativo = (id) => atrativos.find((a) => a.id === id)
 
-  const salvarConta = (e) => {
+  const salvarConta = async (e) => {
     e.preventDefault()
     setConta(formConta)
+    try { await aguardarGravacao() } catch { return }
     setSalvoConta(true)
     setTimeout(() => setSalvoConta(false), 2500)
   }
@@ -166,7 +169,9 @@ export default function Perfil() {
 
             <div className="perfil-conteudo">
               <p className="notice">
-                Dados demonstrativos: as informações ficam salvas apenas neste navegador, sem login real.
+                {state?.emailAceito === conta.email
+                  ? 'E-mail válido. Sua conta foi criada.'
+                  : 'Seus dados, preferências e visitas ficam salvos na sua conta.'}
               </p>
 
               {aba === 'conta' && (
@@ -246,11 +251,27 @@ export default function Perfil() {
                           />
                         </div>
                       )}
+                      {tipoValido(formConta.tipoUsuario) !== 'Turista' && <>
+                        <div className="perfil-campo"><label htmlFor="perfil-ramo">Ramo de atuação</label>
+                          <select id="perfil-ramo" className="input" required value={formConta.ramo ?? ''} onChange={e => setFormConta({ ...formConta, ramo: e.target.value })}>
+                            <option value="">Selecione</option>{ramos.map(r => <option key={r}>{r}</option>)}
+                          </select></div>
+                        <div className="perfil-campo"><label htmlFor="perfil-bairro">Bairro</label>
+                          <input id="perfil-bairro" className="input" value={formConta.bairro ?? ''} onChange={e => setFormConta({ ...formConta, bairro: e.target.value })} /></div>
+                        {formConta.tipoUsuario === 'Empresa' && <div className="perfil-campo"><label htmlFor="perfil-cnpj">CNPJ</label>
+                          <input id="perfil-cnpj" className="input" required value={formConta.cnpj ?? ''} onChange={e => setFormConta({ ...formConta, cnpj: e.target.value })} /></div>}
+                      </>}
                     </div>
 
                     <div className="perfil-acoes">
                       <button type="submit" className="home-btn home-btn--verde">
                         Salvar alterações
+                      </button>
+                      <button type="button" className="perfil-remover" onClick={async () => {
+                        try { await sair(); navigate('/login', { replace: true }) }
+                        catch (erro) { informar(erro.message) }
+                      }}>
+                        Sair da conta
                       </button>
                       {salvoConta && (
                         <span className="perfil-status" role="status">Dados atualizados.</span>
