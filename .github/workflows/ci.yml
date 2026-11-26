@@ -43,7 +43,7 @@ jobs:
         run: npm run build
 
   banco:
-    name: API e migrações no MySQL 8
+    name: Backend · lint, testes e build
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -51,6 +51,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: j360_ci
           MYSQL_ROOT_HOST: '%'
+          MYSQL_DATABASE: j360_build_ci
         ports:
           - 3306:3306
         options: >-
@@ -62,11 +63,22 @@ jobs:
     env:
       DB_HOST: 127.0.0.1
       DB_USER: root
+      DB_NAME: j360_build_ci
       DB_PASSWORD: j360_ci
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: 22
-      - run: npm install --no-audit --no-fund
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
       - run: npm test
+      - run: npm run build
+      - run: npm run migrate:dist
+      - name: Verificar a API gerada
+        run: |
+          node dist/servidor.mjs &
+          api_pid=$!
+          trap 'kill "$api_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --show-error --retry 10 --retry-connrefused \
+            http://127.0.0.1:3001/api/sessao | grep -x null

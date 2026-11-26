@@ -1097,3 +1097,26 @@ O servidor e o comando de migração leem `.env.local`. A suíte de testes lê `
 4. Na mesma pasta, execute `npm test`. A suíte cria um esquema `j360_teste_<identificador>`, aplica as migrações, testa as contas e remove o esquema ao terminar. Basta que o MySQL esteja rodando para essa execução.
 
 Se aparecer **Access denied for user**, confira o usuário, a senha e o host da credencial de testes. Se a recusa mencionar um banco `j360_teste_...` durante a criação ou remoção, confira as permissões da credencial nessa instância.
+
+### 20.8 Lint, testes e build do backend
+
+Na pasta `backend`, use Node.js 22.19 ou posterior da série 22 e execute:
+
+```powershell
+npm ci
+npm run lint
+npm test
+npm run build
+```
+
+| Comando | O que verifica ou produz | Configuração necessária |
+|---|---|---|
+| `npm run lint` | O ESLint aplica as regras recomendadas de JavaScript aos módulos `.mjs` do backend, incluindo os testes, o script de build e a própria configuração. Erros ou avisos fazem o comando falhar. | Dependências de desenvolvimento instaladas. |
+| `npm test` | O executor nativo do Node roda os testes de e-mail e a integração com MySQL descritos nas seções 20.5 e 20.7. | MySQL e credenciais de teste. |
+| `npm run build` | O Rolldown segue os imports do servidor e do executor de migrações, inclui as regras e o catálogo do projeto e gera módulos ESM para Node.js. O script copia as migrações SQL para a distribuição. | Dependências de desenvolvimento instaladas. Pode rodar com o MySQL desligado e sem chave da Abstract. |
+
+**Arquivos.** `backend/eslint.config.mjs` usa ESLint, `@eslint/js` e os globais do Node fornecidos por `globals`. `backend/scripts/build.mjs` usa Rolldown e funções nativas do Node. As versões das dependências ficam em `backend/package-lock.json`. A pasta `dist/` é gerada localmente e ignorada pelo Git e pelo lint.
+
+**Publicação.** Distribua todo o conteúdo de `backend/dist/` junto de `backend/package.json` e `backend/package-lock.json`, mantendo `dist/` ao lado desses dois arquivos. No servidor, execute `npm ci --omit=dev` para instalar as dependências de execução, incluindo `mysql2`. O build já inclui os módulos compartilhados com o frontend. Forneça a configuração do banco e da Abstract no ambiente ou em `.env.local` na pasta do pacote. Execute `npm run migrate:dist` para atualizar o banco escolhido e `npm run start:dist` para iniciar a API. Os comandos `npm start` e `npm run migrate` continuam disponíveis para quem trabalha com o código-fonte.
+
+**Integração contínua.** O trabalho do backend no GitHub Actions instala as dependências pelo lockfile, roda lint, testes e build. Depois executa as migrações empacotadas no banco `j360_build_ci` do serviço temporário de MySQL 8, inicia o servidor gerado e consulta `GET /api/sessao` para conferir a resposta de uma sessão anônima.
