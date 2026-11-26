@@ -246,11 +246,11 @@ npm ci
 npm run dev
 ```
 
-Abra `http://localhost:5173`. A API atende na porta 3001 e o Vite encaminha as requisições a `/api`. Em produção, sirva o frontend por HTTPS, encaminhe `/api/*` para o backend preservando o cabeçalho `Host` e defina `NODE_ENV=production`. Mantenha `frontend/src/data/` na mesma estrutura relativa ao backend, pois a API importa as regras e o catálogo compartilhados. Execute as migrações antes de iniciar a nova versão.
+Abra `http://localhost:5173`. A API atende na porta 3001 e o Vite encaminha as requisições a `/api`. Em produção, sirva o frontend por HTTPS, encaminhe `/api/*` para o backend preservando o cabeçalho `Host` e defina `NODE_ENV=production`. Ao executar o código-fonte, preserve a estrutura relativa de `frontend/src/data/`. Ao publicar o build, os módulos compartilhados de catálogo e validação já estão incluídos em `backend/dist/`. Veja a seção 20.8 da [documentação técnica](docs/DOCUMENTACAO.md). Execute as migrações antes de iniciar a nova versão.
 
 ### Scripts disponíveis
 
-Todos executados dentro de `frontend/`:
+Comandos executados dentro de `frontend/`:
 
 | Comando | Descrição |
 |---|---|
@@ -260,6 +260,16 @@ Todos executados dentro de `frontend/`:
 | `npm run lint` | Analisa o código com o ESLint |
 | `npm test` | Executa os testes uma vez |
 | `npm run test:watch` | Executa os testes em modo contínuo |
+
+Em `backend/`, execute `npm ci` para instalar as versões registradas no lockfile.
+
+| Comando do backend | Descrição |
+|---|---|
+| `npm run lint` | Analisa os módulos da API, do banco, dos testes e do build com ESLint. |
+| `npm test` | Executa a suíte de e-mail e os testes de integração no MySQL de testes. |
+| `npm run build` | Gera o servidor, o executor de migrações e os arquivos SQL em `backend/dist/`. |
+| `npm run migrate:dist` | Aplica as migrações da distribuição usando o ambiente da API. |
+| `npm run start:dist` | Inicia o servidor gerado. |
 
 ### Fotos da página inicial
 
@@ -328,7 +338,7 @@ A cada push e Pull Request, o GitHub Actions executa dois trabalhos independente
 | Trabalho | Verificações |
 |---|---|
 | Frontend | Instalação, ESLint, Vitest e build do Vite |
-| Backend | MySQL 8 isolado, instalação do driver mysql2, testes da Abstract com respostas simuladas e testes de integração de contas e migrações |
+| Backend | Instalação com lockfile, ESLint, testes com MySQL 8 isolado, build, execução das migrações geradas e consulta HTTP à API de distribuição |
 
 Se qualquer etapa falhar, a pipeline fica vermelha e o resultado aparece no commit e no Pull Request. O badge **CI**, no topo deste arquivo, reflete o resultado da branch principal.
 
