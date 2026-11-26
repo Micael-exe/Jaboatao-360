@@ -1,4 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { simularConta } from '../test/conta'
+import { snapshot } from '../data/banco'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
@@ -10,6 +12,8 @@ const renderComercio = () =>
       <Comercio />
     </MemoryRouter>,
   )
+
+beforeEach(() => simularConta())
 
 describe('Tela de Comércio local', () => {
   it('lista todos os locais ao abrir', () => {
@@ -44,7 +48,7 @@ describe('Tela de Comércio local', () => {
     renderComercio()
     await user.click(screen.getAllByLabelText('Favoritar')[0])
     expect(screen.getAllByLabelText('Remover dos favoritos')).toHaveLength(1)
-    expect(JSON.parse(localStorage.getItem('j360_favoritos_comercio'))).toEqual(['c-1'])
+    expect(snapshot().dados.favoritos_comercio).toEqual(['c-1'])
   })
 
   it('adiciona um local ao roteiro e mostra o atalho', async () => {
@@ -54,6 +58,6 @@ describe('Tela de Comércio local', () => {
 
     expect(screen.getByRole('button', { name: '✓ Adicionado!' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Ver roteiro/ })).toHaveAttribute('href', '/roteiros')
-    expect(JSON.parse(localStorage.getItem('j360_rascunho')).paradas).toHaveLength(1)
+    expect(snapshot().dados.rascunho.paradas).toHaveLength(1)
   })
 })

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import logo from '../assets/logo-jaboatao360.webp'
-import { estaLogado } from '../data/acesso'
+import useSessao from '../hooks/useSessao'
 import './Footer.css'
 
 // 'restrito' indica os caminhos que só aparecem depois do login ou cadastro
@@ -14,7 +14,7 @@ const links = [
 ]
 
 export default function Footer() {
-  const logado = estaLogado()
+  const logado = useSessao()
   const linksVisiveis = links.filter(({ restrito }) => logado || !restrito)
 
   return (

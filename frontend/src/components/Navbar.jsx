@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import logoColorida from '../assets/logo-jaboatao360-navbar.webp'
 import logoBranca from '../assets/logo-jaboatao360-navbar-branca.webp'
-import { estaLogado } from '../data/acesso'
+import useSessao from '../hooks/useSessao'
 import './Navbar.css'
 
 // 'restrito' indica os caminhos que só aparecem depois do login ou cadastro
@@ -20,8 +20,7 @@ export default function Navbar() {
   const { pathname } = useLocation()
   const [aberto, setAberto] = useState(false)
   const barra = useRef(null)
-  // Páginas com topo escuro: início, sobre, perfil, login e cadastro. Nas demais, a barra continua clara e fixa no fluxo
-  const naHome = pathname === '/' || pathname === '/sobre' || pathname === '/perfil' || pathname === '/login' || pathname === '/cadastro'
+  const topoEscuro = ['/', '/sobre', '/perfil', '/login', '/cadastro', '/mapa', '/roteiros', '/comercio'].includes(pathname)
 
   // Nas páginas com topo em foto: a barra fica transparente sobre o topo e, ao rolar, encolhe e assume o tom
   // da seção que está por baixo dela. Cada seção declara seu tom em data-nav-tema.
@@ -29,7 +28,7 @@ export default function Navbar() {
   const [tema, setTema] = useState('escura') // 'escura' = fundo escuro por baixo; 'clara' = fundo claro
 
   useEffect(() => {
-    if (!naHome) return undefined
+    if (!topoEscuro) return undefined
     let quadro = 0
 
     const medir = () => {
@@ -58,13 +57,13 @@ export default function Navbar() {
       window.removeEventListener('scroll', agendar)
       window.removeEventListener('resize', agendar)
     }
-  }, [naHome])
+  }, [topoEscuro, pathname])
 
-  const logado = estaLogado()
+  const logado = useSessao()
   // 'visitante' são os caminhos de quem ainda não entrou; 'restrito', os que exigem login
   const linksVisiveis = links.filter(({ restrito, visitante }) => (logado ? !visitante : !restrito))
 
-  const classeHome = naHome ? `nav--home nav--${tema} ${rolou ? 'nav--rolou' : ''}` : ''
+  const classeHome = topoEscuro ? `nav--home nav--${tema} ${rolou ? 'nav--rolou' : ''}` : ''
 
   return (
     <nav ref={barra} className={`nav ${classeHome}`}>
@@ -77,8 +76,8 @@ export default function Navbar() {
             alt="Jaboatão 360"
             className="nav-logo nav-logo--colorida h-10 md:h-11 w-auto"
           />
-          {/* Versão clara da logo, usada sobre fundos escuros. Só aparece na home */}
-          {naHome && (
+          {/* Versão clara da logo, usada sobre fundos escuros. Usada nas páginas com topo escuro */}
+          {topoEscuro && (
             <img
               src={logoBranca}
               width="400"

@@ -15,14 +15,14 @@ const textos = {
     titulo: 'Escolha como você usa o Jaboatão 360.',
     lead: 'Cada categoria tem a sua entrada. Escolha a que combina com você e acesse o seu perfil.',
     aviso:
-      'Login demonstrativo: não há servidor. Qualquer e-mail válido com uma senha que siga as regras do cadastro entra, e os dados ficam salvos apenas neste navegador.',
+      'Entre com o e-mail e a senha cadastrados e selecione o seu perfil.',
   },
   cadastro: {
     eyebrow: 'Cadastro',
     titulo: 'Crie sua conta no Jaboatão 360.',
     lead: 'Escolha a categoria, preencha os dados e comece a usar. Cada categoria pede as informações que fazem sentido para ela.',
     aviso:
-      'Cadastro demonstrativo: não há servidor e a senha não é guardada. Os dados ficam salvos apenas neste navegador.',
+      'O cadastro consulta a Abstract para verificar se o e-mail pode receber mensagens. Apenas o endereço é enviado. Seus dados ficam vinculados à conta.',
   },
 }
 

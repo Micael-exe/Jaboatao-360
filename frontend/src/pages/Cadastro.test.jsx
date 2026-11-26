@@ -1,8 +1,20 @@
-import { describe, expect, it } from 'vitest'
+import { exemplo } from '../test/conta'
+import { snapshot } from '../data/banco'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import Cadastro from './Cadastro'
+
+beforeEach(() => {
+  vi.stubGlobal('fetch', vi.fn(async (_url,op) => {
+    const v=JSON.parse(op.body)
+    const dados={...v.conta,email:v.email,tipoUsuario:{turista:'Turista',empreendedor:'Empreendedor',empresa:'Empresa'}[v.categoria]}
+    if (dados.cnpj) dados.cnpj=dados.cnpj.replace(/\D/g,'')
+    return {ok:true,json:async()=>exemplo(dados)}
+  }))
+})
+afterEach(() => vi.unstubAllGlobals())
 
 const renderCadastro = (rota = '/cadastro') =>
   render(
@@ -15,7 +27,7 @@ const renderCadastro = (rota = '/cadastro') =>
     </MemoryRouter>,
   )
 
-const conta = () => JSON.parse(localStorage.getItem('j360_conta'))
+const conta = () => snapshot()?.dados.conta ?? null
 
 describe('Tela de Cadastro', () => {
   it('cada categoria pede os próprios campos', async () => {
@@ -47,8 +59,11 @@ describe('Tela de Cadastro', () => {
     await user.click(screen.getByRole('button', { name: 'Criar conta' }))
 
     expect(screen.getByRole('heading', { name: 'Tela de perfil' })).toBeInTheDocument()
+    expect(fetch).toHaveBeenCalledWith('/api/cadastro', expect.objectContaining({
+      method: 'POST', body: expect.stringContaining('maria@exemplo.com'),
+    }))
     expect(conta()).toMatchObject({ nome: 'Maria Lima', email: 'maria@exemplo.com', cidade: 'Recife', tipoUsuario: 'Turista' })
-    expect(localStorage.getItem('j360_conta')).not.toContain('Segredo1!')
+    expect(localStorage.getItem('j360_conta')).toBeNull()
   })
 
   it('recusa senhas diferentes', async () => {
@@ -110,6 +125,26 @@ describe('Tela de Cadastro', () => {
       expect(screen.getByRole('alert')).toHaveTextContent('caractere especial')
     }
     expect(localStorage.getItem('j360_conta')).toBeNull()
+  })
+
+  it.each([
+    ['invalido', 'inválido'],
+    ['inconclusivo', 'confirmar'],
+    ['indisponivel', 'indisponível'],
+    ['limite', 'Aguarde'],
+  ])('bloqueia o cadastro quando a API responde %s', async (estado, mensagem) => {
+    fetch.mockResolvedValueOnce({ ok: false, status: estado === 'limite' ? 429 : 422, json: async () => ({ mensagem }) })
+    const user = userEvent.setup()
+    renderCadastro()
+    await user.type(screen.getByLabelText('Nome'), 'Maria')
+    await user.type(screen.getByLabelText('E-mail'), 'maria@exemplo.com')
+    await user.type(screen.getByLabelText('Senha'), 'Segredo1!')
+    await user.type(screen.getByLabelText('Confirmar senha'), 'Segredo1!')
+    await user.click(screen.getByRole('button', { name: 'Criar conta' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent(mensagem)
+    expect(conta()).toBeNull()
+    expect(localStorage.getItem('j360_sessao')).toBeNull()
+    expect(screen.getByLabelText('Nome')).toHaveValue('Maria')
   })
 
   it('leva ao login pelo link', async () => {

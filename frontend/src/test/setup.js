@@ -1,3 +1,4 @@
+import { receberConta } from '../data/banco'
 import '@testing-library/jest-dom/vitest'
 import { afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
@@ -8,5 +9,7 @@ window.scrollTo = vi.fn()
 // Isola cada teste: desmonta a tela e limpa o "banco" local
 afterEach(() => {
   cleanup()
+  receberConta(null)
+  vi.unstubAllGlobals()
   localStorage.clear()
 })

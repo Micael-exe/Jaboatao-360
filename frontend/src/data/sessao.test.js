@@ -1,26 +1,16 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { estaLogado, iniciarSessao, categorias } from './acesso'
+import { expect, it, vi } from 'vitest'
+import { carregarSessao, contaAntiga, lerLegado, snapshot } from './banco'
 
-beforeEach(() => localStorage.clear())
-
-describe('estaLogado', () => {
-  it('é falso sem sessão gravada', () => {
-    expect(estaLogado()).toBe(false)
-  })
-
-  it('é verdadeiro depois do login ou cadastro', () => {
-    iniciarSessao({ categoria: categorias[0], email: 'ana@exemplo.com', modo: 'login' })
-    expect(estaLogado()).toBe(true)
-  })
-
-  it('volta a ser falso se a sessão for apagada', () => {
-    iniciarSessao({ categoria: categorias[0], email: 'ana@exemplo.com', modo: 'login' })
-    localStorage.removeItem('j360_sessao')
-    expect(estaLogado()).toBe(false)
-  })
-
-  it('ignora sessão corrompida', () => {
-    localStorage.setItem('j360_sessao', '{quebrado')
-    expect(estaLogado()).toBe(false)
-  })
+it('ignora a antiga sessão demonstrativa e consulta o servidor', async () => {
+  localStorage.setItem('j360_sessao','{"email":"ana@example.com"}')
+  vi.stubGlobal('fetch',vi.fn(async()=>({ok:true,json:async()=>null})))
+  await carregarSessao()
+  expect(snapshot()).toBeNull()
+})
+it('oferece importação apenas para o e-mail correspondente', () => {
+  localStorage.setItem('j360_conta','{"email":"Ana@example.com"}')
+  localStorage.setItem('j360_favoritos_comercio','["c-2"]')
+  expect(contaAntiga('bia@example.com')).toBeNull()
+  expect(lerLegado('ana@example.com').dados.favoritos_comercio).toEqual(['c-2'])
+  expect(localStorage.getItem('j360_favoritos_comercio')).toBeTruthy()
 })

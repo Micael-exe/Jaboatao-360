@@ -1,4 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { exemplo } from '../test/conta'
+import { snapshot } from '../data/banco'
+import { vi, describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -69,14 +71,15 @@ describe('Tela de Login', () => {
 
   it('entra, grava a sessão e a conta e vai para o perfil', async () => {
     const user = userEvent.setup()
+    vi.stubGlobal('fetch',vi.fn(async()=>({ok:true,json:async()=>exemplo({nome:'Ana souza',tipoUsuario:'Empreendedor'})})))
     renderLogin('/login?categoria=empreendedor')
     await user.type(screen.getByLabelText('E-mail'), 'ana.souza@exemplo.com')
     await user.type(screen.getByLabelText('Senha'), 'Segredo1!')
     await user.click(screen.getByRole('button', { name: 'Entrar' }))
 
     expect(screen.getByRole('heading', { name: 'Tela de perfil' })).toBeInTheDocument()
-    expect(JSON.parse(localStorage.getItem('j360_sessao')).categoria).toBe('empreendedor')
-    const conta = JSON.parse(localStorage.getItem('j360_conta'))
+    expect(fetch).toHaveBeenCalledWith('/api/login',expect.objectContaining({method:'POST'}))
+    const conta = snapshot().dados.conta
     expect(conta.tipoUsuario).toBe('Empreendedor')
     expect(conta.nome).toBe('Ana souza')
   })

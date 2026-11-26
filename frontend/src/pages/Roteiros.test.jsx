@@ -1,4 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { simularConta } from '../test/conta'
+import { snapshot } from '../data/banco'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Roteiros from './Roteiros'
@@ -7,6 +9,8 @@ const botoesAdicionar = () => screen.getAllByRole('button', { name: '+ Adicionar
 const nomeDoRoteiro = () => screen.getByPlaceholderText('Nome do roteiro')
 const nomesNoEditor = () =>
   within(document.querySelector('ol')).getAllByText(/^Praia de/).map((el) => el.textContent)
+
+beforeEach(() => simularConta())
 
 describe('Tela de Roteiros', () => {
   it('mostra os estados vazios ao abrir', () => {
@@ -41,7 +45,7 @@ describe('Tela de Roteiros', () => {
     expect(screen.getByRole('heading', { name: 'Meu passeio' })).toBeInTheDocument()
     expect(screen.getByText(/1 parada/)).toBeInTheDocument()
     expect(nomeDoRoteiro()).toHaveValue('')
-    expect(JSON.parse(localStorage.getItem('j360_roteiros'))).toHaveLength(1)
+    expect(snapshot().dados.roteiros).toHaveLength(1)
   })
 
   it('reorganiza as paradas com os botões de subir e descer', async () => {

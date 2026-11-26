@@ -1,10 +1,10 @@
 # Documentação — Novas telas, testes e pipeline de CI
 
-Projeto **Jaboatão 360** · Frontend (React + Vite + Tailwind)
+Projeto **Jaboatão 360** · Frontend (React + Vite + Tailwind), API Node.js e MySQL 8
 
-Versão da documentação: **1.7** · Atualizado em 24/11/2026
+Versão da documentação: **1.9** · Atualizado em 25/11/2026
 
-Este documento resume o que foi desenvolvido nesta entrega: três novas telas, testes automatizados, o uso de IA para apoiar os cenários de teste e a pipeline do GitHub Actions.
+O histórico abaixo acompanha a evolução do projeto. Para configurar a versão atual, siga os [primeiros passos do README](../README.md#primeiros-passos). A seção 20 descreve as contas, a persistência e as migrações disponíveis desde a versão 1.9.
 
 ---
 
@@ -410,6 +410,10 @@ Para evitar o aspecto de página gerada por modelo, a home foi simplificada:
 
 | Versão | Seções | Resumo |
 |---|---|---|
+| **1.9** | 20 | Contas, sessões, dados pessoais e migrações versionadas no MySQL |
+| **1.8.2** | 19 | Migração do cadastro para a Email Intelligence API da Abstract |
+| **1.8.1** | 18 | Migração da consulta de entregabilidade para a Verifalia e tratamento de verificações em andamento |
+| **1.8** | 17 | Verificação de e-mail no cadastro, saída da conta e atualização visual das telas do guia |
 | **1.7** | 16 | Link "Entrar" oculto depois do login e regra de senha (maiúscula, número e caractere especial) no cadastro e no login |
 | **1.6** | 15 | Acesso restrito ao mapa, roteiros, comércio e perfil (menu, rodapé e rotas), botão "Continuar sem conta" removido e documentação e testes atualizados |
 | **1.5** | 14 | Login e cadastro por categoria (Turista, Empreendedor e Empresa), categorias novas no Perfil e link "Entrar" na Navbar |
@@ -846,4 +850,250 @@ No total, o projeto passou de 76 para 88 testes e de 13 para 14 arquivos de test
 - **Regra apenas no frontend:** como toda a autenticação demonstrativa, a validação não é segurança real até existir backend.
 - **Cobertura por arquivo** ainda não foi remedida (ver 15.6).
 
+---
 
+## 17. Verificação de e-mail, saída da conta e telas do guia (versão 1.8)
+
+### 17.1 Escopo
+
+| Tela | Comportamento |
+|---|---|
+| Cadastro de turista, empreendedor ou empresa | Depois das validações locais, consulta o endereço informado. Um resultado válido libera a gravação da conta e da sessão e leva ao Perfil, com a confirmação. |
+| Perfil → Dados da conta | **Sair da conta** encerra a sessão e leva para `/login`. O menu, o rodapé e as rotas protegidas acompanham a mudança, inclusive em outras abas da mesma origem. |
+| Roteiros | Abertura com a foto do Pilar. Catálogo e editor ficam lado a lado em telas largas e empilhados no celular. Os roteiros salvos aparecem abaixo. |
+| Comércio | Busca e filtros ficam ao lado dos resultados em telas largas. A vitrine apresenta tipo, categoria, bairro, horário e preço, com ações de favorito e de inclusão no roteiro. |
+| Mapa | A apresentação e as etapas estão descritas em [MAPA_INTERATIVO.md](MAPA_INTERATIVO.md). |
+
+### 17.2 Contrato e configuração da API
+
+O navegador envia `POST /api/verificar-email` com `Content-Type: application/json` e um corpo como `{"email":"pessoa@example.com"}`. A API encaminha o endereço para a Abstract. Nome, senha, CNPJ e dados do negócio ficam fora da requisição. A resposta contém a chave `estado`. A aplicação não grava as consultas em banco nem no armazenamento local.
+
+| HTTP | Estado | Efeito no cadastro |
+|---|---|---|
+| 200 | `valido` | O provedor retornou `deliverable` para o endereço informado, com SMTP confirmado e sem indicação de domínio catch-all. O formulário pode concluir o cadastro. |
+| 200 | `invalido` | Formato incorreto ou retorno `undeliverable`, exceto para caixa cheia ou servidor temporariamente indisponível. A pessoa pode corrigir e reenviar. |
+| 200 | `inconclusivo` | O provedor não confirmou uma caixa entregável para cadastro. Inclui `unknown`, caixa cheia, servidor de e-mail indisponível ou resposta entregável sem confirmação SMTP ou com indicação de domínio catch-all. A pessoa pode tentar depois ou informar outro endereço. |
+| 429 | `limite` | Limite de consultas no período. O cabeçalho `Retry-After` informa quantos segundos aguardar. |
+| 503 | `indisponivel` | Chave ausente ou recusada, cota ou limite de requisições da Abstract atingido, falha de rede, tempo esgotado ou resposta inesperada do provedor. Os dados preenchidos permanecem no formulário para nova tentativa. |
+
+A API aceita JSON de até 2 KiB. Método incorreto retorna 405, tipo de conteúdo incompatível retorna 415, JSON malformado retorna 400 e corpo grande demais retorna 413. O servidor limita as consultas a 10 por endereço de conexão e 100 no total por minuto, por processo. Atrás de um proxy, conexões vindas do mesmo proxy compartilham o limite. O servidor faz uma consulta à Abstract por envio válido do formulário, com prazo de 20 segundos.
+
+**Desenvolvimento.** Copie `frontend/.env.example` para `frontend/.env.local`, preencha `ABSTRACT_API_KEY` com a chave da Email Intelligence API da Abstract e reinicie `npm run dev` em `frontend/`. O mesmo endpoint atende `npm run preview`. A chave é lida pelo servidor e usa um nome sem o prefixo `VITE_`. A falta da chave bloqueia o cadastro com aviso de indisponibilidade. O login demonstrativo continua disponível para experimentar as telas.
+
+**Produção.** Na raiz do projeto, com Node.js 22 e a chave no ambiente do processo, execute:
+
+```sh
+node backend/servidor.mjs
+```
+
+A porta padrão é 3001 e pode ser definida em `PORT`. No servidor web, encaminhe `/api/verificar-email` para esse processo antes da regra de fallback da SPA. Sirva o conteúdo de `frontend/dist/` no mesmo domínio, por HTTPS. Uma hospedagem exclusivamente estática precisa desse serviço para concluir cadastros. Parâmetros e credenciais do provedor estão na [documentação da Abstract](https://docs.abstractapi.com/api/email-reputation).
+
+### 17.3 Sessão e limites do MVP
+
+A saída remove apenas `j360_sessao`. Conta, roteiros, rascunho, favoritos, preferências e visitas continuam neste navegador conforme o modelo de armazenamento da seção 2.4. Voltar pelo histórico ou digitar uma rota protegida após sair leva ao login. O MVP continua usando um conjunto de dados por navegador, sem isolamento por conta.
+
+A consulta indica entregabilidade no momento do cadastro. Comprovar que a pessoa controla a caixa exigiria confirmar um código ou link recebido por e-mail. O login continua demonstrativo, e a edição do endereço em Perfil não passa por nova consulta.
+
+### 17.4 Arquivos criados e alterados
+
+| Local | Alteração |
+|---|---|
+| `backend/verificar-email.mjs`, `backend/servidor.mjs` | Verificação e serviço HTTP para produção, usando recursos nativos do Node.js. |
+| `frontend/vite.config.js`, `frontend/.env.example` | Rota no desenvolvimento e na prévia e exemplo da variável privada. |
+| `src/data/verificarEmail.js`, `components/acesso/FormularioCadastro.jsx`, `components/acesso/PaginaAcesso.jsx` | Chamada HTTP, bloqueio de envio duplicado, cancelamento ao trocar de formulário, estados de espera e mensagens. |
+| `src/data/acesso.js`, `hooks/useSessao.js`, `App.jsx`, `components/Navbar.jsx`, `components/Footer.jsx`, `pages/Perfil.jsx` | Encerramento da sessão, atualização das rotas e links, confirmação no Perfil e opção de sair. |
+| `src/components/PaginaGuia.jsx`, `pages/Guia.css`, `pages/Mapa.jsx`, `pages/Mapa.css`, `pages/Roteiros.jsx`, `pages/Comercio.jsx` | Composição das três telas com fotos existentes, tipografia, cores e largura de leitura da Home e da Sobre. A Navbar adapta o contraste ao topo e ao corpo. |
+| `backend/verificar-email.test.mjs`, `src/pages/Cadastro.test.jsx`, `src/App.test.jsx`, `.github/workflows/ci.yml` | Cenários de verificação, sessão e execução dos testes de API na integração contínua. |
+| `README.md`, `docs/DOCUMENTACAO.md`, `docs/MAPA_INTERATIVO.md` | Instalação, arquitetura atual, histórico, alterações e resultados da entrega. |
+
+Os caminhos abreviados de componentes, hooks e páginas da tabela são relativos a `frontend/src/`.
+
+### 17.5 Resultados medidos
+
+| Comando em `frontend/` | Resultado |
+|---|---|
+| `npm run lint` | Concluído sem erros ou avisos. |
+| `npm test` | 94 testes aprovados em 14 arquivos, incluindo as três categorias de cadastro, recusa e indisponibilidade da API, saída e atualização entre abas. |
+| `node --test ../backend/verificar-email.test.mjs` | 10 testes aprovados. As requisições passam pelo manipulador HTTP com respostas de provedor simuladas. |
+| `npm run build` | Build de produção concluído com 118 módulos transformados. |
+
+As três telas foram renderizadas em larguras de 375 e 1.340 px. O conteúdo ficou em uma coluna no celular e em duas no desktop, sem rolagem horizontal da página.
+
+A verificação com uma caixa real depende das credenciais da equipe. Os testes automatizados simulam o provedor e não consomem créditos.
+
+---
+
+## 18. Migração do cadastro para a Verifalia (versão 1.8.1)
+
+Esta seção registra a configuração usada na versão 1.8.1. Para instalar a versão com Abstract, siga a seção 19.
+
+### 18.1 Atualização de uma instalação 1.8
+
+1. Extraia os arquivos desta atualização na raiz do projeto, onde ficam o README e as pastas `backend/`, `frontend/` e `docs/`, e substitua os arquivos correspondentes.
+2. No `frontend/.env.local` existente, troque a linha `ZEROBOUNCE_API_KEY` pelas duas variáveis abaixo. Preserve os valores do mapa e das demais integrações.
+3. Preencha as variáveis com o usuário e a senha de API da Verifalia. O usuário precisa ter autenticação por usuário e senha habilitada e permissão para criar e ler os próprios trabalhos de verificação.
+4. Em desenvolvimento, reinicie `npm run dev`. Em produção, defina as variáveis no ambiente de `backend/servidor.mjs`, reinicie esse processo e publique o frontend recompilado para atualizar o aviso do cadastro.
+
+```dotenv
+VERIFALIA_USERNAME=
+VERIFALIA_PASSWORD=
+```
+
+### 18.2 Como a verificação funciona
+
+A rota usada pelo formulário continua sendo `POST /api/verificar-email`. No servidor, a integração envia um único endereço pelo campo `entries[0].inputData` em um POST para `https://api.verifalia.com/v2.7/email-validations?waitTime=5000`. As credenciais seguem no cabeçalho HTTP Basic sobre HTTPS.
+
+Quando recebe HTTP 202, o servidor usa o identificador do trabalho para consultar o resultado por GET, com até quatro consultas e espera solicitada de três segundos por consulta. Um HTTP 200 só libera o cadastro se o trabalho estiver concluído, contiver o endereço enviado e trouxer a classificação `Deliverable`. A tabela da seção 17.2 descreve os demais resultados. [Envio do trabalho](https://verifalia.com/developers/email-verifications/creating-jobs) · [Leitura do resultado](https://verifalia.com/developers/email-verifications/retrieving-jobs)
+
+### 18.3 Arquivos alterados
+
+| Arquivo | Alteração |
+|---|---|
+| `backend/verificar-email.mjs` | Envio autenticado, acompanhamento do trabalho e tradução das quatro classificações. |
+| `backend/servidor.mjs` | Leitura das credenciais no serviço de produção. |
+| `backend/verificar-email.test.mjs` | Testes do formato da requisição, classificações, acompanhamento e falhas. |
+| `frontend/vite.config.js` | Carregamento das credenciais nos servidores de desenvolvimento e prévia. |
+| `frontend/.env.example` | Nomes das duas variáveis privadas. |
+| `frontend/src/components/acesso/PaginaAcesso.jsx` | Nome do provedor no aviso do cadastro. |
+| `README.md` e `docs/DOCUMENTACAO.md` | Configuração, migração, histórico e contrato do serviço. |
+
+### 18.4 Verificação
+
+Os testes da API simulam as respostas da Verifalia, incluindo conclusão imediata, resposta pendente seguida de conclusão, pendência prolongada, credenciais ausentes e falhas do provedor. O teste com uma caixa real depende das credenciais da instalação.
+
+Na versão 1.8.1, os 94 testes do frontend e os 10 da API passaram. Lint e build de produção concluídos sem erros.
+
+---
+
+## 19. Migração do cadastro para a Abstract (versão 1.8.2)
+
+### 19.1 Atualização de uma instalação 1.8.1
+
+1. Extraia o pacote na raiz do projeto, na pasta do README. Os arquivos já seguem os caminhos de destino.
+2. Em `frontend/.env.local`, substitua as linhas de `VERIFALIA_USERNAME` e `VERIFALIA_PASSWORD` por `ABSTRACT_API_KEY` e informe a chave da **Email Intelligence API** da Abstract. Mantenha as outras configurações locais.
+3. Reinicie `npm run dev` em `frontend/`. Para produção, configure a mesma variável no ambiente de `backend/servidor.mjs`, reinicie o serviço e publique o frontend recompilado.
+
+```dotenv
+ABSTRACT_API_KEY=sua_chave_da_abstract
+```
+
+### 19.2 Consulta e resultados
+
+O formulário continua enviando o endereço a `POST /api/verificar-email`. O servidor faz um POST HTTPS para `https://emailreputation.abstractapi.com/v1/`, com a chave no cabeçalho Bearer e apenas o campo `email` no corpo JSON. A resposta já contém o resultado. A chave fica no servidor.
+
+O cadastro confere se o endereço devolvido corresponde ao enviado e lê `email_deliverability.status`. Para aprovar, exige `deliverable` e `is_smtp_valid: true`. Quando o provedor sinaliza `email_quality.is_catchall: true`, a existência da caixa específica fica inconclusiva. Esse campo é opcional. A seção 17.2 descreve a resposta do projeto para cada caso, incluindo indisponibilidade do provedor. [Referência da API](https://docs.abstractapi.com/api/email-reputation)
+
+### 19.3 Arquivos alterados
+
+| Arquivo | Alteração |
+|---|---|
+| `backend/verificar-email.mjs` | Consulta à Abstract e interpretação da entregabilidade. |
+| `backend/verificar-email.test.mjs` | Testes da requisição e das respostas do novo provedor. |
+| `frontend/vite.config.js` e `frontend/.env.example` | Leitura e exemplo de configuração da chave. |
+| `frontend/src/components/acesso/PaginaAcesso.jsx` | Identificação da Abstract no aviso de cadastro. |
+| `README.md` e `docs/DOCUMENTACAO.md` | Instalação, contrato, histórico e instruções de migração. |
+
+### 19.4 Verificação
+
+Os testes da API usam respostas simuladas da Abstract. Os casos cobrem endereço entregável, caixa inválida ou cheia, servidor de e-mail indisponível, retorno desconhecido, domínio catch-all, ausência de confirmação SMTP, falta de chave e falhas de rede ou de cota. Para consultar um endereço real, a instalação precisa de uma chave ativa da equipe.
+
+Resultado da versão 1.8.2: 94 testes do frontend e 10 da API aprovados. Lint e build de produção concluídos sem erros.
+
+---
+
+## 20. Contas e banco de dados (versão 1.9)
+
+### 20.1 Estrutura do banco
+
+O projeto usa o MySQL 8 previsto no roadmap e aproveita a API Node.js já usada pela Abstract. Cada conta tem um UUID que continua válido mesmo se o titular mudar o e-mail ou a categoria. As tabelas usam InnoDB e chaves estrangeiras. As coleções têm uma linha por item, o que permite ordenar paradas, consultar visitas por data e impedir favoritos repetidos.
+
+| Tabela | Conteúdo e relação |
+|---|---|
+| `contas` | Uma linha por pessoa. Contém nome, e-mail único normalizado, hash da senha, cidade, tipo, avatar, data de criação e revisão. |
+| `negocios` | Até um negócio por conta de empreendedor ou empresa. Registra nome, ramo e bairro. Para empresa, o CNPJ é validado e salvo com 14 dígitos. Voltar ao perfil turista remove os dados do negócio. |
+| `preferencias` e `interesses_conta` | Ritmo, orçamento e três opções de notificações por conta. Cada interesse selecionado ocupa uma linha com chave composta. |
+| `locais` | Identificador, nome e origem de cada atrativo ou comércio do catálogo do projeto. O comando de migração atualiza esses dados usando os IDs de `frontend/src/data/dados.js`. Preserve esses IDs ao editar o catálogo. |
+| `favoritos` e `visitas` | Relacionam conta e local. Favoritos são únicos por comércio e conta. Visitas têm ID próprio, data e anotação, permitindo voltar ao mesmo atrativo. |
+| `roteiros` e `paradas` | Roteiros salvos e um rascunho por conta. Cada parada tem identificador, posição e horário opcional. A referência composta liga a parada ao roteiro do titular. Locais externos do mapa conservam a referência e o nome usados no passeio. |
+| `sessoes` | Hash do token de sessão, conta e vencimento. O navegador recebe um cookie HttpOnly com duração de sete dias. Sair revoga a sessão atual. |
+| `migracoes` | Nome do arquivo SQL aplicado, soma SHA-256 e data de aplicação. A revisão da tabela `contas` controla alterações pessoais concorrentes e é independente da versão do esquema. |
+
+Na página Sobre, os rótulos de servidor e banco de dados identificam Node.js e MySQL 8.
+
+### 20.2 Arquivos e API
+
+| Arquivo | Responsabilidade |
+|---|---|
+| `backend/banco/conexao.mjs` | Pool do mysql2 e transações com commit ou rollback. |
+| `backend/banco/migrar.mjs` e `migracoes/*.sql` | Ordem de aplicação, trava de execução, histórico e atualização do catálogo. |
+| `backend/banco/dados.mjs` | Validação e conversão entre os objetos da interface e as linhas do banco. |
+| `backend/banco/api.mjs` e `backend/servidor.mjs` | Cadastro, credenciais, cookies, autorização e rotas HTTP. A API usa scrypt com salt individual para as senhas. |
+| `frontend/src/data/banco.js` e `frontend/src/hooks/` | Carga da sessão, importação opcional, gravação das alterações, avisos de falha e sincronização ao voltar à aba. |
+
+| Método e rota | Comportamento |
+|---|---|
+| `POST /api/cadastro` | Valida categoria, dados pessoais e e-mail pela Abstract. Cria conta, preferências e sessão em uma transação, junto dos dados importados quando selecionados. |
+| `POST /api/login` | Confere e-mail, senha e categoria e devolve os dados da conta autenticada. |
+| `GET /api/sessao` | Obtém os dados e a revisão atuais. Sem sessão ativa, devolve `null`. |
+| `PATCH /api/dados` | Recebe `contaId`, `revisao` e `alteracoes`. A sessão identifica o titular. Os grupos enviados são validados e gravados na mesma transação. Uma troca de endereço passa pela Abstract. |
+| `POST /api/sair` | Revoga a sessão no banco e expira o cookie. |
+| `POST /api/verificar-email` | Mantém a consulta independente de entregabilidade da versão anterior. O cadastro faz a própria verificação no servidor. |
+
+A interface confirma o salvamento depois da resposta da API. Se duas abas editarem a mesma revisão, a primeira gravação avança a revisão. A segunda recebe HTTP 409, recarrega os dados e pede que a pessoa refaça a alteração. Se uma transação falhar, o banco desfaz o lote.
+
+### 20.3 Instalação e atualização da versão demonstrativa
+
+1. Aplique os arquivos na raiz do projeto 1.8.2, preservando as pastas. Crie o banco e configure `backend/.env.local` conforme os [primeiros passos do README](../README.md#primeiros-passos). A chave da Abstract passa a ser lida pelo backend.
+2. Em `backend/`, instale as dependências, execute `npm run migrate` e inicie a API com `npm start`. Abra o frontend em outro terminal.
+3. Na versão demonstrativa, os registros estavam no navegador e as senhas nunca foram armazenadas. No mesmo navegador e endereço do site, abra **Cadastro**, informe o e-mail usado no perfil antigo e defina a senha. Quando os dados locais forem reconhecidos, selecione a opção de importação. Confira os campos do perfil e conclua o cadastro.
+4. O cadastro importa roteiros, rascunho, favoritos, preferências e visitas presentes no armazenamento local. A importação é opcional e preserva a cópia original no navegador. Depois do cadastro, use **Entrar** em qualquer dispositivo. Para uma conta já existente no MySQL, basta rodar as migrações da nova versão no servidor.
+
+### 20.4 Como acrescentar um campo para contas antigas e novas
+
+A migração `002_cor_do_avatar.sql` é um exemplo executável. A primeira migração cria as contas. A segunda acrescenta `contas.avatar` com `NOT NULL DEFAULT 'espuma'`. Ao consultar uma conta criada antes da migração, o novo campo já contém o valor padrão. Novas inserções que omitem o campo também recebem esse valor.
+
+1. Crie o próximo arquivo numerado, por exemplo `003_idioma_preferido.sql`, na pasta `backend/banco/migracoes/`. Para uma preferência individual com padrão conhecido, acrescente uma coluna em `preferencias`, como `idioma VARCHAR(12) NOT NULL DEFAULT 'pt-BR'`. Para vários valores por conta, use uma tabela relacionada, como em `interesses_conta`.
+2. Se o valor inicial depender de cada registro, permita `NULL` na primeira etapa, preencha os registros antigos com uma regra definida e verifique o resultado antes de exigir o valor. Escreva cada etapa de modo que possa ser retomada após interrupção. O MySQL confirma comandos de alteração de estrutura separadamente. A migração 002 consulta `information_schema` antes de criar a coluna.
+3. Mantenha intactos os arquivos já aplicados. O comando `npm run migrate` usa uma trava por banco, confere o histórico e executa os arquivos pendentes em ordem. Uma mudança no conteúdo de uma migração já registrada interrompe a execução.
+4. Atualize leitura, validação e gravação em `dados.mjs` e o componente que edita o campo. Preserve o valor atual quando um cliente antigo omitir a nova propriedade. No teste de integração, crie uma conta antes da migração, aplique a mudança, crie outra e confira o valor nas duas.
+5. Faça uma cópia de segurança antes de aplicar em um banco com dados reais. Execute primeiro em uma cópia de teste e depois no ambiente da aplicação, antes de iniciar o código que depende do novo campo.
+
+### 20.5 Verificação
+
+| Onde executar | Comandos e cobertura |
+|---|---|
+| `frontend/` | `npm run lint`, `npm test` e `npm run build`. Os testes de interface simulam a API e verificam fluxos como login, perfil, favoritos, rascunho e roteiro do mapa. |
+| `backend/` | `npm test` executa os testes da verificação de e-mail com respostas simuladas e os testes de integração com MySQL. Use uma instância de testes e informe `DB_HOST`, `DB_PORT`, `DB_USER` e `DB_PASSWORD` em `.env.teste.local` ou no ambiente. A credencial de testes deve poder criar e remover esquemas temporários. |
+| GitHub Actions | O trabalho `banco` provisiona MySQL 8 e executa a suíte com o driver definido em `backend/package.json`. |
+
+A suíte de integração cria um esquema de nome aleatório com prefixo `j360_teste_` e o remove ao terminar. Verifica o valor padrão em contas antigas e novas, a repetição da migração, importação, validações, persistência após novo login, conflito de revisão, isolamento entre contas, exclusão em cascata e saída da conta.
+
+Na verificação local desta entrega, os 88 testes do frontend e os 10 testes de e-mail passaram. O lint e o build também passaram. Os seis cenários de integração rodaram no MySQL 8.0.44 com o cliente nativo, por meio de um adaptador de teste. A execução com o driver mysql2 está configurada na CI. As respostas da Abstract foram simuladas.
+
+### 20.6 Correção de “Origem inválida” no cadastro local
+
+Ao abrir o frontend em `http://localhost:5173`, o navegador identifica essa origem no pedido de cadastro. A configuração inicial do proxy do Vite encaminhava o pedido para a API com o cabeçalho `Host: 127.0.0.1:3001`. Como os endereços divergiam, a API respondia com HTTP 403 antes de consultar a Abstract ou gravar a conta.
+
+Em `frontend/vite.config.js`, a regra de `/api` passou a usar `changeOrigin: false`. O Vite continua encaminhando o pedido à porta 3001 e preserva o endereço público para a conferência feita pela API. A regra atende tanto ao desenvolvimento quanto à prévia do build.
+
+Para aplicar em uma instalação da versão 1.9, substitua o arquivo de configuração, reinicie o Vite na pasta `frontend` e tente novamente pelo endereço exibido no terminal. O banco e as migrações já instalados podem continuar em uso.
+
+Na verificação local, a configuração anterior retornou 403 em desenvolvimento e na prévia. Com a correção, o mesmo fluxo retornou 201 nos dois modos e as duas contas de teste foram localizadas no MySQL. O teste usou o proxy do Vite, a API de cadastro do projeto, uma resposta simulada da Abstract e um esquema MySQL isolado acessado pelo cliente nativo.
+
+### 20.7 Como configurar o MySQL para `npm test` no backend
+
+O servidor e o comando de migração leem `.env.local`. A suíte de testes lê `.env.teste.local` ou as variáveis exportadas no terminal ou na CI. Se o arquivo de teste estiver ausente e o ambiente não definir `DB_USER`, os dez testes de e-mail podem passar enquanto o teste de contas para antes da primeira conexão. A própria suíte escolhe `DB_NAME` e simula as respostas da Abstract.
+
+1. Na pasta `backend`, execute `Copy-Item .env.teste.example .env.teste.local` no PowerShell. O arquivo de exemplo pode ser versionado. A cópia com a senha fica ignorada pelo Git.
+2. Se já houver uma credencial de testes com acesso aos esquemas temporários, use-a. Para criar uma credencial local em uma instalação padrão do MySQL 8, abra o Workbench na conexão de administrador **da instância de testes**. Troque a senha de exemplo antes de executar o SQL. Os sublinhados escapados são literais e o sinal de porcentagem identifica o sufixo aleatório do esquema. Essa regra pressupõe `partial_revokes=OFF`, o padrão do MySQL 8.
+
+   ```sql
+   CREATE USER 'j360_testes'@'localhost' IDENTIFIED BY 'SUA_SENHA_DE_TESTE';
+   GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, DROP, INDEX, REFERENCES
+       ON `j360\_teste\_%`.* TO 'j360_testes'@'localhost';
+   ```
+
+3. Abra `.env.teste.local` e preencha `DB_PASSWORD` com a senha escolhida. Confira `DB_HOST`, `DB_PORT` e `DB_USER`. Para outra máquina ou contêiner, ajuste o endereço e a conta de acesso à instância usada.
+4. Na mesma pasta, execute `npm test`. A suíte cria um esquema `j360_teste_<identificador>`, aplica as migrações, testa as contas e remove o esquema ao terminar. Basta que o MySQL esteja rodando para essa execução.
+
+Se aparecer **Access denied for user**, confira o usuário, a senha e o host da credencial de testes. Se a recusa mencionar um banco `j360_teste_...` durante a criação ou remoção, confira as permissões da credencial nessa instância.

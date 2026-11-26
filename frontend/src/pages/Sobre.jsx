@@ -36,8 +36,8 @@ const objetivos = [
 
 const tecnologias = [
   { grupo: 'Interface', itens: 'React e Vite' },
-  { grupo: 'Servidor', itens: 'Django e Django REST Framework' },
-  { grupo: 'Banco de dados', itens: 'PostgreSQL' },
+  { grupo: 'Servidor', itens: 'Node.js' },
+  { grupo: 'Banco de dados', itens: 'MySQL 8' },
   { grupo: 'Mapas', itens: 'Leaflet e OpenStreetMap' },
   { grupo: 'Hospedagem', itens: 'Vercel e Render' },
 ]

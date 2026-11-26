@@ -1,3 +1,7 @@
+import { aguardarGravacao } from '../data/banco'
+import useDadosConta from '../hooks/useLocalStorage'
+import { buscarItem } from '../data/dados'
+import PaginaGuia from '../components/PaginaGuia'
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { interesses, filtrarLocais, carregarLocais, usaDemonstracao } from '../mapa/catalogo'
 import { dias, hora, situacao } from '../mapa/horarios'
@@ -20,6 +24,8 @@ export default function Mapa() {
   const [manual, abrirMapa] = useState(false)
   const [roteiro, mostrarRoteiro] = useState(null)
   const [ocupado, ocupar] = useState('')
+  const [salvos, setSalvos] = useDadosConta('j360_roteiros', [])
+  const [gravando, setGravando] = useState(false)
   const [erro, avisar] = useState('')
   const tarefa = useRef(null)
   const topo = useRef(null)
@@ -100,23 +106,32 @@ export default function Mapa() {
     try {
       const resultado = await gerarRoteiro(origem, lugares.filter(p => escolhas.includes(p.id)), signal)
       if (signal.aborted) return
-      mostrarRoteiro(resultado)
+      mostrarRoteiro({ ...resultado, id: crypto.randomUUID(),
+        data: new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Recife' }).format(new Date()) })
       mudarEtapa(3)
     } catch {
       if (!signal.aborted) avisar('Não foi possível calcular o trajeto pelas ruas. Tente novamente ou altere a partida.')
     } finally { if (!signal.aborted) ocupar('') }
   }
+  async function salvarPasseio() {
+    const paradas = roteiro.paradas.map(({ local, inicio }) => ({
+      uid: crypto.randomUUID(), ref: local.id, hora: hora(inicio % 1440),
+      ...(!usaDemonstracao || !buscarItem(local.id) ? { nomeMapa: local.nome } : {}),
+    }))
+    setGravando(true)
+    setSalvos(lista => [...lista, { id: roteiro.id, nome: 'Passeio por Jaboatão', data: roteiro.data, paradas }])
+    try { await aguardarGravacao() } catch (erro) { avisar(erro.message) }
+    finally { setGravando(false) }
+  }
   const temSim = Object.values(respostas).includes('sim')
   const pontoNaTela = origem && `${origem.lat.toFixed(4)}, ${origem.lng.toFixed(4)}`
-  return <main className="map-pagina">
-    <ol className="map-passos" aria-label="Etapas do passeio">{etapas.map((nome, i) =>
-      <li key={nome} aria-current={etapa === i ? 'step' : undefined} className={i <= etapa ? 'atingido' : ''}>{nome}</li>)}</ol>
-    <div className={etapa === 0 ? 'map-abertura' : 'map-interno'}>
-      {etapa === 0 && <aside className="map-capa">
-        <div><p>Jaboatão dos Guararapes · PE</p><h2>Mapa interativo</h2></div>
-      </aside>}
+  return <PaginaGuia pagina="mapa" titulo="Mapa interativo"
+    descricao="Escolha os lugares que quer visitar e veja por onde começar o passeio.">
+    <div className="map-layout">
+      <ol className="map-passos" aria-label="Etapas do passeio">{etapas.map((nome, i) =>
+        <li key={nome} aria-current={etapa === i ? 'step' : undefined} className={i <= etapa ? 'atingido' : ''}>{nome}</li>)}</ol>
       <section className="map-painel">
-        <h1 tabIndex="-1" ref={topo}>{['Filtro de interesses', 'Escolha seus lugares', 'Ponto de partida', 'Seu roteiro'][etapa]}</h1>
+        <h2 tabIndex="-1" ref={topo}>{['Filtro de interesses', 'Escolha seus lugares', 'Ponto de partida', 'Seu roteiro'][etapa]}</h2>
         {etapa === 0 && <>
           <p className="map-intro">Marque Sim para o que te interessa e Não para o que prefere deixar de fora. Você pode deixar categorias em branco.</p>
           <div className="map-categorias">{interesses.map(nome =>
@@ -175,6 +190,9 @@ export default function Mapa() {
               <span className="map-numero" aria-hidden="true">{i + 1}</span>
               <div><DetalheParada parada={p} relogio={roteiro.relogio} /></div>
             </li>)}</ol>
+            <button className="map-pri" disabled={gravando || salvos.some(r => r.id === roteiro.id)} onClick={salvarPasseio}>
+              {gravando ? 'Salvando…' : salvos.some(r => r.id === roteiro.id) ? 'Salvo em Meus roteiros' : 'Salvar em Meus roteiros'}
+            </button>
           </> : <p role="status">Nenhuma visita coube no passeio de hoje.</p>}
           {roteiro.fora.length > 0 && <section className="map-fora"><h2>Fora do trajeto</h2>
             {roteiro.fora.map(({ local, motivo }) => <div key={local.id}>
@@ -189,5 +207,5 @@ export default function Mapa() {
         {usaDemonstracao && <p className="map-demo">Catálogo de demonstração · Locais e horários de exemplo.</p>}
       </section>
     </div>
-  </main>
+  </PaginaGuia>
 }
