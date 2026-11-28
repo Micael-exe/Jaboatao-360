@@ -11,6 +11,7 @@ import DetalheParada, { Semana } from '../mapa/DetalheParada'
 import './Mapa.css'
 import './Mapa-swipe.css'
 import ExplorarMapa from '../mapa/ExplorarMapa'
+import EscolherRoteiro from '../mapa/EscolherRoteiro'
 
 const MapaFolha = lazy(() => import('../mapa/MapaFolha'))
 const etapas = ['Interesses', 'Lugares', 'Partida', 'Roteiro']
@@ -18,6 +19,8 @@ const quantidade = n => `${n} ${n === 1 ? 'lugar' : 'lugares'}`
 
 export default function Mapa() {
   const [modo, setModo] = useState("explorar")
+  const [tipoRoteiro, setTipoRoteiro] = useState(null)
+  const [nomeRoteiro, setNomeRoteiro] = useState('')
   const [etapa, mudarEtapa] = useState(0)
   const [respostas, responder] = useState({})
   const [lugares, listar] = useState(null)
@@ -75,12 +78,36 @@ export default function Mapa() {
     avancar(vistos + 1)
     if (vistos + 1 === lugares.length && selecionados.length) mudarEtapa(2)
   }
+  function abrirPersonalizado() {
+    cancelar(); setTipoRoteiro('personalizado'); setNomeRoteiro(''); mudarEtapa(0)
+    responder({}); listar(null); avancar(0); escolher([]); definirOrigem(null); abrirMapa(false); mostrarRoteiro(null)
+  }
+  function voltarEscolha() {
+    cancelar(); setTipoRoteiro(null); setNomeRoteiro(''); mudarEtapa(0)
+  }
+  async function selecionarPronto(ids, nome) {
+    const signal = iniciar('locais')
+    try {
+      const lista = await carregarLocais(signal)
+      if (signal.aborted) return
+      const unicos = [...new Set(ids.map(String))]
+      const encontrados = unicos.map(id => lista.find(l => String(l.id) === id)).filter(Boolean)
+      if (!encontrados.length || encontrados.length !== unicos.length) {
+        avisar('Nem todos os lugares desse roteiro estão disponíveis no catálogo atual. Escolha outro roteiro ou crie um personalizado.'); return
+      }
+      listar(encontrados); escolher(encontrados.map(l=>l.id)); avancar(encontrados.length)
+      definirOrigem(null); abrirMapa(false); mostrarRoteiro(null); setNomeRoteiro(nome); setTipoRoteiro('pronto'); mudarEtapa(2)
+    } catch {
+      if (!signal.aborted) avisar('Não foi possível carregar o roteiro. Tente novamente.')
+    } finally { if (!signal.aborted) ocupar('') }
+  }
   function rever() {
     cancelar()
     avancar(0)
     mudarEtapa(1)
   }
   function alterarFiltro() {
+    setTipoRoteiro('personalizado'); setNomeRoteiro('')
     cancelar()
     listar(null)
     mudarEtapa(0)
@@ -122,7 +149,7 @@ export default function Mapa() {
       ...(!usaDemonstracao || !buscarItem(local.id) ? { nomeMapa: local.nome } : {}),
     }))
     setGravando(true)
-    setSalvos(lista => [...lista, { id: roteiro.id, nome: 'Passeio por Jaboatão', data: roteiro.data, paradas }])
+    setSalvos(lista => [...lista, { id: roteiro.id, nome: nomeRoteiro || 'Passeio por Jaboatão', data: roteiro.data, paradas }])
     try { await aguardarGravacao() } catch (erro) { avisar(erro.message) }
     finally { setGravando(false) }
   }
@@ -131,7 +158,9 @@ export default function Mapa() {
   return <PaginaGuia pagina="mapa" titulo="Mapa interativo"
     descricao="Escolha os lugares que quer visitar e veja por onde começar o passeio.">
     <nav className="exp-mode exp-mode-cards" aria-label="Modo do mapa"><div className="exp-mode-heading"><strong>Como você quer explorar?</strong><span>Escolha um modo para começar seu passeio.</span></div><button type="button" aria-pressed={modo === "explorar"} onClick={() => { cancelar(); setModo("explorar") }}><span className="exp-mode-icon" aria-hidden="true">&#x1F5FA;</span><span className="exp-mode-copy"><strong>Explorar no mapa</strong><small>Veja todos os locais, horários e detalhes no mapa.</small></span><span className="exp-mode-arrow" aria-hidden="true">&#x2192;</span></button><button type="button" aria-pressed={modo === "roteiro"} onClick={() => setModo("roteiro")}><span className="exp-mode-icon" aria-hidden="true">&#x1F9ED;</span><span className="exp-mode-copy"><strong>Descobrir lugares e montar roteiro</strong><small>Deslize os cartões e monte seu passeio personalizado.</small></span><span className="exp-mode-arrow" aria-hidden="true">&#x2192;</span></button></nav>
-    {modo === "explorar" ? <ExplorarMapa /> : (
+    {modo === "explorar" ? <ExplorarMapa /> : !tipoRoteiro ? <EscolherRoteiro onCriar={abrirPersonalizado} onSelecionar={selecionarPronto} salvos={salvos} ocupado={ocupado} erro={erro}/> : (
+    <>
+    <div className="route-back"><button type="button" onClick={voltarEscolha}>← Escolher outro modo de roteiro</button>{nomeRoteiro&&<strong>{nomeRoteiro}</strong>}</div>
     <div className={etapa === 1 ? "map-layout map-layout--lugares" : "map-layout"}>
       <ol className="map-passos" aria-label="Etapas do passeio">{etapas.map((nome, i) =>
         <li key={nome} aria-current={etapa === i ? 'step' : undefined} className={i <= etapa ? 'atingido' : ''}>{nome}</li>)}</ol>
@@ -213,6 +242,7 @@ export default function Mapa() {
         {usaDemonstracao && <p className="map-demo">Catálogo de demonstração · Locais e horários de exemplo.</p>}
       </section>
     </div>
+    </>
     )}
   </PaginaGuia>
 }

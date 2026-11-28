@@ -21,6 +21,7 @@ async function inicio() {
   const pessoa = userEvent.setup()
   render(<Mapa />)
   await pessoa.click(screen.getByRole('button', { name: /Descobrir lugares e montar roteiro/ }))
+  await pessoa.click(screen.getByRole('button', { name: /Criar roteiro/ }))
   expect(screen.getByRole('button', { name: 'Ver lugares' })).toBeDisabled()
   await pessoa.click(within(screen.getByRole('group', { name: 'Praias' })).getByRole('radio', { name: 'Sim' }))
   await pessoa.click(screen.getByRole('button', { name: 'Ver lugares' }))
@@ -73,4 +74,13 @@ it('permite rever a seleção se todas as fotos foram puladas', async () => {
 it('abre o mapa de exploração por padrão', () => {
   render(<Mapa />)
   expect(screen.getByText('Mapa de exploração')).toBeVisible()
+})
+
+it('seleciona um roteiro temático e avança para a partida', async () => {
+  const pessoa = userEvent.setup()
+  render(<Mapa />)
+  await pessoa.click(screen.getByRole('button', { name: /Descobrir lugares e montar roteiro/ }))
+  await pessoa.click(screen.getByRole('button', { name: /Selecionar roteiro/ }))
+  await pessoa.click(screen.getByRole('button', { name: /Um dia na orla/ }))
+  expect(await screen.findByRole('heading', { name: 'Ponto de partida' })).toBeVisible()
 })
