@@ -1,12 +1,13 @@
 import { simularConta } from '../test/conta'
 import { snapshot } from '../data/banco'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, it, vi } from 'vitest'
 import Mapa from './Mapa'
 import { carregarLocais, demonstracao } from '../mapa/catalogo'
 import { gerarRoteiro } from '../mapa/rotas'
 
+vi.mock('../mapa/ExplorarMapa', () => ({ default: () => <div>Mapa de exploração</div> }))
 vi.mock('../mapa/catalogo', async importar => ({ ...await importar(), carregarLocais: vi.fn() }))
 vi.mock('../mapa/rotas', () => ({ gerarRoteiro: vi.fn() }))
 vi.mock('../mapa/MapaFolha', () => ({ default: ({ selecionar }) => selecionar
@@ -19,6 +20,8 @@ beforeEach(() => {
 async function inicio() {
   const pessoa = userEvent.setup()
   render(<Mapa />)
+  await pessoa.click(screen.getByRole('button', { name: /Descobrir lugares e montar roteiro/ }))
+  await pessoa.click(screen.getByRole('button', { name: /Criar roteiro/ }))
   expect(screen.getByRole('button', { name: 'Ver lugares' })).toBeDisabled()
   await pessoa.click(within(screen.getByRole('group', { name: 'Praias' })).getByRole('radio', { name: 'Sim' }))
   await pessoa.click(screen.getByRole('button', { name: 'Ver lugares' }))
@@ -40,8 +43,9 @@ it('encerra antes da última foto, preserva a origem após falha e exclui o luga
   })
   const pessoa = await inicio()
   await pessoa.click(screen.getByRole('button', { name: /Quero visitar/ }))
+  await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('1 de 3 vistos'))
   await pessoa.click(screen.getByRole('button', { name: /Pular/ }))
-  expect(screen.getByRole('status')).toHaveTextContent('2 de 3 vistos · 1 lugar')
+  await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('2 de 3 vistos · 1 lugar'))
   await pessoa.click(screen.getByRole('button', { name: 'Montar roteiro' }))
   await pessoa.click(screen.getByRole('button', { name: 'Escolher no mapa' }))
   await pessoa.click(await screen.findByRole('button', { name: 'Usar o centro do mapa' }))
@@ -57,9 +61,26 @@ it('encerra antes da última foto, preserva a origem após falha e exclui o luga
 })
 it('permite rever a seleção se todas as fotos foram puladas', async () => {
   const pessoa = await inicio()
-  for (let i = 0; i < 3; i++) await pessoa.click(screen.getByRole('button', { name: /Pular/ }))
+  for (let i = 0; i < 3; i++) {
+    await pessoa.click(screen.getByRole('button', { name: /Pular/ }))
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent(`${i + 1} de 3 vistos`))
+  }
   await pessoa.click(screen.getByRole('button', { name: 'Rever lugares' }))
   expect(screen.getByRole('status')).toHaveTextContent('0 de 3 vistos')
   fireEvent.click(screen.getByRole('button', { name: 'Alterar interesses' }))
   expect(screen.getByRole('heading', { name: 'Filtro de interesses' })).toBeVisible()
+})
+
+it('abre o mapa de exploração por padrão', () => {
+  render(<Mapa />)
+  expect(screen.getByText('Mapa de exploração')).toBeVisible()
+})
+
+it('seleciona um roteiro temático e avança para a partida', async () => {
+  const pessoa = userEvent.setup()
+  render(<Mapa />)
+  await pessoa.click(screen.getByRole('button', { name: /Descobrir lugares e montar roteiro/ }))
+  await pessoa.click(screen.getByRole('button', { name: /Selecionar roteiro/ }))
+  await pessoa.click(screen.getByRole('button', { name: /Um dia na orla/ }))
+  expect(await screen.findByRole('heading', { name: 'Ponto de partida' })).toBeVisible()
 })
