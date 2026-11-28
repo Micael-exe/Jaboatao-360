@@ -1,0 +1,58 @@
+.exp-page { --exp-green:#115e51; color:#173f36; text-align:left; }
+.exp-title { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin:20px 0; }
+.exp-title h2 { font-size:clamp(1.7rem,3vw,2.5rem); font-weight:750; }
+.exp-title p,.exp-source,.exp-map-caption { color:#536960; font-size:.9rem; }
+.exp-locate,.exp-reset,.exp-center { border:1px solid #b9d5ca; border-radius:999px; padding:10px 16px; font-weight:650; cursor:pointer; background:white; color:#115e51; min-height:44px; }
+.exp-locate { background:var(--exp-green); color:white; border-color:var(--exp-green); }
+.exp-locate:disabled { opacity:.6; }
+.exp-toolbar { display:flex; flex-wrap:wrap; align-items:end; gap:12px; padding:15px; border:1px solid #d5e4de; background:white; border-radius:16px; }
+.exp-search { display:grid; gap:5px; font-size:.84rem; font-weight:650; flex:1 1 180px; }
+.exp-search input { width:100%; background:#f2f7f4; border:1px solid #bfd4cc; padding:10px 12px; border-radius:9px; min-height:44px; }
+.exp-cats { display:flex; gap:8px; flex-wrap:wrap; padding:15px 0; }
+.exp-cats button,.exp-mode button { background:white; border:1px solid #bfd6cc; color:var(--exp-green,#115e51); border-radius:999px; padding:9px 14px; min-height:44px; font-size:.88rem; font-weight:650; cursor:pointer; }
+.exp-cats button[aria-pressed=true],.exp-mode button[aria-pressed=true] { background:#115e51; color:white; border-color:#115e51; }
+.exp-mode { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin:0 0 24px; }
+.exp-notice { padding:10px 14px; border-radius:10px; background:#fff3d7; color:#684f19; margin:8px 0 14px; font-size:.85rem; }
+.exp-notice button { text-decoration:underline; font-weight:700; padding:4px; }
+.exp-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:16px; margin-top:10px; align-items:start; }
+@media(min-width:900px) { .exp-grid { grid-template-columns:minmax(0,1.9fr) minmax(260px,1fr); } }
+.exp-map-wrap { min-width:0; border:1px solid #c8ded5; border-radius:16px; overflow:hidden; background:white; }
+.exp-map { height:clamp(380px,65vh,650px); width:100%; isolation:isolate; background:#dce8e3; }
+.exp-center { position:absolute; z-index:800; left:50%; transform:translateX(-50%); bottom:28px; box-shadow:0 3px 12px #163c3240; white-space:nowrap; font-size:.85rem; }
+.exp-map-caption { padding:10px 14px; font-size:.79rem; }
+.exp-marker { border:2px solid white; border-radius:50%; background:#fff; display:grid; place-items:center; box-shadow:0 3px 8px #0c403955; font-size:19px; }
+.exp-marker-praia { background:#e1f5fc; }.exp-marker-cultura { background:#ffeed3; }.exp-marker-natureza { background:#ddf3dd; }.exp-marker-gastronomia { background:#ffe5dc; }.exp-marker-turismo { background:#e6eee9; }
+.exp-gps-marker { border:3px solid white; border-radius:50%; background:#277ee6; box-shadow:0 0 0 5px #277ee644; }
+.exp-side { background:white; border:1px solid #d5e4de; border-radius:16px; padding:15px; min-width:0; }
+.exp-side > h3 { display:flex; justify-content:space-between; font-size:1.05rem; font-weight:700; margin:7px 0 12px; }
+.exp-side > h3 span { color:#115e51; background:#e5f1ec; border-radius:20px; padding:2px 10px; }
+.exp-list { display:grid; gap:7px; max-height:490px; overflow:auto; }
+.exp-place { display:grid; grid-template-columns:38px minmax(0,1fr) auto; align-items:center; gap:9px; text-align:left; background:#f5f8f6; border:1px solid #e0ebe5; border-radius:11px; padding:9px; cursor:pointer; }
+.exp-place:hover,.exp-place.selected { background:#e5f2ed; border-color:#519c8a; }
+.exp-place strong { display:block; font-size:.9rem; line-height:1.3; overflow-wrap:anywhere; }
+.exp-place small { display:block; color:#536960; font-size:.75rem; }
+.exp-place-icon { font-size:20px; border-radius:10px; background:white; display:grid; place-items:center; height:38px; }
+.exp-distance { color:#126c5a; font-size:.8rem; font-weight:700; white-space:nowrap; }
+.exp-detail { position:relative; border:1px solid #afd1c3; border-radius:13px; padding:14px; margin-bottom:16px; background:#f3f9f6; overflow:hidden; }
+.exp-detail img { width:100%; height:130px; object-fit:cover; border-radius:9px; margin-bottom:10px; }
+.exp-detail h3 { font-size:1.25rem; font-weight:750; padding-right:22px; margin:6px 0; }
+.exp-detail p { margin:8px 0; font-size:.86rem; overflow-wrap:anywhere; }
+.exp-detail a { font-size:.82rem; color:#115e51; text-decoration:underline; }
+.exp-tag { font-size:.75rem; font-weight:650; color:#115e51; }
+.exp-close { position:absolute; right:8px; top:8px; border-radius:50%; background:white; color:#115e51; width:34px; height:34px; font-size:1.4rem; cursor:pointer; }
+@media(max-width:600px){.exp-map{height:420px}.exp-toolbar{align-items:stretch}.exp-title h2{font-size:1.65rem}}
+/* Navegação principal: dois modos visíveis, com rótulo e explicação. */
+.exp-mode.exp-mode-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0 0 28px;padding:18px;background:#e8f2ed;border:1px solid #c6ded2;border-radius:20px;box-shadow:0 8px 25px #143f3010}
+.exp-mode-heading{grid-column:1/-1;display:grid;gap:3px;text-align:left;color:#174d44}.exp-mode-heading strong{font-size:1.18rem}.exp-mode-heading span{font-size:.87rem;color:#4d625a}
+.exp-mode.exp-mode-cards button{display:grid;grid-template-columns:48px minmax(0,1fr) 22px;align-items:center;gap:12px;border-radius:15px;padding:18px;min-height:112px;text-align:left;transition:transform .18s,box-shadow .18s;border:2px solid #c0d8cc;color:#174d44;white-space:normal}.exp-mode.exp-mode-cards button:hover{transform:translateY(-2px);box-shadow:0 7px 18px #174d4420}.exp-mode.exp-mode-cards button[aria-pressed=true]{background:#115e51;color:#fff;border-color:#115e51;box-shadow:0 6px 18px #115e5138}.exp-mode-icon{display:grid;place-items:center;background:#e5f1ec;border-radius:13px;font-size:1.65rem;width:48px;height:48px}.exp-mode-copy{display:grid;gap:5px}.exp-mode-copy strong{font-size:clamp(1rem,1.8vw,1.18rem);line-height:1.25}.exp-mode-copy small{font-weight:400;font-size:.85rem;line-height:1.35}.exp-mode-arrow{font-size:1.45rem}.exp-detail-v2 .exp-close{z-index:2;box-shadow:0 2px 8px #123b3325}.exp-photo-credit{display:block;font-size:.68rem;color:#536960;margin-bottom:8px}.exp-hours{background:white;border:1px solid #d7e7df;border-radius:10px;padding:12px;margin:12px 0}.exp-hours h4{font-size:.92rem;font-weight:700;margin-bottom:6px}.exp-status{display:inline-block;font-size:.82rem;border-radius:999px;padding:4px 9px;background:#f4edda;color:#70510b}.exp-status.aberto{background:#dbf4e4;color:#176333}.exp-status.fechado{background:#fce8e7;color:#a13636}.exp-hours details{margin-top:8px;font-size:.82rem}.exp-hours summary{cursor:pointer;font-weight:650}.exp-hours ul{list-style:none;padding:0;margin:8px 0}.exp-hours li{padding:4px 0;border-bottom:1px solid #e4eee8;overflow-wrap:anywhere}.exp-hours small{display:block;font-size:.72rem;color:#536960;margin-top:8px}.exp-detail-links{display:grid;gap:8px;margin-top:10px}.exp-detail-links .exp-directions{display:block;background:#115e51;color:#fff;text-decoration:none;text-align:center;padding:10px;border-radius:9px;font-weight:700}
+@media(max-width:700px){.exp-mode.exp-mode-cards{grid-template-columns:1fr;padding:12px;gap:10px}.exp-mode.exp-mode-cards button{min-height:90px;padding:12px}.exp-mode-heading strong{font-size:1.05rem}}
+@media(prefers-reduced-motion:reduce){.exp-mode.exp-mode-cards button{transition:none}}
+/* V3: categorias do catálogo, sem controles de raio. */
+.exp-marker-comercio,.exp-marker-shopping,.exp-marker-artesanato {background:#f9ebcf}
+.exp-marker-museu,.exp-marker-cultura {background:#ffeed3}
+.exp-marker-bar,.exp-marker-gastronomia {background:#ffe5dc}
+.exp-marker-aventura {background:#dff1ff}.exp-marker-hospedagem {background:#e9e4ff}
+.exp-list-heading {font-size:.83rem;font-weight:700;color:#536960;padding:10px 2px 3px;border-top:1px solid #d5e4de}
+.exp-hours .map-semana dl {margin-top:10px}.exp-hours .map-semana dl>div {gap:8px;align-items:baseline}.exp-hours .map-semana dd {text-align:right;white-space:normal}
+
+.exp-route-panel{border:1px solid #c6ded2;background:white;padding:12px;border-radius:10px;margin-top:12px;display:grid;gap:8px}.exp-route-panel h4{font-size:.95rem;font-weight:750}.exp-route-primary,.exp-route-secondary{min-height:44px;border-radius:10px;font-weight:700;padding:10px 14px;cursor:pointer}.exp-route-primary{background:#115e51;color:white}.exp-route-primary:disabled{opacity:.65;cursor:wait}.exp-route-secondary{border:1px solid #bfd6cc;color:#115e51;background:#fff}.exp-route-result{display:grid;gap:6px;padding:10px;background:#e4f2e9;border-radius:8px}.exp-route-result small{font-size:.75rem;color:#536960}.exp-route-result strong{color:#115e51}

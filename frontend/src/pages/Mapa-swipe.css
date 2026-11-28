@@ -1,0 +1,58 @@
+/* Jaboatão 360 — experiência de seleção local, sem alterar as demais etapas. */
+.map-layout--lugares { position: relative; grid-template-columns: minmax(0, 1fr); }
+.map-layout--lugares .map-painel { width: 100%; max-width: 670px; margin-inline: auto; text-align: center; border-top: 0; padding-top: 0; }
+.map-layout--lugares .map-painel > h2 { font-size: clamp(1.45rem, 3vw, 2.2rem); margin-bottom: .6rem; }
+.map-layout--lugares .map-intro { margin: 0 auto 10px; font-size: .9rem; }
+.map-layout--lugares .map-progress { max-width: 440px; margin: 0 auto 24px; height: 6px; background: #d8e6e1; border-radius: 99px; overflow: hidden; }
+.map-progress > span { display: block; height: 100%; background: #128375; border-radius: inherit; transition: width .28s ease; }
+@media (min-width: 1100px) {
+  .map-layout--lugares .map-passos { position: absolute; inset: 0 auto auto 0; width: 142px; text-align: left; }
+  .map-layout--lugares .map-painel { max-width: min(670px, calc(100% - 320px)); }
+}
+@media (min-width: 800px) and (max-width: 1099px) {
+  .map-layout--lugares .map-passos { position: static; display: flex; }
+  .map-layout--lugares .map-passos li { border-left: 0; border-top: 2px solid var(--h-borda); text-align: center; padding: .5rem 0; }
+  .map-layout--lugares .map-passos .atingido { border-color: var(--h-verde); }
+}
+.map-swipe { max-width: 440px; margin-inline: auto; overflow: visible; padding-inline: 12px; }
+.map-swipe-stage { position: relative; isolation: isolate; margin-bottom: 20px; }
+.map-swipe-stack { position: absolute; inset: 10px 15px -11px; z-index: -1; border-radius: 24px; background: #c8ddd6; box-shadow: 0 9px 16px #164d4420; transform: scale(.96); }
+.map-swipe-stack::after { content: ''; position: absolute; inset: 8px 12px -9px; background: #dce9e3; border-radius: 24px; z-index: -1; }
+.map-swipe-entry { animation: j360-card-in .32s cubic-bezier(.2,.75,.2,1) both; }
+.map-swipe .map-swipe-card { min-height: 330px; height: clamp(330px, 46vh, 450px); border-radius: 22px; box-shadow: 0 16px 36px #164d442e; transform: translate3d(var(--swipe-x),0,0) rotate(var(--swipe-angle)); transform-origin: 50% 85%; transition: transform .32s cubic-bezier(.22,.75,.25,1), opacity .32s ease; text-align: left; will-change: transform; }
+.map-swipe-card.is-dragging { transition: none; }
+.map-swipe-card.is-visitar { transform: translate3d(110vw,-40px,0) rotate(24deg); opacity: 0; pointer-events: none; }
+.map-swipe-card.is-pular { transform: translate3d(-110vw,-40px,0) rotate(-24deg); opacity: 0; pointer-events: none; }
+.map-swipe .map-cartao img, .map-swipe .map-semfoto { display: block; width: 100%; height: 100%; object-fit: cover; }
+.map-swipe .map-semfoto { display: grid; }
+.map-swipe-shade { position: absolute; inset: 0; background: linear-gradient(180deg, #102e2a28 0%, transparent 30%, #082c2890 64%, #092d29f5 100%); pointer-events: none; }
+.map-swipe .map-legenda { position: absolute; bottom: 0; inset-inline: 0; padding: 24px 22px; pointer-events: none; }
+.map-swipe .map-legenda h2 { font-size: clamp(1.65rem, 3vw, 2.35rem); color: #fff; font-weight: 750; margin-top: 7px; }
+.map-swipe .map-legenda span { color: #e0f2ec; font-weight: 600; }
+.map-swipe-stamp { position: absolute; top: 23px; padding: 8px 11px; border: 3px solid currentColor; border-radius: 9px; font-size: clamp(.8rem, 2.5vw, 1.1rem); font-weight: 800; background: #ffffffeb; pointer-events: none; }
+.map-swipe-yes { left: 15px; color: #08744f; transform: rotate(-12deg); }
+.map-swipe-no { right: 15px; color: #b13246; transform: rotate(12deg); }
+.map-swipe-actions { display: flex; justify-content: center; gap: 32px; margin: 0; }
+.map-swipe-actions .map-swipe-choice { flex: 0 1 118px; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 0; border: none; background: transparent; color: #19463e; font-size: .86rem; white-space: nowrap; }
+.map-swipe-choice .map-swipe-symbol { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; font-size: 2.2rem; font-weight: 500; line-height: 1; background: white; box-shadow: 0 5px 16px #173e3620; transition: transform .18s ease, background .18s ease; }
+.map-swipe-choice.skip .map-swipe-symbol { color: #c64a5e; border: 1px solid #edbcc4; }
+.map-swipe-choice.visit .map-swipe-symbol { color: #fff; background: #126e5d; border: 1px solid #126e5d; }
+.map-swipe-actions .map-swipe-choice:hover:not(:disabled) { background: transparent; }
+.map-swipe-choice:hover:not(:disabled) .map-swipe-symbol { transform: scale(1.12); }
+.map-swipe-choice:active:not(:disabled) .map-swipe-symbol { transform: scale(.93); }
+.map-swipe-actions .map-swipe-choice:disabled { opacity: .55; background: transparent; }
+.map-swipe-help { text-align: center; font-size: .8rem; margin: 12px 0 0; }
+.map-layout--lugares .map-navegar { justify-content: center; margin-top: 12px; }
+.map-layout--lugares .map-demo { text-align: center; }
+/* Contém os cartões que saem da tela sem criar rolagem horizontal. */
+.guia--mapa { overflow-x: clip; }
+@keyframes j360-card-in { from { opacity: 0; transform: scale(.92) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+@media (max-width: 480px) {
+  .map-swipe { max-width: 360px; padding-inline: 5px; }
+  .map-swipe .map-swipe-card { min-height: 300px; height: clamp(300px, 45vh, 385px); }
+  .map-swipe-choice .map-swipe-symbol { width: 56px; height: 56px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-swipe-entry { animation: none; }
+  .map-swipe-card, .map-swipe-symbol, .map-progress > span { transition: none !important; }
+}
