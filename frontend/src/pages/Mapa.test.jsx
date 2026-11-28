@@ -7,6 +7,7 @@ import Mapa from './Mapa'
 import { carregarLocais, demonstracao } from '../mapa/catalogo'
 import { gerarRoteiro } from '../mapa/rotas'
 
+vi.mock('../mapa/ExplorarMapa', () => ({ default: () => <div>Mapa de exploração</div> }))
 vi.mock('../mapa/catalogo', async importar => ({ ...await importar(), carregarLocais: vi.fn() }))
 vi.mock('../mapa/rotas', () => ({ gerarRoteiro: vi.fn() }))
 vi.mock('../mapa/MapaFolha', () => ({ default: ({ selecionar }) => selecionar
@@ -19,6 +20,7 @@ beforeEach(() => {
 async function inicio() {
   const pessoa = userEvent.setup()
   render(<Mapa />)
+  await pessoa.click(screen.getByRole('button', { name: /Descobrir lugares e montar roteiro/ }))
   expect(screen.getByRole('button', { name: 'Ver lugares' })).toBeDisabled()
   await pessoa.click(within(screen.getByRole('group', { name: 'Praias' })).getByRole('radio', { name: 'Sim' }))
   await pessoa.click(screen.getByRole('button', { name: 'Ver lugares' }))
@@ -66,4 +68,9 @@ it('permite rever a seleção se todas as fotos foram puladas', async () => {
   expect(screen.getByRole('status')).toHaveTextContent('0 de 3 vistos')
   fireEvent.click(screen.getByRole('button', { name: 'Alterar interesses' }))
   expect(screen.getByRole('heading', { name: 'Filtro de interesses' })).toBeVisible()
+})
+
+it('abre o mapa de exploração por padrão', () => {
+  render(<Mapa />)
+  expect(screen.getByText('Mapa de exploração')).toBeVisible()
 })
