@@ -9,6 +9,7 @@ import { gerarRoteiro } from '../mapa/rotas'
 import CartaoLugar from '../mapa/CartaoLugar'
 import DetalheParada, { Semana } from '../mapa/DetalheParada'
 import './Mapa.css'
+import './Mapa-swipe.css'
 
 const MapaFolha = lazy(() => import('../mapa/MapaFolha'))
 const etapas = ['Interesses', 'Lugares', 'Partida', 'Roteiro']
@@ -127,7 +128,7 @@ export default function Mapa() {
   const pontoNaTela = origem && `${origem.lat.toFixed(4)}, ${origem.lng.toFixed(4)}`
   return <PaginaGuia pagina="mapa" titulo="Mapa interativo"
     descricao="Escolha os lugares que quer visitar e veja por onde começar o passeio.">
-    <div className="map-layout">
+    <div className={etapa === 1 ? "map-layout map-layout--lugares" : "map-layout"}>
       <ol className="map-passos" aria-label="Etapas do passeio">{etapas.map((nome, i) =>
         <li key={nome} aria-current={etapa === i ? 'step' : undefined} className={i <= etapa ? 'atingido' : ''}>{nome}</li>)}</ol>
       <section className="map-painel">
@@ -153,6 +154,7 @@ export default function Mapa() {
         </>}
         {etapa === 1 && <>
           <p className="map-intro" role="status">{vistos} de {lugares.length} vistos · {quantidade(escolhas.length)} na seleção</p>
+          <div className="map-progress" role="progressbar" aria-label="Progresso da selecao" aria-valuemin={0} aria-valuemax={lugares.length} aria-valuenow={vistos}><span style={{width: (100 * vistos / lugares.length) + "%"}} /></div>
           {vistos < lugares.length
             ? <CartaoLugar key={lugares[vistos].id} local={lugares[vistos]} decidir={decidir}
                 ilustrativa={usaDemonstracao && lugares[vistos].id !== 'a-3'} escolhido={escolhas.includes(lugares[vistos].id)} />

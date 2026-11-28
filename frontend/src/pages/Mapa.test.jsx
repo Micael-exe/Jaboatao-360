@@ -1,6 +1,6 @@
 import { simularConta } from '../test/conta'
 import { snapshot } from '../data/banco'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, it, vi } from 'vitest'
 import Mapa from './Mapa'
@@ -40,8 +40,9 @@ it('encerra antes da última foto, preserva a origem após falha e exclui o luga
   })
   const pessoa = await inicio()
   await pessoa.click(screen.getByRole('button', { name: /Quero visitar/ }))
+  await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('1 de 3 vistos'))
   await pessoa.click(screen.getByRole('button', { name: /Pular/ }))
-  expect(screen.getByRole('status')).toHaveTextContent('2 de 3 vistos · 1 lugar')
+  await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('2 de 3 vistos · 1 lugar'))
   await pessoa.click(screen.getByRole('button', { name: 'Montar roteiro' }))
   await pessoa.click(screen.getByRole('button', { name: 'Escolher no mapa' }))
   await pessoa.click(await screen.findByRole('button', { name: 'Usar o centro do mapa' }))
@@ -57,7 +58,10 @@ it('encerra antes da última foto, preserva a origem após falha e exclui o luga
 })
 it('permite rever a seleção se todas as fotos foram puladas', async () => {
   const pessoa = await inicio()
-  for (let i = 0; i < 3; i++) await pessoa.click(screen.getByRole('button', { name: /Pular/ }))
+  for (let i = 0; i < 3; i++) {
+    await pessoa.click(screen.getByRole('button', { name: /Pular/ }))
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent(`${i + 1} de 3 vistos`))
+  }
   await pessoa.click(screen.getByRole('button', { name: 'Rever lugares' }))
   expect(screen.getByRole('status')).toHaveTextContent('0 de 3 vistos')
   fireEvent.click(screen.getByRole('button', { name: 'Alterar interesses' }))
